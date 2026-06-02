@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物品详情 - 校园二手交易平台</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="index.html">校园二手交易</a>
+        <nav>
+            <a href="publish.html">发布物品</a>
+            <a href="orders.html">订单管理</a>
+            <a href="profile.html">个人中心</a>
+        </nav>
+    </header>
+
+    <main class="layout two-column">
+        <section id="itemDetail" class="detail-panel"></section>
+        <aside class="message-panel">
+            <h2>留言沟通</h2>
+            <div id="messageList" class="message-list"></div>
+            <form id="messageForm" class="message-form">
+                <input name="senderId" type="number" value="2" min="1" required>
+                <input name="receiverId" type="number" value="1" min="1" required>
+                <textarea name="content" rows="3" placeholder="输入留言内容" required></textarea>
+                <button type="submit">发送留言</button>
+            </form>
+        </aside>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/detail.js"></script>
+</body>
+</html>
+

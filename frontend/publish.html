@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布物品 - 校园二手交易平台</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="index.html">校园二手交易</a>
+        <nav>
+            <a href="publish.html">发布物品</a>
+            <a href="orders.html">订单管理</a>
+            <a href="profile.html">个人中心</a>
+        </nav>
+    </header>
+
+    <main class="layout narrow">
+        <h1>发布二手物品</h1>
+        <form class="form-panel" id="publishForm">
+            <label>标题<input name="title" required maxlength="120"></label>
+            <label>分类
+                <select name="category" required>
+                    <option value="书籍">书籍</option>
+                    <option value="生活用品">生活用品</option>
+                    <option value="电子产品">电子产品</option>
+                    <option value="其他">其他</option>
+                </select>
+            </label>
+            <label>价格<input name="price" type="number" min="0" step="0.01" required></label>
+            <label>图片地址<input name="imageUrl" placeholder="assets/images/book.svg"></label>
+            <label>卖家ID<input name="sellerId" type="number" min="1" value="1" required></label>
+            <label>描述<textarea name="description" rows="5"></textarea></label>
+            <button type="submit">提交发布</button>
+            <p class="form-message" id="publishMessage"></p>
+        </form>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/publish.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="物品图片占位">
+    <rect width="640" height="480" fill="#e9eef5"/>
+    <rect x="180" y="130" width="280" height="200" rx="16" fill="#ffffff" stroke="#c7d2de" stroke-width="8"/>
+    <circle cx="250" cy="200" r="36" fill="#f2b84b"/>
+    <path d="M210 300l70-80 55 62 35-38 70 56z" fill="#1d7a66"/>
+</svg>
+

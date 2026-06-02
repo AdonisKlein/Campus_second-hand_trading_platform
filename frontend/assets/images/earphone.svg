@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="耳机">
+    <rect width="640" height="480" fill="#edf4fb"/>
+    <path d="M210 250a110 110 0 01220 0" fill="none" stroke="#1d7a66" stroke-width="28" stroke-linecap="round"/>
+    <rect x="165" y="240" width="70" height="120" rx="28" fill="#f2b84b"/>
+    <rect x="405" y="240" width="70" height="120" rx="28" fill="#f2b84b"/>
+    <circle cx="200" cy="300" r="18" fill="#ffffff"/>
+    <circle cx="440" cy="300" r="18" fill="#ffffff"/>
+</svg>
+

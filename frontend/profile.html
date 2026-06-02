@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 校园二手交易平台</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="index.html">校园二手交易</a>
+        <nav>
+            <a href="publish.html">发布物品</a>
+            <a href="orders.html">订单管理</a>
+            <a href="profile.html">个人中心</a>
+        </nav>
+    </header>
+
+    <main class="layout narrow">
+        <h1>个人中心</h1>
+        <form class="form-panel" id="registerForm">
+            <h2>注册</h2>
+            <label>用户名<input name="username" required></label>
+            <label>密码<input name="password" type="password" placeholder="6-12位字母和数字" required></label>
+            <label>昵称<input name="nickname"></label>
+            <label>联系方式<input name="phone"></label>
+            <button type="submit">注册</button>
+            <p class="form-message" id="profileMessage"></p>
+        </form>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/profile.js"></script>
+</body>
+</html>
+

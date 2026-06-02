@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="台灯">
+    <rect width="640" height="480" fill="#fff7df"/>
+    <path d="M250 160h170l-34 92H214z" fill="#f2b84b"/>
+    <rect x="305" y="245" width="30" height="110" fill="#1d7a66"/>
+    <ellipse cx="320" cy="370" rx="110" ry="28" fill="#1d7a66"/>
+    <circle cx="320" cy="150" r="22" fill="#ffffff"/>
+</svg>
+

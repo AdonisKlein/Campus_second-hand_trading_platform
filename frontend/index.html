@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园二手交易平台</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="index.html">校园二手交易</a>
+        <nav>
+            <a href="publish.html">发布物品</a>
+            <a href="orders.html">订单管理</a>
+            <a href="profile.html">个人中心</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <section class="hero">
+            <h1>校园闲置，好物流转</h1>
+            <p>浏览教材、生活用品、电子产品等二手物品，快速留言沟通并创建订单。</p>
+            <form class="search-bar" id="searchForm">
+                <input id="keyword" type="search" placeholder="搜索物品关键词">
+                <select id="category">
+                    <option value="">全部分类</option>
+                    <option value="书籍">书籍</option>
+                    <option value="生活用品">生活用品</option>
+                    <option value="电子产品">电子产品</option>
+                    <option value="其他">其他</option>
+                </select>
+                <button type="submit">查询</button>
+            </form>
+        </section>
+
+        <section>
+            <div class="section-title">
+                <h2>最新物品</h2>
+                <span id="itemCount">加载中</span>
+            </div>
+            <div class="item-grid" id="itemGrid"></div>
+        </section>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
+

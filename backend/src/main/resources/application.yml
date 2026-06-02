@@ -1,0 +1,24 @@
+server:
+    port: 8080
+    servlet:
+        context-path: /api
+
+spring:
+    application:
+        name: campus-secondhand
+    datasource:
+        url: jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: validate
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+
+app:
+    upload-dir: uploads
+
