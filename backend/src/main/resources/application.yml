@@ -9,7 +9,7 @@ spring:
     datasource:
         url: jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
         username: root
-        password: root
+        password: "051223"
         driver-class-name: com.mysql.cj.jdbc.Driver
     jpa:
         hibernate:
@@ -21,4 +21,3 @@ spring:
 
 app:
     upload-dir: uploads
-

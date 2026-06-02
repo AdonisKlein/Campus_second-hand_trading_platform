@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -30,7 +32,7 @@ public class UserController {
 
         User user = new User();
         user.setUsername(request.username());
-        user.setPasswordHash(Integer.toHexString(request.password().hashCode()));
+        user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setNickname(request.nickname());
         user.setPhone(request.phone());
         userRepository.save(user);
@@ -39,9 +41,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ApiResponse<UserView> login(@Valid @RequestBody LoginRequest request) {
-        String passwordHash = Integer.toHexString(request.password().hashCode());
         return userRepository.findByUsername(request.username())
-            .filter(user -> user.getPasswordHash().equals(passwordHash))
+            .filter(user -> passwordEncoder.matches(request.password(), user.getPasswordHash()))
             .map(user -> ApiResponse.ok(UserView.from(user)))
             .orElseGet(() -> ApiResponse.fail("用户名或密码错误"));
     }
@@ -86,4 +87,3 @@ public class UserController {
         }
     }
 }
-
