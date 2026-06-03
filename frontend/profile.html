@@ -18,6 +18,17 @@
 
     <main class="layout narrow">
         <h1>个人中心</h1>
+
+        <!-- Login form -->
+        <form class="form-panel" id="loginForm">
+            <h2>登录</h2>
+            <label>用户名<input name="username" required></label>
+            <label>密码<input name="password" type="password" required></label>
+            <button type="submit">登录</button>
+            <p class="form-message" id="loginMessage"></p>
+        </form>
+
+        <!-- Register form (existing) -->
         <form class="form-panel" id="registerForm">
             <h2>注册</h2>
             <label>用户名<input name="username" required></label>
@@ -25,12 +36,31 @@
             <label>昵称<input name="nickname"></label>
             <label>联系方式<input name="phone"></label>
             <button type="submit">注册</button>
-            <p class="form-message" id="profileMessage"></p>
+            <p class="form-message" id="registerMessage"></p>
         </form>
+
+        <!-- Profile view / edit (shown when logged in) -->
+        <section id="profileSection" class="form-panel" style="display:none;">
+            <h2>我的资料</h2>
+            <div id="profileView">
+                <p>用户名：<span id="viewUsername"></span></p>
+                <p>昵称：<span id="viewNickname"></span></p>
+                <p>联系方式：<span id="viewPhone"></span></p>
+                <p>邮箱：<span id="viewEmail"></span></p>
+            </div>
+
+            <form id="profileForm">
+                <label>昵称<input name="nickname"></label>
+                <label>联系方式<input name="phone"></label>
+                <label>邮箱<input name="email" type="email"></label>
+                <button type="submit">保存资料</button>
+                <button type="button" id="logoutBtn">退出登录</button>
+                <p class="form-message" id="profileMessage"></p>
+            </form>
+        </section>
     </main>
 
     <script src="assets/js/api.js"></script>
     <script src="assets/js/profile.js"></script>
 </body>
 </html>
-

@@ -3,6 +3,7 @@ const itemId = params.get("id");
 const itemDetail = document.querySelector("#itemDetail");
 const messageList = document.querySelector("#messageList");
 const messageForm = document.querySelector("#messageForm");
+let currentItem = null;
 
 async function loadDetail() {
     const result = await request(`/items/${itemId}`);
@@ -11,6 +12,7 @@ async function loadDetail() {
         itemDetail.innerHTML = "<p>物品不存在</p>";
         return;
     }
+    currentItem = item;
 
     itemDetail.innerHTML = `
         <img class="detail-image" src="${item.imageUrl || "assets/images/placeholder.svg"}" alt="${item.title}">
@@ -22,9 +24,15 @@ async function loadDetail() {
     `;
 
     document.querySelector("#createOrder").addEventListener("click", async () => {
+        const currentUser = getCurrentUser();
+        if (!currentUser) {
+            alert('请先登录后下单');
+            location.href = 'profile.html';
+            return;
+        }
         const order = await request("/orders", {
             method: "POST",
-            body: JSON.stringify({ itemId: item.id, buyerId: 2, sellerId: item.sellerId })
+            body: JSON.stringify({ itemId: item.id, buyerId: Number(currentUser.id), sellerId: item.sellerId })
         });
         alert(order.success ? "订单创建成功" : order.message);
     });
@@ -43,10 +51,20 @@ async function loadMessages() {
 
 messageForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        alert('请先登录后留言');
+        location.href = 'profile.html';
+        return;
+    }
+    if (!currentItem) {
+        alert('物品未加载完成');
+        return;
+    }
     const data = formToJson(messageForm);
     data.itemId = Number(itemId);
-    data.senderId = Number(data.senderId);
-    data.receiverId = Number(data.receiverId);
+    data.senderId = Number(currentUser.id);
+    data.receiverId = Number(currentItem.sellerId);
     await request("/messages", {
         method: "POST",
         body: JSON.stringify(data)
@@ -57,4 +75,3 @@ messageForm.addEventListener("submit", async (event) => {
 
 loadDetail();
 loadMessages();
-

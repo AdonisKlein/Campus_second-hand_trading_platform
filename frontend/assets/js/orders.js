@@ -1,13 +1,4 @@
-const userIdInput = document.querySelector("#userId");
 const orderList = document.querySelector("#orderList");
-
-async function loadOrders() {
-    const result = await request(`/orders?userId=${userIdInput.value}`);
-    const orders = result.data || [];
-    orderList.innerHTML = orders.length
-        ? orders.map(renderOrder).join("")
-        : "<p>暂无订单</p>";
-}
 
 function renderOrder(order) {
     return `
@@ -21,6 +12,18 @@ function renderOrder(order) {
     `;
 }
 
-userIdInput.addEventListener("change", loadOrders);
-loadOrders();
+async function loadOrders() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        orderList.innerHTML = '<p>请先登录以查看订单</p>';
+        setTimeout(() => { location.href = 'profile.html'; }, 800);
+        return;
+    }
+    const result = await request(`/orders?userId=${currentUser.id}`);
+    const orders = result.data || [];
+    orderList.innerHTML = orders.length
+        ? orders.map(renderOrder).join("")
+        : "<p>暂无订单</p>";
+}
 
+loadOrders();
