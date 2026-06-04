@@ -9,7 +9,7 @@ spring:
     datasource:
         url: jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
         username: root
-        password: "051223"
+        password: "lin41008"
         driver-class-name: com.mysql.cj.jdbc.Driver
     jpa:
         hibernate:
@@ -18,6 +18,18 @@ spring:
         properties:
             hibernate:
                 format_sql: true
+    # Mail configuration (example for Mailtrap). Replace these with your Mailtrap credentials.
+    mail:
+        host: smtp.mailtrap.io
+        port: 2525
+        username: YOUR_MAILTRAP_USERNAME
+        password: YOUR_MAILTRAP_PASSWORD
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
 
 app:
     upload-dir: uploads

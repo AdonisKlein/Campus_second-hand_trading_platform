@@ -43,6 +43,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
+        <!-- Mail sender for verification emails -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -61,9 +66,32 @@
 
     <build>
         <plugins>
+            <!-- 保留原来的spring-boot插件不变 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.3.5</version>
+                <configuration>
+                    <mainClass>com.campus.secondhand.SecondhandApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 添加这个exec插件，专门用来本地运行 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <mainClass>com.campus.secondhand.SecondhandApplication</mainClass>
+                    <classpathScope>runtime</classpathScope>
+                </configuration>
             </plugin>
         </plugins>
     </build>

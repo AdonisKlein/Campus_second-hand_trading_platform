@@ -53,3 +53,14 @@ CREATE TABLE IF NOT EXISTS trade_orders (
     CONSTRAINT fk_orders_seller FOREIGN KEY (seller_id) REFERENCES users(id)
 );
 
+-- Email verification table for registration codes
+CREATE TABLE IF NOT EXISTS email_verification (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    code VARCHAR(10) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    attempts INT NOT NULL DEFAULT 0,
+    used BOOLEAN NOT NULL DEFAULT FALSE,
+    INDEX idx_verification_email (email)
+);

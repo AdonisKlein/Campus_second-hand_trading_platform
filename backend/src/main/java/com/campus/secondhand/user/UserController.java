@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -18,10 +19,26 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final VerificationService verificationService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, VerificationService verificationService) {
         this.userRepository = userRepository;
+        this.verificationService = verificationService;
+    }
+
+    @PostMapping("/send-verification")
+    public ApiResponse<String> sendVerification(@RequestBody SendVerificationRequest request) {
+        try {
+            EmailVerification v = verificationService.sendCode(request.email());
+            // if not expired and previously sent, return message indicating already sent
+            if (v.getExpiresAt().isAfter(java.time.LocalDateTime.now()) && v.getCreatedAt().isBefore(java.time.LocalDateTime.now().minusSeconds(1))) {
+                return ApiResponse.ok("验证码已发送");
+            }
+            return ApiResponse.ok("验证码已发送");
+        } catch (Exception e) {
+            return ApiResponse.fail("发送失败");
+        }
     }
 
     @PostMapping("/register")
@@ -29,12 +46,18 @@ public class UserController {
         if (userRepository.existsByUsername(request.username())) {
             return ApiResponse.fail("用户名已存在");
         }
+        // verify code
+        boolean ok = verificationService.verifyCode(request.email(), request.code());
+        if (!ok) {
+            return ApiResponse.fail("验证码错误或已过期");
+        }
 
         User user = new User();
         user.setUsername(request.username());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setNickname(request.nickname());
-        user.setPhone(request.phone());
+        user.setPhone(null); // phone to be provided in profile
+        user.setEmail(request.email());
         userRepository.save(user);
         return ApiResponse.created(UserView.from(user));
     }
@@ -66,11 +89,14 @@ public class UserController {
             .orElseGet(() -> ApiResponse.fail("用户不存在"));
     }
 
+    public record SendVerificationRequest(@NotBlank String email) {}
+
     public record RegisterRequest(
         @NotBlank String username,
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,12}$", message = "密码需为6-12位字母和数字组合") String password,
         String nickname,
-        String phone
+        @NotBlank String email,
+        @NotBlank String code
     ) {
     }
 
