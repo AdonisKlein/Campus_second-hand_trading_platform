@@ -74,7 +74,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<UserView> update(@PathVariable Long id, @RequestBody UpdateProfileRequest request) {
+    public ApiResponse<?> update(@PathVariable Long id, @RequestBody UpdateProfileRequest request) {
         return userRepository.findById(id)
             .map(user -> {
                 // if email changed, require verification code

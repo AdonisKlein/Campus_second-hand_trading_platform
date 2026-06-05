@@ -42,12 +42,13 @@
             <form id="profileForm" style="display:none;">
                 <label>昵称<input name="nickname"></label>
                 <label>联系方式（手机号）<input name="phone"></label>
+                <label>邮箱<input name="email" type="email"></label>
                 <div class="inline-field">
-                    <label>邮箱<input name="email" type="email"></label>
-                    <button type="button" id="sendEmailCodeBtn">发送验证邮箱</button>
+                    <label>邮箱验证码<input name="emailCode" maxlength="6" placeholder="6位数字"></label>
+                    <button type="button" id="sendEmailCodeBtn">发送验证码</button>
                     <span id="emailCountdown" class="small"></span>
                 </div>
-                <label>邮箱验证码<input name="emailCode" maxlength="6" placeholder="6位数字"></label>
+
                 <div class="actions">
                     <button type="submit" id="saveBtn">保存资料</button>
                 </div>
