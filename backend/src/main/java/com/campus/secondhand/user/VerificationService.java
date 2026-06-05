@@ -51,8 +51,18 @@ public class VerificationService {
 
     @Transactional
     public boolean verifyCode(String email, String code) {
-        // For testing without Mailtrap or when verification is disabled, accept any code
+        Optional<EmailVerification> latestOpt = repository.findFirstByEmailOrderByCreatedAtDesc(email);
+        if (latestOpt.isEmpty()) return false;
+        EmailVerification latest = latestOpt.get();
+        if (latest.isUsed()) return false;
+        if (latest.getExpiresAt().isBefore(LocalDateTime.now())) return false;
+        if (!latest.getCode().equals(code)) {
+            latest.setAttempts(latest.getAttempts() + 1);
+            repository.save(latest);
+            return false;
+        }
+        latest.setUsed(true);
+        repository.save(latest);
         return true;
     }
 }
-

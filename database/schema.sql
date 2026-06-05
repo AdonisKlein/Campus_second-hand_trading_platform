@@ -55,12 +55,16 @@ CREATE TABLE IF NOT EXISTS trade_orders (
 
 -- Email verification table for registration codes
 CREATE TABLE IF NOT EXISTS email_verification (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(255) NOT NULL,
-    code VARCHAR(10) NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    expires_at DATETIME NOT NULL,
-    attempts INT NOT NULL DEFAULT 0,
-    used BOOLEAN NOT NULL DEFAULT FALSE,
-    INDEX idx_verification_email (email)
-);
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+    email VARCHAR(255) NOT NULL COMMENT '接收验证码的邮箱地址',
+    code VARCHAR(10) NOT NULL COMMENT '6位数字验证码',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '验证码创建时间',
+    expires_at DATETIME NOT NULL COMMENT '验证码过期时间',
+    attempts INT NOT NULL DEFAULT 0 COMMENT '验证尝试次数（超过3次自动失效）',
+    used BOOLEAN NOT NULL DEFAULT FALSE COMMENT '是否已使用（true=已使用，false=未使用）',
+
+    -- 索引：加速按邮箱查询验证码
+    INDEX idx_email (email),
+    -- 联合索引：加速查询未过期、未使用的验证码
+    INDEX idx_email_used_expires (email, used, expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='邮箱验证码存储表';

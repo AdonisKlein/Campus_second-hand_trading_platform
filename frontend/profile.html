@@ -39,14 +39,18 @@
                 <p>邮箱：<span id="viewEmail"></span></p>
             </div>
 
-            <form id="profileForm">
+            <form id="profileForm" style="display:none;">
                 <label>昵称<input name="nickname"></label>
                 <label>联系方式（手机号）<input name="phone"></label>
                 <label>邮箱<input name="email" type="email"></label>
-                <button type="submit">保存资料</button>
-                <button type="button" id="logoutBtn">退出登录</button>
+                <div class="actions">
+                    <button type="submit" id="saveBtn">保存资料</button>
+                    <button type="button" id="logoutBtn">退出登录</button>
+                </div>
                 <p class="form-message" id="profileMessage"></p>
             </form>
+
+            <button type="button" id="editProfileBtn">修改资料</button>
         </section>
     </main>
 

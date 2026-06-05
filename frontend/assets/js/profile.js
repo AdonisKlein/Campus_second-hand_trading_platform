@@ -5,6 +5,8 @@ const profileView = document.querySelector("#profileView");
 const profileForm = document.querySelector("#profileForm");
 const profileMessage = document.querySelector("#profileMessage");
 const logoutBtn = document.querySelector("#logoutBtn");
+const editProfileBtn = document.querySelector('#editProfileBtn');
+const saveBtn = document.querySelector('#saveBtn');
 
 function showLoggedInUI(user) {
     document.querySelector('#loginForm').style.display = 'none';
@@ -68,6 +70,13 @@ loginForm.addEventListener('submit', async (e) => {
     }
 });
 
+// when clicking modify, show edit form
+editProfileBtn?.addEventListener('click', (e) => {
+    document.getElementById('profileView').style.display = 'none';
+    document.getElementById('profileForm').style.display = 'block';
+    editProfileBtn.style.display = 'none';
+});
+
 // Update profile
 profileForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -84,15 +93,22 @@ profileForm.addEventListener('submit', async (e) => {
     });
     if (res.success && res.data) {
         setCurrentUser(res.data);
+        // update view
         showLoggedInUI(res.data);
         profileMessage.textContent = '保存成功';
+        // hide form
+        document.getElementById('profileForm').style.display = 'none';
+        document.getElementById('profileView').style.display = '';
+        editProfileBtn.style.display = '';
     } else {
         profileMessage.textContent = res.message || '保存失败';
     }
 });
 
-// Logout
+// Logout with confirmation
 logoutBtn.addEventListener('click', (e) => {
-    clearCurrentUser();
-    showLoggedOutUI();
+    if (confirm('确定要退出登录吗？')) {
+        clearCurrentUser();
+        showLoggedOutUI();
+    }
 });

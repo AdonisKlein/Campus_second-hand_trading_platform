@@ -89,6 +89,17 @@ public class UserController {
             .orElseGet(() -> ApiResponse.fail("用户不存在"));
     }
 
+    @GetMapping("/check")
+    public ApiResponse<Object> check(@RequestParam(required = false) String username,
+                                     @RequestParam(required = false) String email) {
+        boolean usernameExists = false;
+        boolean emailExists = false;
+        if (username != null && !username.isBlank()) usernameExists = userRepository.existsByUsername(username);
+        if (email != null && !email.isBlank()) emailExists = userRepository.existsByEmail(email);
+        var map = java.util.Map.of("usernameExists", usernameExists, "emailExists", emailExists);
+        return ApiResponse.ok(map);
+    }
+
     public record SendVerificationRequest(@NotBlank String email) {}
 
     public record RegisterRequest(
