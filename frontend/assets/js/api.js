@@ -9,21 +9,24 @@ async function request(path, options = {}) {
         ...options
     });
 
-    // Try to parse JSON safely
+    // Read raw text first so we can show it even if it's not valid JSON
+    const text = await response.text();
     let payload = null;
-    try {
-        payload = await response.json();
-    } catch (e) {
-        // Not JSON or empty
-        payload = null;
+    if (text) {
+        try {
+            payload = JSON.parse(text);
+        } catch (e) {
+            payload = text;
+        }
     }
 
     if (!response.ok) {
-        // If backend uses ApiResponse structure, return that; otherwise synthesize
         if (payload && typeof payload === 'object' && ('success' in payload || 'message' in payload)) {
             return payload;
         }
-        return { success: false, message: payload && payload.message ? payload.message : `请求失败：${response.status}` };
+        // include raw text in message if available
+        const rawMsg = typeof payload === 'string' && payload.length > 0 ? payload : `HTTP ${response.status}`;
+        return { success: false, message: rawMsg };
     }
 
     return payload;
