@@ -105,10 +105,18 @@ button {
     background: var(--primary);
     color: #ffffff;
     cursor: pointer;
+    padding: 12px 16px;
+    border-radius: 8px;
 }
 
 button:hover {
     background: var(--primary-dark);
+}
+
+button.secondary {
+    background: #f3f4f6;
+    color: var(--text);
+    border-color: var(--line);
 }
 
 .section-title {
@@ -236,6 +244,65 @@ button:hover {
     width: 120px;
 }
 
+.profile-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* vertical gap between edit and logout */
+    margin-top: 12px;
+}
+
+.form-panel .actions {
+    display: flex;
+    gap: 16px; /* space between save and other inline actions */
+    margin-top: 8px;
+}
+
+.form-panel .actions button {
+    min-width: 120px;
+    padding: 12px 16px;
+}
+
+/* Toast confirm styles */
+.toast {
+    position: fixed;
+    left: 50%;
+    top: 30%;
+    transform: translateX(-50%);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(31,41,55,0.08);
+    z-index: 1000;
+    padding: 16px;
+    min-width: 320px;
+}
+
+.toast-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* make secondary buttons neutral */
+button.secondary {
+    background: #f3f4f6;
+    color: var(--text);
+    border-color: var(--line);
+}
+
+/* ensure primary buttons are prominent */
+button:not(.secondary) {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
 @media (max-width: 760px) {
     .topbar,
     .topbar nav,
@@ -254,4 +321,3 @@ button:hover {
         padding: 28px;
     }
 }
-

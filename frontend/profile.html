@@ -42,17 +42,35 @@
             <form id="profileForm" style="display:none;">
                 <label>昵称<input name="nickname"></label>
                 <label>联系方式（手机号）<input name="phone"></label>
-                <label>邮箱<input name="email" type="email"></label>
+                <div class="inline-field">
+                    <label>邮箱<input name="email" type="email"></label>
+                    <button type="button" id="sendEmailCodeBtn">发送验证邮箱</button>
+                    <span id="emailCountdown" class="small"></span>
+                </div>
+                <label>邮箱验证码<input name="emailCode" maxlength="6" placeholder="6位数字"></label>
                 <div class="actions">
                     <button type="submit" id="saveBtn">保存资料</button>
-                    <button type="button" id="logoutBtn">退出登录</button>
                 </div>
                 <p class="form-message" id="profileMessage"></p>
             </form>
 
-            <button type="button" id="editProfileBtn">修改资料</button>
+            <div class="profile-controls">
+                <button type="button" id="editProfileBtn">修改资料</button>
+                <button type="button" id="logoutBtn" class="secondary">退出登录</button>
+            </div>
         </section>
     </main>
+
+    <!-- Toast / confirm container -->
+    <div id="confirmToast" class="toast" style="display:none;">
+        <div class="toast-body">
+            <div id="confirmToastMessage">确认操作吗？</div>
+            <div class="toast-actions">
+                <button id="confirmToastOk">确认</button>
+                <button id="confirmToastCancel" class="secondary">取消</button>
+            </div>
+        </div>
+    </div>
 
     <script src="assets/js/api.js"></script>
     <script src="assets/js/profile.js"></script>

@@ -31,10 +31,6 @@ public class UserController {
     public ApiResponse<String> sendVerification(@RequestBody SendVerificationRequest request) {
         try {
             EmailVerification v = verificationService.sendCode(request.email());
-            // if not expired and previously sent, return message indicating already sent
-            if (v.getExpiresAt().isAfter(java.time.LocalDateTime.now()) && v.getCreatedAt().isBefore(java.time.LocalDateTime.now().minusSeconds(1))) {
-                return ApiResponse.ok("验证码已发送");
-            }
             return ApiResponse.ok("验证码已发送");
         } catch (Exception e) {
             return ApiResponse.fail("发送失败");
@@ -81,9 +77,15 @@ public class UserController {
     public ApiResponse<UserView> update(@PathVariable Long id, @RequestBody UpdateProfileRequest request) {
         return userRepository.findById(id)
             .map(user -> {
+                // if email changed, require verification code
+                if (request.email() != null && !request.email().equals(user.getEmail())) {
+                    if (request.emailCode() == null || !verificationService.verifyCode(request.email(), request.emailCode())) {
+                        return ApiResponse.fail("邮箱验证码错误或已过期");
+                    }
+                    user.setEmail(request.email());
+                }
                 user.setNickname(request.nickname());
                 user.setPhone(request.phone());
-                user.setEmail(request.email());
                 return ApiResponse.ok(UserView.from(userRepository.save(user)));
             })
             .orElseGet(() -> ApiResponse.fail("用户不存在"));
@@ -114,7 +116,7 @@ public class UserController {
     public record LoginRequest(@NotBlank String username, @NotBlank String password) {
     }
 
-    public record UpdateProfileRequest(String nickname, String phone, String email) {
+    public record UpdateProfileRequest(String nickname, String phone, String email, String emailCode) {
     }
 
     public record UserView(Long id, String username, String nickname, String phone, String email) {
