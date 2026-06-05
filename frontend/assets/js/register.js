@@ -39,16 +39,20 @@ sendCodeBtn.addEventListener('click', async () => {
         return;
     }
     sendCodeBtn.disabled = true;
-    const res = await request('/users/send-verification', {
-        method: 'POST',
-        body: JSON.stringify({ email })
-    });
-    if (res.success) {
-        registerMessage.textContent = '验证码已发送，请查看邮箱';
-        // start 5 minute countdown (300s)
-        startCountdown(300);
-    } else {
-        registerMessage.textContent = res.message || '发送失败，请稍候再试';
+    try {
+        const res = await request('/users/send-verification', {
+            method: 'POST',
+            body: JSON.stringify({ email })
+        });
+        if (res && res.success) {
+            registerMessage.textContent = '验证码已发送，请查看邮箱（开发环境会在后端控制台打印）';
+            startCountdown(300);
+        } else {
+            registerMessage.textContent = res && res.message ? res.message : '发送失败，请稍候再试';
+            sendCodeBtn.disabled = false;
+        }
+    } catch (err) {
+        registerMessage.textContent = '发送验证码时发生错误，请稍候再试';
         sendCodeBtn.disabled = false;
     }
 });
@@ -56,16 +60,23 @@ sendCodeBtn.addEventListener('click', async () => {
 registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     registerMessage.textContent = '';
+    const submitBtn = registerForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
     const data = formToJson(registerForm);
-    const res = await request('/users/register', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    });
-    if (res.success && res.data) {
-        setCurrentUser(res.data);
-        // redirect to profile page
-        location.href = 'profile.html';
-    } else {
-        registerMessage.textContent = res.message || '注册失败';
+    try {
+        const res = await request('/users/register', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        if (res && res.success && res.data) {
+            setCurrentUser(res.data);
+            location.href = 'profile.html';
+            return;
+        }
+        registerMessage.textContent = res && res.message ? res.message : '注册失败，请检查输入';
+    } catch (err) {
+        registerMessage.textContent = '注册时发生错误，请稍候再试';
+    } finally {
+        submitBtn.disabled = false;
     }
 });

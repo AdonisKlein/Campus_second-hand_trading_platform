@@ -8,7 +8,25 @@ async function request(path, options = {}) {
         },
         ...options
     });
-    return response.json();
+
+    // Try to parse JSON safely
+    let payload = null;
+    try {
+        payload = await response.json();
+    } catch (e) {
+        // Not JSON or empty
+        payload = null;
+    }
+
+    if (!response.ok) {
+        // If backend uses ApiResponse structure, return that; otherwise synthesize
+        if (payload && typeof payload === 'object' && ('success' in payload || 'message' in payload)) {
+            return payload;
+        }
+        return { success: false, message: payload && payload.message ? payload.message : `请求失败：${response.status}` };
+    }
+
+    return payload;
 }
 
 function formToJson(form) {

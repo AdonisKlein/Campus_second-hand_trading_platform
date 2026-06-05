@@ -47,16 +47,24 @@ function showLoggedOutUI() {
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginMessage.textContent = '';
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
     const data = formToJson(loginForm);
-    const res = await request('/users/login', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    });
-    if (res.success && res.data) {
-        setCurrentUser(res.data);
-        showLoggedInUI(res.data);
-    } else {
-        loginMessage.textContent = res.message || '登录失败';
+    try {
+        const res = await request('/users/login', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        if (res && res.success && res.data) {
+            setCurrentUser(res.data);
+            showLoggedInUI(res.data);
+            return;
+        }
+        loginMessage.textContent = res && res.message ? res.message : '登录失败，请检查用户名和密码';
+    } catch (err) {
+        loginMessage.textContent = '登录时发生网络或服务器错误，请稍候再试';
+    } finally {
+        submitBtn.disabled = false;
     }
 });
 
