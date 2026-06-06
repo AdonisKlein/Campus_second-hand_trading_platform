@@ -9,7 +9,7 @@ spring:
     datasource:
         url: jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
         username: root
-        password: "051223"
+        password: "051223"  # 数据库密码（请根据实际修改）
         driver-class-name: com.mysql.cj.jdbc.Driver
     jpa:
         hibernate:
