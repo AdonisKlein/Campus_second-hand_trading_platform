@@ -18,19 +18,62 @@
 
     <main class="layout narrow">
         <h1>个人中心</h1>
-        <form class="form-panel" id="registerForm">
-            <h2>注册</h2>
+
+        <!-- Login form -->
+        <form class="form-panel" id="loginForm">
+            <h2>登录</h2>
             <label>用户名<input name="username" required></label>
-            <label>密码<input name="password" type="password" placeholder="6-12位字母和数字" required></label>
-            <label>昵称<input name="nickname"></label>
-            <label>联系方式<input name="phone"></label>
-            <button type="submit">注册</button>
-            <p class="form-message" id="profileMessage"></p>
+            <label>密码<input name="password" type="password" required></label>
+            <button type="submit">登录</button>
+            <p class="form-message" id="loginMessage"></p>
+            <p class="small">如无账号，点击 <a href="register.html">前往注册</a></p>
         </form>
+
+        <!-- Profile view / edit (shown when logged in) -->
+        <section id="profileSection" class="form-panel" style="display:none;">
+            <h2>我的资料</h2>
+            <div id="profileView">
+                <p>用户名：<span id="viewUsername"></span></p>
+                <p>昵称：<span id="viewNickname"></span></p>
+                <p>联系方式（手机号）：<span id="viewPhone"></span></p>
+                <p>邮箱：<span id="viewEmail"></span></p>
+            </div>
+
+            <form id="profileForm" style="display:none;">
+                <label>昵称<input name="nickname"></label>
+                <label>联系方式（手机号）<input name="phone"></label>
+                <label>邮箱<input name="email" type="email"></label>
+                <div class="inline-field">
+                    <label>邮箱验证码<input name="emailCode" maxlength="6" placeholder="6位数字"></label>
+                    <button type="button" id="sendEmailCodeBtn">发送验证码</button>
+                    <span id="emailCountdown" class="small"></span>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" id="saveBtn">保存资料</button>
+                </div>
+                <p class="form-message" id="profileMessage"></p>
+            </form>
+
+            <div class="profile-controls">
+                <button type="button" id="editProfileBtn">修改资料</button>
+                <button type="button" id="logoutBtn" class="secondary">退出登录</button>
+            </div>
+        </section>
     </main>
+
+    <!-- Toast / confirm container -->
+    <div id="confirmToast" class="toast" style="display:none;">
+        <div class="toast-body">
+            <div id="confirmToastMessage">确认操作吗？</div>
+            <div class="toast-actions">
+                <button id="confirmToastOk">确认</button>
+                <button id="confirmToastCancel" class="secondary">取消</button>
+            </div>
+        </div>
+    </div>
 
     <script src="assets/js/api.js"></script>
     <script src="assets/js/profile.js"></script>
 </body>
 </html>
-

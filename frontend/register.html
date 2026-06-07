@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 校园二手交易平台</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="index.html">校园二手交易</a>
+        <nav>
+            <a href="publish.html">发布物品</a>
+            <a href="orders.html">订单管理</a>
+            <a href="profile.html">个人中心</a>
+        </nav>
+    </header>
+
+    <main class="layout narrow">
+        <h1>注册</h1>
+        <form class="form-panel" id="registerForm">
+            <label>用户名<input name="username" required></label>
+            <label>密码<input name="password" type="password" placeholder="6-12位字母和数字" required></label>
+            <label>昵称<input name="nickname"></label>
+            <label>邮箱<input name="email" type="email" required></label>
+            <div class="inline-field">
+                <label>验证码<input name="code" maxlength="6" placeholder="6位数字" required></label>
+                <button type="button" id="sendCodeBtn">发送验证码</button>
+                <span id="countdown" class="small"></span>
+            </div>
+            <button type="submit">注册并登录</button>
+            <p class="form-message" id="registerMessage"></p>
+            <p class="small">已有账号？<a href="profile.html">前往登录</a></p>
+        </form>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/register.js"></script>
+</body>
+</html>

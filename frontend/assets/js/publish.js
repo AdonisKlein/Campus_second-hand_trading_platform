@@ -3,9 +3,16 @@ const publishMessage = document.querySelector("#publishMessage");
 
 publishForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        publishMessage.textContent = '请先登录后再发布物品';
+        setTimeout(() => { location.href = 'profile.html'; }, 800);
+        return;
+    }
+
     const data = formToJson(publishForm);
     data.price = Number(data.price);
-    data.sellerId = Number(data.sellerId);
+    data.sellerId = Number(currentUser.id);
 
     const result = await request("/items", {
         method: "POST",
@@ -17,4 +24,3 @@ publishForm.addEventListener("submit", async (event) => {
         publishForm.reset();
     }
 });
-

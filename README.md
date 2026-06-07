@@ -48,6 +48,7 @@ backend/src/main/resources/application.yml
 ```bash
 cd backend
 mvn spring-boot:run
+//或者 mvn clean compile exec:java
 ```
 
 4. 打开前端：

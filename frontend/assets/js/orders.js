@@ -1,37 +1,14 @@
 const currentUserInfo = document.querySelector("#currentUserInfo");
 const orderList = document.querySelector("#orderList");
 
-function getCurrentUser() {
-    return JSON.parse(localStorage.getItem("user") || "{}");
-}
-
-async function loadOrders() {
-    const currentUser = getCurrentUser();
-
-    if (!currentUser.id) {
-        orderList.innerHTML = "<p>请先到个人中心注册/登录</p>";
-        return;
-    }
-
-    currentUserInfo.textContent =
-        `当前用户：${currentUser.nickname || currentUser.username || currentUser.id}`;
-
-    const result = await request(`/orders?userId=${currentUser.id}`);
-    const orders = result.data || [];
-
-    orderList.innerHTML = orders.length
-        ? orders.map(renderOrder).join("")
-        : "<p>暂无订单</p>";
-}
-
 function renderOrder(order) {
     return `
         <div class="table-row">
             <span>订单 #${order.id}</span>
-            <span>物品：${order.itemTitle}</span>
-            <span>价格：￥${order.itemPrice}</span>
-            <span>买家：${order.buyerNickname}</span>
-            <span>卖家：${order.sellerNickname}</span>
+            <span>物品：${order.itemTitle || order.itemId}</span>
+            <span>价格：${order.itemPrice ? `￥${order.itemPrice}` : "-"}</span>
+            <span>买家：${order.buyerNickname || order.buyerId}</span>
+            <span>卖家：${order.sellerNickname || order.sellerId}</span>
             <span>状态：${order.status}</span>
             <span>
                 <button onclick="updateOrderStatus(${order.id}, 'CONFIRMED')">确认</button>
@@ -40,6 +17,31 @@ function renderOrder(order) {
             </span>
         </div>
     `;
+}
+
+async function loadOrders() {
+    const currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.id) {
+        if (currentUserInfo) {
+            currentUserInfo.textContent = "";
+        }
+        orderList.innerHTML = "<p>请先登录以查看订单</p>";
+        setTimeout(() => {
+            location.href = "profile.html";
+        }, 800);
+        return;
+    }
+
+    if (currentUserInfo) {
+        currentUserInfo.textContent =
+            `当前用户：${currentUser.nickname || currentUser.username || currentUser.id}`;
+    }
+
+    const result = await request(`/orders?userId=${currentUser.id}`);
+    const orders = result.data || [];
+    orderList.innerHTML = orders.length
+        ? orders.map(renderOrder).join("")
+        : "<p>暂无订单</p>";
 }
 
 async function updateOrderStatus(orderId, status) {
@@ -52,4 +54,5 @@ async function updateOrderStatus(orderId, status) {
     loadOrders();
 }
 
+window.updateOrderStatus = updateOrderStatus;
 loadOrders();
