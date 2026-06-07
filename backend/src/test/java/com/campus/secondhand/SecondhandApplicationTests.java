@@ -4,9 +4,12 @@ import com.campus.secondhand.item.Item;
 import com.campus.secondhand.item.ItemRepository;
 import com.campus.secondhand.message.MessageRepository;
 import com.campus.secondhand.order.TradeOrderRepository;
+import com.campus.secondhand.user.EmailVerification;
+import com.campus.secondhand.user.EmailVerificationRepository;
 import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +49,16 @@ class SecondhandApplicationTests {
     @Autowired
     private TradeOrderRepository orderRepository;
 
+    @Autowired
+    private EmailVerificationRepository emailVerificationRepository;
+
     @BeforeEach
     void cleanDatabase() {
         orderRepository.deleteAll();
         messageRepository.deleteAll();
         itemRepository.deleteAll();
         userRepository.deleteAll();
+        emailVerificationRepository.deleteAll();
     }
 
     @Test
@@ -60,6 +67,8 @@ class SecondhandApplicationTests {
 
     @Test
     void registerLoginAndRejectWrongPassword() throws Exception {
+        saveVerificationCode("test@example.com", "123456");
+
         mockMvc.perform(post("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -67,7 +76,8 @@ class SecondhandApplicationTests {
                         "username": "testuser",
                         "password": "abc123",
                         "nickname": "测试用户",
-                        "phone": "13800000000"
+                        "email": "test@example.com",
+                        "code": "123456"
                     }
                     """))
             .andExpect(status().isOk())
@@ -230,5 +240,16 @@ class SecondhandApplicationTests {
         item.setImageUrl("assets/images/book.svg");
         item.setSellerId(sellerId);
         return itemRepository.save(item);
+    }
+
+    private void saveVerificationCode(String email, String code) {
+        EmailVerification verification = new EmailVerification();
+        verification.setEmail(email);
+        verification.setCode(code);
+        verification.setCreatedAt(LocalDateTime.now());
+        verification.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+        verification.setAttempts(0);
+        verification.setUsed(false);
+        emailVerificationRepository.save(verification);
     }
 }
