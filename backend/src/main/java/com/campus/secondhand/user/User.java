@@ -19,7 +19,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     @Column(length = 80)
@@ -31,6 +31,13 @@ public class User {
     @Column(length = 100)
     private String email;
 
+    @Column(name = "login_failed_count", nullable = false)
+    private Integer loginFailedCount = 0;
+
+    @Column(name = "locked_until")
+    private LocalDateTime lockedUntil;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() {
@@ -81,6 +88,22 @@ public class User {
         this.email = email;
     }
 
+    public Integer getLoginFailedCount() {
+        return loginFailedCount;
+    }
+
+    public void setLoginFailedCount(Integer loginFailedCount) {
+        this.loginFailedCount = loginFailedCount;
+    }
+
+    public LocalDateTime getLockedUntil() {
+        return lockedUntil;
+    }
+
+    public void setLockedUntil(LocalDateTime lockedUntil) {
+        this.lockedUntil = lockedUntil;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -89,4 +112,3 @@ public class User {
         this.createdAt = createdAt;
     }
 }
-

@@ -4,6 +4,7 @@ import com.campus.secondhand.common.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,8 +62,33 @@ public class UserController {
     @PostMapping("/login")
     public ApiResponse<UserView> login(@Valid @RequestBody LoginRequest request) {
         return userRepository.findByUsername(request.username())
-            .filter(user -> passwordEncoder.matches(request.password(), user.getPasswordHash()))
-            .map(user -> ApiResponse.ok(UserView.from(user)))
+            .map(user -> {
+                LocalDateTime now = LocalDateTime.now();
+                if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(now)) {
+                    return ApiResponse.<UserView>fail("账号已被临时锁定，请10分钟后再试");
+                }
+
+                if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+                    int failedCount = user.getLoginFailedCount() == null ? 0 : user.getLoginFailedCount();
+                    failedCount += 1;
+                    user.setLoginFailedCount(failedCount);
+
+                    if (failedCount >= 3) {
+                        user.setLoginFailedCount(0);
+                        user.setLockedUntil(now.plusMinutes(10));
+                        userRepository.save(user);
+                        return ApiResponse.<UserView>fail("密码错误次数过多，账号已锁定10分钟");
+                    }
+
+                    userRepository.save(user);
+                    return ApiResponse.<UserView>fail("用户名或密码错误，剩余尝试次数：" + (3 - failedCount));
+                }
+
+                user.setLoginFailedCount(0);
+                user.setLockedUntil(null);
+                userRepository.save(user);
+                return ApiResponse.ok(UserView.from(user));
+            })
             .orElseGet(() -> ApiResponse.fail("用户名或密码错误"));
     }
 

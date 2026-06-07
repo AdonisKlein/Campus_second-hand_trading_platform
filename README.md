@@ -1,18 +1,50 @@
 # Campus Second-hand Trading Platform
 
-校园二手交易平台课程项目，采用前后端分离的简易结构：
+校园二手交易平台是一个课程实践项目，用于完成校园内二手物品发布、浏览、留言沟通、下单和订单管理流程。
 
-- `backend/`：Spring Boot 后端服务，提供用户、商品、留言、订单、邮箱验证码、图片上传等接口。
-- `frontend/`：静态 HTML/CSS/JavaScript 页面，可直接通过浏览器或静态服务器访问。
-- `database/`：MySQL 建库脚本和初始化数据。
-- `doc/`：项目文档，例如软件开发计划书。
+当前项目采用简易前后端分离结构：
 
-## 环境要求
+- `backend/`：Spring Boot 后端，提供 REST API。
+- `frontend/`：静态 HTML/CSS/JavaScript 前端页面。
+- `database/`：MySQL 建表脚本和演示数据。
+- `doc/`：需求、设计、安装、用户、测试等项目文档。
 
-- JDK 17
-- Maven 3.8+
-- MySQL 8.x
-- 浏览器：Chrome、Edge 或 Firefox
+## 功能概览
+
+已实现功能：
+
+- 用户注册、登录。
+- 邮箱验证码发送与校验。
+- 密码 BCrypt 加密存储。
+- 连续 3 次登录失败后锁定账号 10 分钟。
+- 个人资料查看和修改。
+- 商品浏览、关键词搜索、分类筛选。
+- 商品发布，当前图片字段为图片地址。
+- 商品详情查看。
+- 商品留言发送与列表查看。
+- 创建订单。
+- 订单列表查看。
+- 订单状态更新：`CONFIRMED`、`COMPLETED`、`CANCELLED`。
+- 下单后商品状态更新为 `SOLD`。
+
+当前简化点：
+
+- 未实现真实本地文件上传，商品图片使用图片地址。
+- 前端登录态使用 `localStorage` 保存用户基本信息。
+- 未实现 Token 或 Session 权限体系。
+- 留言按商品展示，没有独立私信会话页。
+
+## 技术栈
+
+| 层次 | 技术 |
+|---|---|
+| 前端 | HTML、CSS、JavaScript |
+| 后端 | Java 17、Spring Boot 3.5.14 |
+| 数据库 | MySQL 8.x |
+| ORM | Spring Data JPA |
+| 构建 | Maven |
+| 测试 | JUnit 5、MockMvc、H2 |
+| 安全 | Spring Security Crypto BCrypt |
 
 ## 项目结构
 
@@ -20,14 +52,22 @@
 Campus_second-hand_trading_platform/
 ├── backend/
 │   ├── pom.xml
-│   └── src/main/
-│       ├── java/com/campus/secondhand/
-│       └── resources/application.yml
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/campus/secondhand/
+│       │   └── resources/application.yml
+│       └── test/
 ├── database/
 │   ├── schema.sql
 │   └── seed.sql
 ├── doc/
-│   └── 软件开发计划书.md
+│   ├── 安装手册.md
+│   ├── 测试报告.md
+│   ├── 后端测试.md
+│   ├── 软件开发计划书.md
+│   ├── 设计文档.md
+│   ├── 需求说明书.md
+│   └── 用户手册.md
 ├── frontend/
 │   ├── index.html
 │   ├── register.html
@@ -39,77 +79,63 @@ Campus_second-hand_trading_platform/
 └── README.md
 ```
 
-## 数据库初始化
+## 环境要求
 
-另一台设备默认没有数据库和表，需要先安装并启动 MySQL，然后执行项目中的建库建表脚本。
+- JDK 17 或以上。
+- Maven 3.8 或以上。
+- MySQL 8.x。
+- Chrome、Edge 或 Firefox。
 
-### 1. 确认 MySQL 已启动
-
-在命令行中执行：
+检查环境：
 
 ```bash
+java -version
+mvn -version
 mysql --version
 ```
 
-如果能看到 MySQL 版本号，说明命令行可以识别 MySQL。然后使用 root 用户登录：
+## 数据库初始化
+
+### 1. 登录 MySQL
 
 ```bash
 mysql -u root -p
 ```
 
-输入 MySQL 密码后进入 MySQL 控制台。
+### 2. 创建数据库和表
 
-### 2. 执行建库建表脚本
-
-项目已经提供了完整建库建表脚本：
-
-```text
-database/schema.sql
-```
-
-该脚本会自动创建数据库 `campus_secondhand`，并创建用户、商品、留言、订单、邮箱验证码等表。
-
-如果当前命令行已经位于项目根目录，可以在 MySQL 控制台中执行：
+在 MySQL 控制台执行：
 
 ```sql
 source database/schema.sql;
 ```
 
-在 Windows 上，如果相对路径无法识别，可以使用绝对路径，例如：
+如果相对路径不可用，请使用绝对路径，例如：
 
 ```sql
 source D:/Code/Software/bigwork/Campus_second-hand_trading_platform/database/schema.sql;
 ```
 
-注意：MySQL 的 `source` 路径建议使用 `/`，不要使用 Windows 的 `\`，否则可能需要额外转义。
-
-### 3. 导入测试数据
-
-如需导入默认测试数据，继续执行：
+### 3. 导入演示数据
 
 ```sql
 source database/seed.sql;
 ```
 
-或使用绝对路径：
+或：
 
 ```sql
 source D:/Code/Software/bigwork/Campus_second-hand_trading_platform/database/seed.sql;
 ```
 
-如果只想测试空数据库，可以跳过 `seed.sql`。
-
-### 4. 检查数据库和表
-
-执行：
+### 4. 检查表
 
 ```sql
-SHOW DATABASES;
 USE campus_secondhand;
 SHOW TABLES;
 ```
 
-正常情况下应能看到类似表名：
+应看到：
 
 ```text
 users
@@ -119,86 +145,70 @@ trade_orders
 email_verification
 ```
 
-也可以检查是否有测试数据：
+### 5. 旧数据库升级
+
+如果之前已经创建过数据库，但 `users` 表缺少登录锁定字段，请执行：
 
 ```sql
-SELECT * FROM users;
-SELECT * FROM items;
+ALTER TABLE users
+ADD COLUMN login_failed_count INT NOT NULL DEFAULT 0,
+ADD COLUMN locked_until DATETIME NULL;
 ```
-
-### 5. 退出 MySQL
-
-```sql
-exit;
-```
-
-### 6. 另一种执行方式
-
-也可以不进入 MySQL 控制台，直接在项目根目录执行：
-
-```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p campus_secondhand < database/seed.sql
-```
-
-第一条命令创建数据库和表，第二条命令导入测试数据。
 
 ## 后端配置
 
-后端配置文件位于：
+配置文件：
 
 ```text
 backend/src/main/resources/application.yml
 ```
 
-默认配置：
+默认端口和接口前缀：
 
-- 服务端口：`8080`
-- 接口前缀：`/api`
-- 数据库：`campus_secondhand`
-- 上传目录：`uploads`
+```yaml
+server:
+    port: 8080
+    servlet:
+        context-path: /api
+```
 
-在其他设备测试前，请根据本机 MySQL 修改：
+数据库配置需要按本机 MySQL 修改：
 
 ```yaml
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: "你的MySQL密码"
+    datasource:
+        url: jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+        username: root
+        password: "你的MySQL密码"
 ```
 
-如果暂时不测试邮箱验证码发送，需要确认邮件配置不会阻塞注册流程；如需真实发送验证码，请配置 `spring.mail` 下的 SMTP 账号信息。
+邮箱验证码依赖 SMTP 配置。如需真实发送邮件，请修改：
+
+```yaml
+spring:
+    mail:
+        host: smtp.mailtrap.io
+        port: 2525
+        username: YOUR_MAILTRAP_USERNAME
+        password: YOUR_MAILTRAP_PASSWORD
+```
 
 ## 启动后端
 
-进入后端目录：
-
 ```bash
 cd backend
-```
-
-启动服务：
-
-```bash
 mvn spring-boot:run
 ```
 
-启动成功后，后端接口地址为：
+启动成功后，接口基础地址为：
 
 ```text
 http://localhost:8080/api
 ```
 
-如果在局域网另一台设备访问，请把 `localhost` 换成运行后端电脑的局域网 IP，例如：
+## 前端配置
 
-```text
-http://192.168.1.10:8080/api
-```
-
-## 前端配置与访问
-
-前端接口地址配置在：
+前端 API 地址在：
 
 ```text
 frontend/assets/js/api.js
@@ -210,23 +220,24 @@ frontend/assets/js/api.js
 const API_BASE = "http://localhost:8080/api";
 ```
 
-如果前端和后端在同一台电脑上测试，可以保持不变。
-
-如果用其他设备访问前端，需要把这里改成后端电脑的局域网 IP，例如：
+如果用另一台设备访问后端，请改为后端设备的局域网 IP，例如：
 
 ```javascript
 const API_BASE = "http://192.168.1.10:8080/api";
 ```
 
-然后打开前端首页：
+## 打开前端
+
+方式一：直接打开首页：
 
 ```text
 frontend/index.html
 ```
 
-也可以在 `frontend/` 目录下启动一个简单静态服务器，例如：
+方式二：启动静态服务器：
 
 ```bash
+cd frontend
 python -m http.server 5500
 ```
 
@@ -236,62 +247,83 @@ python -m http.server 5500
 http://localhost:5500
 ```
 
-局域网其他设备访问时，将 `localhost` 换成前端所在电脑的 IP。
-
 ## 主要页面
 
-- `frontend/index.html`：首页、商品浏览、搜索筛选入口
-- `frontend/register.html`：注册/登录
-- `frontend/detail.html`：商品详情、留言、下单入口
-- `frontend/publish.html`：发布商品
-- `frontend/orders.html`：订单管理
-- `frontend/profile.html`：个人中心
+| 页面 | 文件 | 功能 |
+|---|---|---|
+| 首页 | `frontend/index.html` | 商品浏览、搜索、筛选。 |
+| 注册 | `frontend/register.html` | 注册账号、发送邮箱验证码。 |
+| 详情 | `frontend/detail.html` | 商品详情、留言、创建订单。 |
+| 发布 | `frontend/publish.html` | 发布商品。 |
+| 订单 | `frontend/orders.html` | 查看订单、更新订单状态。 |
+| 个人中心 | `frontend/profile.html` | 登录、资料查看修改、退出登录。 |
 
-## 测试流程建议
+## 测试
 
-1. 初始化数据库并导入测试数据。
-2. 启动后端，确认 `http://localhost:8080/api` 可访问。
-3. 打开前端首页。
-4. 注册或登录用户。
-5. 测试商品发布、搜索、详情查看。
-6. 测试留言沟通。
-7. 测试创建订单和订单管理。
-8. 测试个人信息查看与修改。
+后端自动化测试：
+
+```bash
+cd backend
+mvn test
+```
+
+当前测试覆盖：
+
+- Spring 上下文加载。
+- 注册、登录、错误密码。
+- 3 次登录失败锁定。
+- 商品发布和搜索。
+- 留言发送和查询。
+- 订单创建、重复下单拦截、订单状态校验、商品售出联动。
+
+期望结果：
+
+```text
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
+## 局域网其他设备测试
+
+如果在 A 电脑启动后端，在 B 电脑打开前端：
+
+1. 确认两台设备在同一局域网。
+2. 查询 A 电脑局域网 IP，例如 `192.168.1.10`。
+3. 修改 `frontend/assets/js/api.js`：
+
+```javascript
+const API_BASE = "http://192.168.1.10:8080/api";
+```
+
+4. 确认 A 电脑防火墙允许访问 8080 端口。
+5. 在 B 电脑打开前端页面或访问静态服务器地址。
+
+## 文档
+
+详细文档位于 `doc/`：
+
+- `需求说明书.md`：系统功能和非功能需求。
+- `设计文档.md`：架构、模块、接口和数据库设计。
+- `安装手册.md`：新设备部署步骤。
+- `用户手册.md`：用户操作流程。
+- `测试报告.md`：测试范围和结果。
+- `后端测试.md`：后端自动化测试说明。
+- `软件开发计划书.md`：项目计划。
 
 ## 常见问题
 
 ### 数据库连接失败
 
-检查 `application.yml` 中的数据库地址、用户名、密码是否正确，并确认 MySQL 已启动。
+检查 MySQL 是否启动，`application.yml` 中用户名、密码、数据库名是否正确。
 
-### 其他设备无法访问后端
+### 前端页面能打开但接口失败
 
-检查以下内容：
+检查后端是否启动，以及 `frontend/assets/js/api.js` 中 `API_BASE` 是否正确。
 
-- 后端是否已启动。
-- `frontend/assets/js/api.js` 中是否仍写着 `localhost`。
-- 后端电脑和测试设备是否在同一局域网。
-- Windows 防火墙是否放行 `8080` 端口。
+### 邮箱验证码发送失败
 
-### 前端页面能打开但接口报错
+检查 `spring.mail` 配置是否为真实可用的 SMTP 服务。
 
-通常是 `API_BASE` 配置不正确，或后端未启动。打开浏览器开发者工具的 Network 面板，检查请求地址是否指向正确的后端 IP 和端口。
+### 商品图片不显示
 
-### 图片上传或图片显示异常
-
-确认后端 `app.upload-dir` 指向的上传目录存在，并且后端进程对该目录有写入权限。
-
-## 打包后端
-
-如需生成 jar 包：
-
-```bash
-cd backend
-mvn clean package
-```
-
-打包完成后运行：
-
-```bash
-java -jar target/secondhand-0.0.1-SNAPSHOT.jar
-```
+当前商品图片为图片地址，请确认地址能被浏览器访问。

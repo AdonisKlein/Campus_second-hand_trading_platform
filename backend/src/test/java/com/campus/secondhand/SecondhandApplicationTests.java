@@ -105,7 +105,49 @@ class SecondhandApplicationTests {
                     """))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("用户名或密码错误"));
+            .andExpect(jsonPath("$.message").value("用户名或密码错误，剩余尝试次数：2"));
+    }
+
+    @Test
+    void lockUserAfterThreeFailedLogins() throws Exception {
+        saveUser("lockuser");
+
+        for (int i = 0; i < 2; i++) {
+            mockMvc.perform(post("/users/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""
+                        {
+                            "username": "lockuser",
+                            "password": "wrong123"
+                        }
+                        """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(false));
+        }
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "username": "lockuser",
+                        "password": "wrong123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.message").value("密码错误次数过多，账号已锁定10分钟"));
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "username": "lockuser",
+                        "password": "abc123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.message").value("账号已被临时锁定，请10分钟后再试"));
     }
 
     @Test
