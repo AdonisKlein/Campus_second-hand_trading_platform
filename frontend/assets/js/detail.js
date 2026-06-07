@@ -1,3 +1,9 @@
+let currentItem = null;
+
+function getCurrentUser() {
+    return JSON.parse(localStorage.getItem("user") || "{}");
+}
+
 const params = new URLSearchParams(location.search);
 const itemId = params.get("id");
 const itemDetail = document.querySelector("#itemDetail");
@@ -7,6 +13,8 @@ const messageForm = document.querySelector("#messageForm");
 async function loadDetail() {
     const result = await request(`/items/${itemId}`);
     const item = result.data;
+    currentItem = item;
+
     if (!item) {
         itemDetail.innerHTML = "<p>物品不存在</p>";
         return;
@@ -22,10 +30,23 @@ async function loadDetail() {
     `;
 
     document.querySelector("#createOrder").addEventListener("click", async () => {
+        const currentUser = getCurrentUser();
+
+        if (!currentUser.id) {
+            alert("请先到个人中心注册/登录");
+            location.href = "profile.html";
+            return;
+        }
+
         const order = await request("/orders", {
             method: "POST",
-            body: JSON.stringify({ itemId: item.id, buyerId: 2, sellerId: item.sellerId })
+            body: JSON.stringify({
+                itemId: item.id,
+                buyerId: currentUser.id,
+                sellerId: item.sellerId
+            })
         });
+
         alert(order.success ? "订单创建成功" : order.message);
     });
 }
@@ -33,6 +54,7 @@ async function loadDetail() {
 async function loadMessages() {
     const result = await request(`/messages/item/${itemId}`);
     const messages = result.data || [];
+
     messageList.innerHTML = messages.map(message => `
         <div class="message-item">
             <strong>用户 ${message.senderId}</strong>
@@ -43,18 +65,35 @@ async function loadMessages() {
 
 messageForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const data = formToJson(messageForm);
-    data.itemId = Number(itemId);
-    data.senderId = Number(data.senderId);
-    data.receiverId = Number(data.receiverId);
+
+    const currentUser = getCurrentUser();
+
+    if (!currentUser.id) {
+        alert("请先到个人中心注册/登录");
+        location.href = "profile.html";
+        return;
+    }
+
+    if (!currentItem) {
+        alert("商品信息加载失败");
+        return;
+    }
+
+    const data = {
+        itemId: Number(itemId),
+        senderId: currentUser.id,
+        receiverId: currentItem.sellerId,
+        content: messageForm.content.value
+    };
+
     await request("/messages", {
         method: "POST",
         body: JSON.stringify(data)
     });
+
     messageForm.content.value = "";
     loadMessages();
 });
 
 loadDetail();
 loadMessages();
-
