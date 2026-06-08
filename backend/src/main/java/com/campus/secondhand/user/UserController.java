@@ -128,7 +128,47 @@ public class UserController {
         return ApiResponse.ok(map);
     }
 
+    @PostMapping("/forgot-password/send-code")
+    public ApiResponse<String> forgotPasswordSendCode(@RequestBody ForgotPasswordSendCodeRequest request) {
+        // Check if the email exists in the system
+        if (!userRepository.existsByEmail(request.email())) {
+            return ApiResponse.fail("该邮箱未注册");
+        }
+        try {
+            verificationService.sendCode(request.email());
+            return ApiResponse.ok("验证码已发送到您的邮箱");
+        } catch (Exception e) {
+            return ApiResponse.fail("发送失败，请稍后再试");
+        }
+    }
+
+    @PostMapping("/forgot-password/reset")
+    public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        // Verify the code
+        boolean ok = verificationService.verifyCode(request.email(), request.code());
+        if (!ok) {
+            return ApiResponse.fail("验证码错误或已过期");
+        }
+
+        // Find user by email and update password
+        return userRepository.findByEmail(request.email())
+            .map(user -> {
+                user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+                userRepository.save(user);
+                return ApiResponse.ok("密码重置成功");
+            })
+            .orElseGet(() -> ApiResponse.fail("该邮箱未注册"));
+    }
+
     public record SendVerificationRequest(@NotBlank String email) {}
+
+    public record ForgotPasswordSendCodeRequest(@NotBlank String email) {}
+
+    public record ResetPasswordRequest(
+        @NotBlank String email,
+        @NotBlank String code,
+        @NotBlank @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,12}$", message = "密码需为6-12位字母和数字组合") String newPassword
+    ) {}
 
     public record RegisterRequest(
         @NotBlank String username,

@@ -26,7 +26,38 @@
             <label>密码<input name="password" type="password" required></label>
             <button type="submit">登录</button>
             <p class="form-message" id="loginMessage"></p>
-            <p class="small">如无账号，点击 <a href="register.html">前往注册</a></p>
+            <p class="small">
+                如无账号，点击 <a href="register.html">前往注册</a>
+                &ensp;|&ensp;
+                <a href="#" id="forgotPasswordLink">忘记密码</a>
+            </p>
+        </form>
+
+        <!-- Forgot password form -->
+        <form class="form-panel" id="forgotPasswordForm" style="display:none;">
+            <h2>忘记密码</h2>
+
+            <!-- Step 1: send code -->
+            <div id="fpStep1">
+                <label>邮箱<input name="email" type="email" id="fpEmail" required placeholder="请输入注册时使用的邮箱"></label>
+                <div class="inline-field">
+                    <button type="button" id="fpSendCodeBtn">发送验证码</button>
+                    <span id="fpCountdown" class="small"></span>
+                </div>
+            </div>
+
+            <!-- Step 2: reset password -->
+            <div id="fpStep2" style="display:none;">
+                <div class="inline-field">
+                    <label>验证码<input name="code" maxlength="6" placeholder="6位数字" required></label>
+                </div>
+                <label>新密码<input name="newPassword" type="password" placeholder="6-12位字母和数字" required></label>
+                <label>确认新密码<input name="confirmPassword" type="password" placeholder="再次输入新密码" required></label>
+                <button type="submit">重置密码</button>
+            </div>
+
+            <p class="form-message" id="fpMessage"></p>
+            <p class="small"><a href="#" id="fpBackToLogin">返回登录</a></p>
         </form>
 
         <!-- Profile view / edit (shown when logged in) -->

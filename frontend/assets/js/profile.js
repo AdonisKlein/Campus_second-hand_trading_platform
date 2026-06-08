@@ -202,3 +202,154 @@ document.querySelector(".profile-controls #logoutBtn")?.addEventListener("click"
         showLoggedOutUI();
     });
 });
+
+// ---------- Forgot Password ----------
+const forgotPasswordLink = document.querySelector("#forgotPasswordLink");
+const forgotPasswordForm = document.querySelector("#forgotPasswordForm");
+const fpBackToLogin = document.querySelector("#fpBackToLogin");
+const fpSendCodeBtn = document.querySelector("#fpSendCodeBtn");
+const fpCountdownEl = document.querySelector("#fpCountdown");
+const fpMessage = document.querySelector("#fpMessage");
+const fpStep1 = document.querySelector("#fpStep1");
+const fpStep2 = document.querySelector("#fpStep2");
+const fpEmail = document.querySelector("#fpEmail");
+let fpCountdownTimer = null;
+
+// Show forgot password form, hide login form
+forgotPasswordLink?.addEventListener("click", (e) => {
+    e.preventDefault();
+    loginForm.style.display = "none";
+    forgotPasswordForm.style.display = "block";
+    fpMessage.textContent = "";
+    // Reset to step 1
+    fpStep1.style.display = "block";
+    fpStep2.style.display = "none";
+    fpEmail.value = "";
+    forgotPasswordForm.email.value = "";
+    forgotPasswordForm.code.value = "";
+    forgotPasswordForm.newPassword.value = "";
+    forgotPasswordForm.confirmPassword.value = "";
+});
+
+// Back to login
+fpBackToLogin?.addEventListener("click", (e) => {
+    e.preventDefault();
+    forgotPasswordForm.style.display = "none";
+    loginForm.style.display = "block";
+    loginMessage.textContent = "";
+    clearInterval(fpCountdownTimer);
+    fpSendCodeBtn.style.display = "";
+    fpCountdownEl.textContent = "";
+});
+
+function startFpCountdown(seconds) {
+    clearInterval(fpCountdownTimer);
+    let remaining = seconds;
+    fpSendCodeBtn.style.display = "none";
+    fpCountdownEl.textContent = `请在 ${remaining} 秒后重发`;
+    fpCountdownTimer = setInterval(() => {
+        remaining -= 1;
+        if (remaining <= 0) {
+            clearInterval(fpCountdownTimer);
+            fpSendCodeBtn.style.display = "";
+            fpCountdownEl.textContent = "";
+        } else {
+            fpCountdownEl.textContent = `请在 ${remaining} 秒后重发`;
+        }
+    }, 1000);
+}
+
+// Send verification code for forgot password
+fpSendCodeBtn?.addEventListener("click", async () => {
+    fpMessage.textContent = "";
+    const email = fpEmail.value.trim();
+    if (!email) {
+        fpMessage.textContent = "请输入邮箱地址";
+        return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+        fpMessage.textContent = "请输入有效的邮箱地址";
+        return;
+    }
+
+    fpSendCodeBtn.disabled = true;
+    try {
+        const res = await request("/users/forgot-password/send-code", {
+            method: "POST",
+            body: JSON.stringify({ email })
+        });
+
+        if (res && res.success) {
+            fpMessage.textContent = "验证码已发送，请查看后端控制台或邮箱";
+            startFpCountdown(300);
+            // Show step 2
+            fpStep2.style.display = "block";
+        } else {
+            fpMessage.textContent = res && res.message ? res.message : "发送失败，请稍候再试";
+            fpSendCodeBtn.disabled = false;
+        }
+    } catch (err) {
+        fpMessage.textContent = "发送验证码时发生错误，请稍候再试";
+        fpSendCodeBtn.disabled = false;
+    }
+});
+
+// Submit reset password
+forgotPasswordForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    fpMessage.textContent = "";
+    const submitBtn = forgotPasswordForm.querySelector("button[type='submit']");
+    submitBtn.disabled = true;
+
+    const data = {
+        email: fpEmail.value.trim(),
+        code: forgotPasswordForm.code.value.trim(),
+        newPassword: forgotPasswordForm.newPassword.value
+    };
+    const confirmPassword = forgotPasswordForm.confirmPassword.value;
+
+    // Client-side validation
+    if (!data.email || !/^\S+@\S+\.\S+$/.test(data.email)) {
+        fpMessage.textContent = "请输入有效的邮箱地址";
+        submitBtn.disabled = false;
+        return;
+    }
+    if (!data.code || !/^[0-9]{6}$/.test(data.code)) {
+        fpMessage.textContent = "请输入6位数字验证码";
+        submitBtn.disabled = false;
+        return;
+    }
+    if (!/^((?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,12})$/.test(data.newPassword)) {
+        fpMessage.textContent = "新密码需为6-12位，包含字母和数字";
+        submitBtn.disabled = false;
+        return;
+    }
+    if (data.newPassword !== confirmPassword) {
+        fpMessage.textContent = "两次输入的密码不一致";
+        submitBtn.disabled = false;
+        return;
+    }
+
+    try {
+        const res = await request("/users/forgot-password/reset", {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+
+        if (res && res.success) {
+            fpMessage.textContent = "密码重置成功，请返回登录";
+            // After 2 seconds, go back to login
+            setTimeout(() => {
+                forgotPasswordForm.style.display = "none";
+                loginForm.style.display = "block";
+                loginMessage.textContent = "密码已重置，请使用新密码登录";
+            }, 2000);
+        } else {
+            fpMessage.textContent = res && res.message ? res.message : "重置失败，请稍候再试";
+        }
+    } catch (err) {
+        fpMessage.textContent = "重置密码时发生错误，请稍候再试";
+    } finally {
+        submitBtn.disabled = false;
+    }
+});
