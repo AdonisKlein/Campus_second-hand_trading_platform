@@ -224,6 +224,7 @@ forgotPasswordLink?.addEventListener("click", (e) => {
     // Reset to step 1
     fpStep1.style.display = "block";
     fpStep2.style.display = "none";
+    fpSendCodeBtn.disabled = false;
     fpEmail.value = "";
     forgotPasswordForm.email.value = "";
     forgotPasswordForm.code.value = "";
@@ -238,6 +239,7 @@ fpBackToLogin?.addEventListener("click", (e) => {
     loginForm.style.display = "block";
     loginMessage.textContent = "";
     clearInterval(fpCountdownTimer);
+    fpSendCodeBtn.disabled = false;
     fpSendCodeBtn.style.display = "";
     fpCountdownEl.textContent = "";
 });
@@ -251,6 +253,7 @@ function startFpCountdown(seconds) {
         remaining -= 1;
         if (remaining <= 0) {
             clearInterval(fpCountdownTimer);
+            fpSendCodeBtn.disabled = false;
             fpSendCodeBtn.style.display = "";
             fpCountdownEl.textContent = "";
         } else {

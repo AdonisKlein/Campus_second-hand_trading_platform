@@ -151,6 +151,50 @@ class SecondhandApplicationTests {
     }
 
     @Test
+    void resetPasswordWithVerificationCodeAndLoginWithNewPassword() throws Exception {
+        User user = saveUser("resetuser");
+        user.setEmail("reset@example.com");
+        userRepository.save(user);
+        saveVerificationCode("reset@example.com", "654321");
+
+        mockMvc.perform(post("/users/forgot-password/reset")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "email": "reset@example.com",
+                        "code": "654321",
+                        "newPassword": "new123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data").value("密码重置成功"));
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "username": "resetuser",
+                        "password": "abc123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(false));
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "username": "resetuser",
+                        "password": "new123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.username").value("resetuser"));
+    }
+
+    @Test
     void publishAndSearchItems() throws Exception {
         User seller = saveUser("seller");
 

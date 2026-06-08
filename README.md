@@ -15,6 +15,7 @@
 
 - 用户注册、登录。
 - 邮箱验证码发送与校验。
+- 忘记密码，通过注册邮箱验证码重置密码。
 - 密码 BCrypt 加密存储。
 - 连续 3 次登录失败后锁定账号 10 分钟。
 - 个人资料查看和修改。
@@ -256,7 +257,7 @@ http://localhost:5500
 | 详情 | `frontend/detail.html` | 商品详情、留言、创建订单。 |
 | 发布 | `frontend/publish.html` | 发布商品。 |
 | 订单 | `frontend/orders.html` | 查看订单、更新订单状态。 |
-| 个人中心 | `frontend/profile.html` | 登录、资料查看修改、退出登录。 |
+| 个人中心 | `frontend/profile.html` | 登录、忘记密码、资料查看修改、退出登录。 |
 
 ## 测试
 
@@ -271,6 +272,7 @@ mvn test
 
 - Spring 上下文加载。
 - 注册、登录、错误密码。
+- 忘记密码验证码重置密码，并验证旧密码失效、新密码可登录。
 - 3 次登录失败锁定。
 - 商品发布和搜索。
 - 留言发送和查询。
@@ -279,7 +281,7 @@ mvn test
 期望结果：
 
 ```text
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
