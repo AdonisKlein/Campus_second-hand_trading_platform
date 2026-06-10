@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
     nickname VARCHAR(80),
     phone VARCHAR(30),
     email VARCHAR(100),
+    role VARCHAR(20) NOT NULL DEFAULT 'USER',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
     login_failed_count INT NOT NULL DEFAULT 0,
     locked_until DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP

@@ -6,7 +6,26 @@ const profileMessage = document.querySelector("#profileMessage");
 const editProfileBtn = document.querySelector("#editProfileBtn");
 const sendEmailCodeBtn = document.querySelector("#sendEmailCodeBtn");
 const emailCountdownEl = document.querySelector("#emailCountdown");
+const loginTypeInput = loginForm.querySelector("input[name='loginType']");
+const usernameLoginField = document.querySelector("#usernameLoginField");
+const emailLoginField = document.querySelector("#emailLoginField");
 let emailCountdownTimer = null;
+
+function setLoginType(type) {
+    const isEmailLogin = type === "email";
+    loginTypeInput.value = isEmailLogin ? "email" : "username";
+    usernameLoginField.style.display = isEmailLogin ? "none" : "";
+    emailLoginField.style.display = isEmailLogin ? "" : "none";
+    loginForm.username.required = !isEmailLogin;
+    loginForm.email.required = isEmailLogin;
+    loginMessage.textContent = "";
+
+    loginForm.querySelectorAll(".login-tabs button").forEach(button => {
+        const active = button.dataset.loginType === loginTypeInput.value;
+        button.classList.toggle("active", active);
+        button.classList.toggle("secondary", !active);
+    });
+}
 
 function showLoggedInUI(user) {
     loginForm.style.display = "none";
@@ -47,11 +66,21 @@ loginForm.addEventListener("submit", async (event) => {
     loginMessage.textContent = "";
     const submitBtn = loginForm.querySelector("button[type='submit']");
     submitBtn.disabled = true;
+    const loginType = loginTypeInput.value;
+    const data = {
+        loginType,
+        password: loginForm.password.value
+    };
+    if (loginType === "email") {
+        data.email = loginForm.email.value.trim();
+    } else {
+        data.username = loginForm.username.value.trim();
+    }
 
     try {
         const res = await request("/users/login", {
             method: "POST",
-            body: JSON.stringify(formToJson(loginForm))
+            body: JSON.stringify(data)
         });
 
         if (res && res.success && res.data) {
@@ -65,6 +94,12 @@ loginForm.addEventListener("submit", async (event) => {
     } finally {
         submitBtn.disabled = false;
     }
+});
+
+loginForm.querySelectorAll(".login-tabs button").forEach(button => {
+    button.addEventListener("click", () => {
+        setLoginType(button.dataset.loginType);
+    });
 });
 
 editProfileBtn?.addEventListener("click", () => {

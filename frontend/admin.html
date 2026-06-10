@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理中心 - 校园二手交易平台</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="index.html">校园二手交易</a>
+        <nav>
+            <a href="publish.html">发布物品</a>
+            <a href="orders.html">订单管理</a>
+            <a href="profile.html">个人中心</a>
+            <a href="admin.html">管理中心</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <div class="section-title">
+            <h1>管理中心</h1>
+            <span id="adminUserInfo"></span>
+        </div>
+
+        <section id="adminGate" class="form-panel" style="display:none;">
+            <p>请使用管理员账号登录后访问管理中心。</p>
+            <a class="button-link" href="profile.html">前往登录</a>
+        </section>
+
+        <section id="adminPanel" class="admin-panel" style="display:none;">
+            <div class="admin-tabs">
+                <button type="button" class="active" data-admin-tab="users">用户管理</button>
+                <button type="button" class="secondary" data-admin-tab="messages">留言管理</button>
+                <button type="button" class="secondary" data-admin-tab="items">商品管理</button>
+            </div>
+
+            <section class="admin-section" data-admin-section="users">
+                <div class="section-title">
+                    <h2>普通用户</h2>
+                    <span id="userCount"></span>
+                </div>
+                <div id="adminUserList" class="table-list"></div>
+            </section>
+
+            <section class="admin-section" data-admin-section="messages" style="display:none;">
+                <div class="section-title">
+                    <h2>全部留言</h2>
+                    <span id="messageCount"></span>
+                </div>
+                <div id="adminMessageList" class="table-list"></div>
+            </section>
+
+            <section class="admin-section" data-admin-section="items" style="display:none;">
+                <div class="section-title">
+                    <h2>全部商品</h2>
+                    <span id="adminItemCount"></span>
+                </div>
+                <div id="adminItemList" class="table-list"></div>
+            </section>
+        </section>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/admin.js"></script>
+</body>
+</html>

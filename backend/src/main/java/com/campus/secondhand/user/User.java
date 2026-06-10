@@ -31,6 +31,12 @@ public class User {
     @Column(length = 100)
     private String email;
 
+    @Column(nullable = false, length = 20)
+    private String role = "USER";
+
+    @Column(nullable = false, length = 20)
+    private String status = "ACTIVE";
+
     @Column(name = "login_failed_count", nullable = false)
     private Integer loginFailedCount = 0;
 
@@ -86,6 +92,22 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Integer getLoginFailedCount() {

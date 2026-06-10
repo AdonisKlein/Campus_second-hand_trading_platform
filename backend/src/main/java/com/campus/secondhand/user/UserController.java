@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,9 +62,24 @@ public class UserController {
 
     @PostMapping("/login")
     public ApiResponse<UserView> login(@Valid @RequestBody LoginRequest request) {
-        return userRepository.findByUsername(request.username())
+        String loginType = request.loginType() == null ? "username" : request.loginType();
+        String account = "email".equals(loginType) ? request.email() : request.username();
+        String errorPrefix = "email".equals(loginType) ? "邮箱" : "用户名";
+
+        if (account == null || account.isBlank()) {
+            return ApiResponse.fail("请输入" + errorPrefix);
+        }
+
+        Optional<User> userOptional = "email".equals(loginType)
+            ? userRepository.findByEmail(account)
+            : userRepository.findByUsername(account);
+
+        return userOptional
             .map(user -> {
                 LocalDateTime now = LocalDateTime.now();
+                if ("DISABLED".equals(user.getStatus())) {
+                    return ApiResponse.<UserView>fail("账号已被管理员禁用");
+                }
                 if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(now)) {
                     return ApiResponse.<UserView>fail("账号已被临时锁定，请10分钟后再试");
                 }
@@ -81,7 +97,7 @@ public class UserController {
                     }
 
                     userRepository.save(user);
-                    return ApiResponse.<UserView>fail("用户名或密码错误，剩余尝试次数：" + (3 - failedCount));
+                    return ApiResponse.<UserView>fail(errorPrefix + "或密码错误，剩余尝试次数：" + (3 - failedCount));
                 }
 
                 user.setLoginFailedCount(0);
@@ -89,7 +105,7 @@ public class UserController {
                 userRepository.save(user);
                 return ApiResponse.ok(UserView.from(user));
             })
-            .orElseGet(() -> ApiResponse.fail("用户名或密码错误"));
+            .orElseGet(() -> ApiResponse.fail(errorPrefix + "或密码错误"));
     }
 
     @GetMapping("/{id}")
@@ -179,16 +195,24 @@ public class UserController {
     ) {
     }
 
-    public record LoginRequest(@NotBlank String username, @NotBlank String password) {
+    public record LoginRequest(String username, String email, String loginType, @NotBlank String password) {
     }
 
     public record UpdateProfileRequest(String nickname, String phone, String email, String emailCode) {
     }
 
-    public record UserView(Long id, String username, String nickname, String phone, String email) {
+    public record UserView(Long id, String username, String nickname, String phone, String email, String role, String status) {
 
-        static UserView from(User user) {
-            return new UserView(user.getId(), user.getUsername(), user.getNickname(), user.getPhone(), user.getEmail());
+        public static UserView from(User user) {
+            return new UserView(
+                user.getId(),
+                user.getUsername(),
+                user.getNickname(),
+                user.getPhone(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus()
+            );
         }
     }
 }

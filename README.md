@@ -13,7 +13,7 @@
 
 已实现功能：
 
-- 用户注册、登录。
+- 用户注册、用户名登录、邮箱登录。
 - 邮箱验证码发送与校验。
 - 忘记密码，通过注册邮箱验证码重置密码。
 - 密码 BCrypt 加密存储。
@@ -23,10 +23,12 @@
 - 商品发布，当前图片字段为图片地址。
 - 商品详情查看。
 - 商品留言发送与列表查看。
+- 留言显示昵称和发布时间，留言本人可修改或删除。
 - 创建订单。
 - 订单列表查看。
 - 订单状态更新：`CONFIRMED`、`COMPLETED`、`CANCELLED`。
 - 下单后商品状态更新为 `SOLD`。
+- 管理员可禁用/恢复普通用户、删除留言、下架/重新上架商品。
 
 当前简化点：
 
@@ -34,13 +36,14 @@
 - 前端登录态使用 `localStorage` 保存用户基本信息。
 - 未实现 Token 或 Session 权限体系。
 - 留言按商品展示，没有独立私信会话页。
+- 管理员权限基于当前登录用户 ID 和角色字段做简易校验，适合课程项目演示。
 
 ## 技术栈
 
 | 层次 | 技术 |
 |---|---|
 | 前端 | HTML、CSS、JavaScript |
-| 后端 | Java 17、Spring Boot 3.5.14 |
+| 后端 | Java 24、Spring Boot 3.5.14 |
 | 数据库 | MySQL 8.x |
 | ORM | Spring Data JPA |
 | 构建 | Maven |
@@ -82,7 +85,7 @@ Campus_second-hand_trading_platform/
 
 ## 环境要求
 
-- JDK 17 或以上。
+- JDK 24.0.2 或以上。
 - Maven 3.8 或以上。
 - MySQL 8.x。
 - Chrome、Edge 或 Firefox。
@@ -129,6 +132,14 @@ source database/seed.sql;
 source D:/Code/Software/bigwork/Campus_second-hand_trading_platform/database/seed.sql;
 ```
 
+演示账号：
+
+| 账号 | 密码 | 角色 |
+|---|---|---|
+| `admin` | `abc123` | 管理员 |
+| `alice` | 演示脚本内置密码散列 | 普通用户 |
+| `bob` | 演示脚本内置密码散列 | 普通用户 |
+
 ### 4. 检查表
 
 ```sql
@@ -146,14 +157,14 @@ trade_orders
 email_verification
 ```
 
-### 5. 旧数据库升级
+### 5. 旧数据库处理
 
-如果之前已经创建过数据库，但 `users` 表缺少登录锁定字段，请执行：
+为保证一次完成部署，建议使用全新的 `campus_secondhand` 数据库。如果本机已有旧版本数据库，请先备份需要保留的数据，然后执行：
 
 ```sql
-ALTER TABLE users
-ADD COLUMN login_failed_count INT NOT NULL DEFAULT 0,
-ADD COLUMN locked_until DATETIME NULL;
+DROP DATABASE IF EXISTS campus_secondhand;
+source database/schema.sql;
+source database/seed.sql;
 ```
 
 ## 后端配置
@@ -258,6 +269,7 @@ http://localhost:5500
 | 发布 | `frontend/publish.html` | 发布商品。 |
 | 订单 | `frontend/orders.html` | 查看订单、更新订单状态。 |
 | 个人中心 | `frontend/profile.html` | 登录、忘记密码、资料查看修改、退出登录。 |
+| 管理中心 | `frontend/admin.html` | 管理普通用户、留言和商品。 |
 
 ## 测试
 
@@ -272,16 +284,19 @@ mvn test
 
 - Spring 上下文加载。
 - 注册、登录、错误密码。
+- 用户名登录、邮箱登录。
 - 忘记密码验证码重置密码，并验证旧密码失效、新密码可登录。
 - 3 次登录失败锁定。
 - 商品发布和搜索。
 - 留言发送和查询。
+- 留言修改、删除和昵称展示。
 - 订单创建、重复下单拦截、订单状态校验、商品售出联动。
+- 管理员禁用用户、删除留言、下架商品。
 
 期望结果：
 
 ```text
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 

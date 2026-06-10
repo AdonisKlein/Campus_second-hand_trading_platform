@@ -1,6 +1,8 @@
 package com.campus.secondhand.item;
 
 import com.campus.secondhand.common.ApiResponse;
+import com.campus.secondhand.user.User;
+import com.campus.secondhand.user.UserRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ItemController {
 
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
-    public ItemController(ItemRepository itemRepository) {
+    public ItemController(ItemRepository itemRepository, UserRepository userRepository) {
         this.itemRepository = itemRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -45,6 +49,14 @@ public class ItemController {
 
     @PostMapping
     public ApiResponse<Item> publish(@Valid @RequestBody PublishItemRequest request) {
+        var sellerOptional = userRepository.findById(request.sellerId());
+        if (sellerOptional.isEmpty()) {
+            return ApiResponse.fail("卖家不存在");
+        }
+        if (isDisabled(sellerOptional.get())) {
+            return ApiResponse.fail("账号已被管理员禁用");
+        }
+
         Item item = new Item();
         item.setTitle(request.title());
         item.setCategory(request.category());
@@ -64,5 +76,8 @@ public class ItemController {
         @NotNull Long sellerId
     ) {
     }
-}
 
+    private boolean isDisabled(User user) {
+        return "DISABLED".equals(user.getStatus());
+    }
+}

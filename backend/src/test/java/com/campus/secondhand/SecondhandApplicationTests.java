@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -99,6 +100,19 @@ class SecondhandApplicationTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
+                        "loginType": "email",
+                        "email": "test@example.com",
+                        "password": "abc123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.username").value("testuser"));
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
                         "username": "testuser",
                         "password": "wrong123"
                     }
@@ -106,6 +120,30 @@ class SecondhandApplicationTests {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.message").value("用户名或密码错误，剩余尝试次数：2"));
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "username": "testuser",
+                        "password": "abc123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "loginType": "email",
+                        "email": "test@example.com",
+                        "password": "wrong123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.message").value("邮箱或密码错误，剩余尝试次数：2"));
     }
 
     @Test
@@ -244,7 +282,145 @@ class SecondhandApplicationTests {
         mockMvc.perform(get("/messages/item/{itemId}", item.getId()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data", hasSize(1)));
+            .andExpect(jsonPath("$.data", hasSize(1)))
+            .andExpect(jsonPath("$.data[0].senderNickname").value("buyer"));
+    }
+
+    @Test
+    void updateAndDeleteOwnMessageOnly() throws Exception {
+        User seller = saveUser("seller");
+        User buyer = saveUser("buyer");
+        User other = saveUser("other");
+        Item item = saveItem(seller.getId());
+
+        mockMvc.perform(post("/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "itemId": %d,
+                        "senderId": %d,
+                        "receiverId": %d,
+                        "content": "这个还能便宜吗？"
+                    }
+                    """.formatted(item.getId(), buyer.getId(), seller.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true));
+
+        Long messageId = messageRepository.findAll().get(0).getId();
+
+        mockMvc.perform(put("/messages/{id}", messageId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "senderId": %d,
+                        "content": "明天可以当面交易吗？"
+                    }
+                    """.formatted(buyer.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.content").value("明天可以当面交易吗？"));
+
+        mockMvc.perform(delete("/messages/{id}", messageId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "senderId": %d
+                    }
+                    """.formatted(other.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.message").value("只能删除自己的留言"));
+
+        mockMvc.perform(delete("/messages/{id}", messageId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "senderId": %d
+                    }
+                    """.formatted(buyer.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(get("/messages/item/{itemId}", item.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data", hasSize(0)));
+    }
+
+    @Test
+    void adminCanManageUsersMessagesAndItems() throws Exception {
+        User admin = saveAdmin("admin");
+        User seller = saveUser("seller");
+        User buyer = saveUser("buyer");
+        seller.setEmail("seller@example.com");
+        userRepository.save(seller);
+        Item item = saveItem(seller.getId());
+
+        mockMvc.perform(post("/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "itemId": %d,
+                        "senderId": %d,
+                        "receiverId": %d,
+                        "content": "这条需要管理员删除"
+                    }
+                    """.formatted(item.getId(), buyer.getId(), seller.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true));
+
+        Long messageId = messageRepository.findAll().get(0).getId();
+
+        mockMvc.perform(put("/admin/users/{id}/status", buyer.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "adminId": %d,
+                        "status": "DISABLED"
+                    }
+                    """.formatted(admin.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.status").value("DISABLED"));
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "username": "buyer",
+                        "password": "abc123"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.message").value("账号已被管理员禁用"));
+
+        mockMvc.perform(delete("/admin/messages/{id}", messageId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "adminId": %d
+                    }
+                    """.formatted(admin.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(put("/admin/items/{id}/status", item.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "adminId": %d,
+                        "status": "REMOVED"
+                    }
+                    """.formatted(admin.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.status").value("REMOVED"));
+
+        mockMvc.perform(get("/items"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data", hasSize(0)));
     }
 
     @Test
@@ -314,6 +490,13 @@ class SecondhandApplicationTests {
         user.setPasswordHash(passwordEncoder.encode("abc123"));
         user.setNickname(username);
         user.setPhone("13800000000");
+        return userRepository.save(user);
+    }
+
+    private User saveAdmin(String username) {
+        User user = saveUser(username);
+        user.setRole("ADMIN");
+        user.setEmail(username + "@example.com");
         return userRepository.save(user);
     }
 

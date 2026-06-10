@@ -47,11 +47,16 @@ public class TradeOrderController {
 
     @PostMapping
     public ApiResponse<TradeOrder> create(@Valid @RequestBody CreateOrderRequest request) {
-        if (!userRepository.existsById(request.buyerId())) {
+        var buyerOptional = userRepository.findById(request.buyerId());
+        if (buyerOptional.isEmpty()) {
             return ApiResponse.fail("买家不存在");
         }
-        if (!userRepository.existsById(request.sellerId())) {
+        var sellerOptional = userRepository.findById(request.sellerId());
+        if (sellerOptional.isEmpty()) {
             return ApiResponse.fail("卖家不存在");
+        }
+        if (isDisabled(buyerOptional.get()) || isDisabled(sellerOptional.get())) {
+            return ApiResponse.fail("账号已被管理员禁用");
         }
 
         var itemOptional = itemRepository.findById(request.itemId());
@@ -133,5 +138,9 @@ public class TradeOrderController {
         String sellerNickname,
         String status
     ) {
+    }
+
+    private boolean isDisabled(User user) {
+        return "DISABLED".equals(user.getStatus());
     }
 }

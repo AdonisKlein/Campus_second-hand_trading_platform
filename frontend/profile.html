@@ -13,6 +13,7 @@
             <a href="publish.html">发布物品</a>
             <a href="orders.html">订单管理</a>
             <a href="profile.html">个人中心</a>
+            <a href="admin.html">管理中心</a>
         </nav>
     </header>
 
@@ -22,7 +23,13 @@
         <!-- Login form -->
         <form class="form-panel" id="loginForm">
             <h2>登录</h2>
-            <label>用户名<input name="username" required></label>
+            <div class="login-tabs" role="group" aria-label="登录方式">
+                <button type="button" class="active" data-login-type="username">用户名登录</button>
+                <button type="button" class="secondary" data-login-type="email">邮箱登录</button>
+            </div>
+            <input type="hidden" name="loginType" value="username">
+            <label id="usernameLoginField">用户名<input name="username" required></label>
+            <label id="emailLoginField" style="display:none;">邮箱<input name="email" type="email"></label>
             <label>密码<input name="password" type="password" required></label>
             <button type="submit">登录</button>
             <p class="form-message" id="loginMessage"></p>
