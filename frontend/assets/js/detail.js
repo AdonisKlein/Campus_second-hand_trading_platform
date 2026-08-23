@@ -54,10 +54,10 @@ async function loadDetail() {
     itemDetail.innerHTML = `
         <img class="detail-image" src="${escapeHtml(item.imageUrl || "assets/images/placeholder.svg")}" alt="${escapeHtml(item.title)}">
         <h1>${escapeHtml(item.title)}</h1>
-        <p><span class="tag">${escapeHtml(item.category)}</span></p>
+        <p><span class="tag">${escapeHtml(item.category)}</span> <span class="status-badge ${item.status === "ON_SALE" ? "completed" : "cancelled"}">${item.status === "ON_SALE" ? "正在出售" : "已被预留或售出"}</span></p>
         <p class="price">￥${Number(item.price).toFixed(2)}</p>
-        <p>${escapeHtml(item.description || "")}</p>
-        ${item.status === "ON_SALE" ? '<button id="createOrder">创建订单</button>' : '<button disabled>当前不可下单</button>'}
+        <p>${escapeHtml(item.description || "卖家暂未填写商品描述")}</p>
+        ${item.status === "ON_SALE" ? '<button id="createOrder">立即下单并预留</button>' : '<button disabled>当前不可下单</button>'}
     `;
 
     document.querySelector("#createOrder")?.addEventListener("click", async () => {
@@ -109,7 +109,7 @@ async function loadMessages() {
             </div>
         `;
         }).join("")
-        : "<p>暂无留言</p>";
+        : '<p class="empty-state">还没有留言，来问问商品细节吧。</p>';
 }
 
 messageForm.addEventListener("submit", async (event) => {

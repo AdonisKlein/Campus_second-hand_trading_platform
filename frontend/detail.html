@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>物品详情 - 校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="index.html">校园二手交易</a>
+        <a class="brand" href="index.html">航集 Campus Market</a>
         <nav>
+            <a href="index.html">首页</a>
             <a href="publish.html">发布物品</a>
             <a href="orders.html">订单管理</a>
             <a href="profile.html">个人中心</a>
@@ -24,7 +26,7 @@
             <div id="messageList" class="message-list"></div>
             <form id="messageForm" class="message-form">
                 <!-- senderId and receiverId are auto-filled by JS -->
-                <textarea name="content" rows="3" placeholder="输入留言内容" required></textarea>
+                <textarea name="content" rows="3" placeholder="输入留言内容" aria-label="留言内容" required></textarea>
                 <button type="submit">发送留言</button>
             </form>
         </aside>

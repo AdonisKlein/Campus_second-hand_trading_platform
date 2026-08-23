@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="index.html">校园二手交易</a>
+        <a class="brand" href="index.html">航集 Campus Market</a>
         <nav>
+            <a class="active" href="index.html" aria-current="page">首页</a>
             <a href="publish.html">发布物品</a>
             <a href="orders.html">订单管理</a>
             <a href="profile.html">个人中心</a>
@@ -19,11 +21,12 @@
 
     <main class="layout">
         <section class="hero">
+            <p class="eyebrow">BUAA CAMPUS MARKET</p>
             <h1>校园闲置，好物流转</h1>
-            <p>浏览教材、生活用品、电子产品等二手物品，快速留言沟通并创建订单。</p>
+            <p>让每一件闲置重新找到需要它的人。浏览校园好物，在线沟通，线下安心交易。</p>
             <form class="search-bar" id="searchForm">
-                <input id="keyword" type="search" placeholder="搜索物品关键词">
-                <select id="category">
+                <input id="keyword" type="search" placeholder="搜索物品关键词" aria-label="搜索物品关键词">
+                <select id="category" aria-label="选择物品分类">
                     <option value="">全部分类</option>
                     <option value="书籍">书籍</option>
                     <option value="生活用品">生活用品</option>
@@ -37,7 +40,7 @@
         <section>
             <div class="section-title">
                 <h2>最新物品</h2>
-                <span id="itemCount">加载中</span>
+                <span id="itemCount" role="status" aria-live="polite">加载中</span>
             </div>
             <div class="item-grid" id="itemGrid"></div>
         </section>

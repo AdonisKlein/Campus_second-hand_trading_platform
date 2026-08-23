@@ -14,7 +14,9 @@ async function loadItems(params = {}) {
     const result = await request(`/items${query ? `?${query}` : ""}`);
     const items = result.data || [];
     itemCount.textContent = `${items.length} 件物品`;
-    grid.innerHTML = items.map(renderItem).join("");
+    grid.innerHTML = items.length
+        ? items.map(renderItem).join("")
+        : '<p class="empty-state">暂时没有符合条件的商品，换个关键词试试吧。</p>';
 }
 
 function renderItem(item) {
@@ -26,7 +28,7 @@ function renderItem(item) {
                 <span class="tag">${escapeHtml(item.category)}</span>
                 <h3>${escapeHtml(item.title)}</h3>
                 <p class="price">￥${Number(item.price).toFixed(2)}</p>
-                <p>${escapeHtml(item.description || "")}</p>
+                <p class="item-description">${escapeHtml(item.description || "卖家暂未填写商品描述")}</p>
             </div>
         </a>
     `;

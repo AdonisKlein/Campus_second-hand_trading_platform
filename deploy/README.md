@@ -21,6 +21,15 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.yml ps
 docker compose --env-file deploy/.env -f deploy/docker-compose.yml logs -f backend
 ```
 
+如需演示账号和商品，可在**全新的空业务库**中从项目根目录导入一次种子数据。脚本检测到已有用户或商品会直接停止，禁止在生产环境执行：
+
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml cp database/seed.sql mysql:/tmp/seed.sql
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml exec -T mysql sh -lc 'mysql --default-character-set=utf8mb4 -uroot -p"$MYSQL_ROOT_PASSWORD" < /tmp/seed.sql'
+```
+
+演示账号为 `admin@example.com`、`alice@example.com`、`bob@example.com`，密码统一为 `abc123`，仅供本地开发使用。
+
 正式域名启用 HTTPS 后，把 `PUBLIC_ORIGIN` 改成完整域名，并把 `SESSION_COOKIE_SECURE` 改成 `true`。TLS 可以放在这套 Nginx 前面的 Caddy、Traefik 或云负载均衡器终止。
 
 网站启动健康检查只检查应用存活，不把 SMTP 当作启动门槛；邮件发送状态应单独监控。这样邮箱服务临时故障时，浏览和订单功能仍可使用。

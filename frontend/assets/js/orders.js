@@ -18,15 +18,26 @@ function renderOrder(order) {
     const actions = (order.allowedActions || []).map(action =>
         `<button type="button" data-order-id="${order.id}" data-order-action="${action}">${actionLabels[action]}</button>`
     ).join("");
+    const statusClass = {
+        PENDING_SELLER_CONFIRMATION: "pending",
+        WAITING_HANDOVER: "waiting",
+        COMPLETED: "completed",
+        CANCELLED: "cancelled",
+        EXPIRED: "expired"
+    }[order.status] || "";
     return `
-        <div class="table-row">
-            <span>订单 #${order.id}</span>
-            <span>物品：${escapeHtml(order.itemTitle || order.itemId)}</span>
-            <span>价格：${order.itemPrice ? `￥${order.itemPrice}` : "-"}</span>
-            <span>买家：${escapeHtml(order.buyerNickname || order.buyerId)}</span>
-            <span>卖家：${escapeHtml(order.sellerNickname || order.sellerId)}</span>
-            <span>状态：${escapeHtml(statusLabels[order.status] || order.status)}</span>
-            <span>${actions || "暂无可用操作"}</span>
+        <div class="table-row order-card">
+            <div class="order-card__head">
+                <strong>订单 #${order.id}</strong>
+                <span class="status-badge ${statusClass}">${escapeHtml(statusLabels[order.status] || order.status)}</span>
+            </div>
+            <div class="order-card__body">
+                <div><small>商品</small><strong>${escapeHtml(order.itemTitle || order.itemId)}</strong></div>
+                <div><small>成交价</small><strong class="price">${order.itemPrice != null ? `￥${order.itemPrice}` : "-"}</strong></div>
+                <div><small>买家</small><span>${escapeHtml(order.buyerNickname || order.buyerId)}</span></div>
+                <div><small>卖家</small><span>${escapeHtml(order.sellerNickname || order.sellerId)}</span></div>
+            </div>
+            <div class="order-card__actions">${actions || '<span class="order-card__empty-action">当前没有需要处理的操作</span>'}</div>
         </div>
     `;
 }
@@ -53,7 +64,7 @@ async function loadOrders() {
     const orders = result.data || [];
     orderList.innerHTML = orders.length
         ? orders.map(renderOrder).join("")
-        : "<p>暂无订单</p>";
+        : '<p class="empty-state">暂无订单，去首页看看校园好物吧。</p>';
 }
 
 async function performOrderAction(orderId, action) {
