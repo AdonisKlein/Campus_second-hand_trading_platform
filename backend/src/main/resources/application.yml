@@ -7,23 +7,23 @@ spring:
     application:
         name: campus-secondhand
     datasource:
-        url: jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-        username: root
-        password: "051223"
+        url: ${DB_URL:jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+        username: ${DB_USERNAME:root}
+        password: ${DB_PASSWORD:}
         driver-class-name: com.mysql.cj.jdbc.Driver
     jpa:
         hibernate:
-            ddl-auto: validate
+            ddl-auto: ${JPA_DDL_AUTO:validate}
         open-in-view: false
-        show-sql: true
+        show-sql: ${JPA_SHOW_SQL:false}
         properties:
             hibernate:
                 format_sql: true
     mail:
-        host: smtp.mailtrap.io
-        port: 2525
-        username: YOUR_MAILTRAP_USERNAME
-        password: YOUR_MAILTRAP_PASSWORD
+        host: ${MAIL_HOST:smtp.mailtrap.io}
+        port: ${MAIL_PORT:2525}
+        username: ${MAIL_USERNAME:}
+        password: ${MAIL_PASSWORD:}
         properties:
             mail:
                 smtp:
@@ -32,4 +32,4 @@ spring:
                         enable: true
 
 app:
-    upload-dir: uploads
+    upload-dir: ${UPLOAD_DIR:uploads}

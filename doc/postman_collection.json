@@ -1,0 +1,293 @@
+{
+  "info": {
+    "name": "校园二手交易平台 API",
+    "description": "校园二手交易平台 API Postman 测试集合 — 所有端点位于 http://localhost:8080/api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api"
+    }
+  ],
+  "item": [
+    {
+      "name": "用户模块",
+      "item": [
+        {
+          "name": "发送验证码",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/users/send-verification",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "注册",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/users/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"zhangsan\",\n  \"password\": \"abc123\",\n  \"nickname\": \"张三\",\n  \"email\": \"test@example.com\",\n  \"code\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "登录",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.id) {",
+                  "    pm.environment.set(\"userId\", res.data.id);",
+                  "    pm.environment.set(\"nickname\", res.data.nickname);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/users/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"zhangsan\",\n  \"password\": \"abc123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取用户详情",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/users/{{userId}}"
+          }
+        },
+        {
+          "name": "更新用户信息",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/users/{{userId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nickname\": \"张三丰\",\n  \"phone\": \"13800138000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "检查用户名/邮箱",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/users/check?username=zhangsan&email=test@example.com",
+              "query": [
+                { "key": "username", "value": "zhangsan" },
+                { "key": "email", "value": "test@example.com" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "忘记密码-发送验证码",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/users/forgot-password/send-code",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "忘记密码-重置密码",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/users/forgot-password/reset",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"code\": \"123456\",\n  \"newPassword\": \"newpass123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "商品模块",
+      "item": [
+        {
+          "name": "发布商品",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.id) {",
+                  "    pm.environment.set(\"itemId\", res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/items",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"二手高数课本\",\n  \"category\": \"教材\",\n  \"price\": 25.00,\n  \"description\": \"九成新，有笔记\",\n  \"imageUrl\": \"https://example.com/book.jpg\",\n  \"sellerId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "浏览商品列表",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/items"
+          }
+        },
+        {
+          "name": "按分类筛选",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/items?category=教材",
+              "query": [{ "key": "category", "value": "教材" }]
+            }
+          }
+        },
+        {
+          "name": "按关键词搜索",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/items?keyword=高数",
+              "query": [{ "key": "keyword", "value": "高数" }]
+            }
+          }
+        },
+        {
+          "name": "查看商品详情",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/items/{{itemId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "留言模块",
+      "item": [
+        {
+          "name": "发送留言",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemId\": 1,\n  \"senderId\": 2,\n  \"receiverId\": 1,\n  \"content\": \"请问这本书还在吗？\"\n}"
+            }
+          }
+        },
+        {
+          "name": "查看商品留言",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/messages/item/{{itemId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "订单模块",
+      "item": [
+        {
+          "name": "创建订单",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.id) {",
+                  "    pm.environment.set(\"orderId\", res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemId\": 1,\n  \"buyerId\": 2,\n  \"sellerId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "查询用户订单",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/orders?userId={{userId}}",
+              "query": [{ "key": "userId", "value": "{{userId}}" }]
+            }
+          }
+        },
+        {
+          "name": "更新订单状态-确认",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/orders/{{orderId}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONFIRMED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "更新订单状态-完成",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/orders/{{orderId}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"COMPLETED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "更新订单状态-取消",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/orders/{{orderId}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CANCELLED\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

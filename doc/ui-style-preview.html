@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>航集 Campus Market · UI 视觉样板</title>
+  <style>
+    :root {
+      --blue: #155eef;
+      --blue-hover: #004eeb;
+      --blue-soft: #eaf2ff;
+      --yellow: #ffc83d;
+      --yellow-soft: #fff5cc;
+      --canvas: #f6f8fc;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --ink: #182230;
+      --muted: #667085;
+      --line: #e4e7ec;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --shadow-sm: 0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.06);
+      --shadow-md: 0 12px 30px rgba(16,24,40,.10);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+
+    body[data-theme="dark"] {
+      --blue: #6ea8fe;
+      --blue-hover: #8ab8ff;
+      --blue-soft: #17345f;
+      --yellow: #ffd666;
+      --yellow-soft: #4b3b14;
+      --canvas: #0d1420;
+      --surface: #151f2e;
+      --surface-2: #1d2939;
+      --ink: #f8fafc;
+      --muted: #a7b0c0;
+      --line: #344054;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.18);
+      --shadow-md: 0 14px 40px rgba(0,0,0,.30);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 2%, rgba(21,94,239,.10), transparent 24rem),
+        radial-gradient(circle at 93% 12%, rgba(255,200,61,.16), transparent 21rem),
+        var(--canvas);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+      transition: background-color .2s ease, color .2s ease;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    .page-shell { width: min(1440px, 100%); margin: 0 auto; padding: 24px; }
+    .preview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 12px 4px 28px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--blue);
+      box-shadow: 0 8px 22px rgba(21,94,239,.22);
+    }
+    .brand-mark::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 13px;
+      left: 13px;
+      top: 11px;
+      border: 3px solid white;
+      border-left-width: 5px;
+      border-radius: 12px 12px 4px 12px;
+      transform: rotate(-12deg);
+    }
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      right: 6px;
+      bottom: 5px;
+      border-radius: 50%;
+      background: var(--yellow);
+      border: 3px solid var(--surface);
+    }
+    .brand strong { display: block; font-size: 20px; letter-spacing: -.03em; }
+    .brand small { display: block; color: var(--muted); margin-top: 2px; }
+    .head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .btn {
+      min-height: 42px;
+      padding: 9px 16px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 650;
+      transition: transform .14s ease, background .14s ease, border-color .14s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:focus-visible { outline: 3px solid rgba(21,94,239,.25); outline-offset: 2px; }
+    .btn-primary { color: white; background: var(--blue); }
+    .btn-primary:hover { background: var(--blue-hover); }
+    body[data-theme="dark"] .btn-primary { color: #09111f; }
+    .btn-action { color: #182230; background: var(--yellow); }
+    .btn-outline { border-color: var(--line); background: var(--surface); }
+    .btn-ghost:hover { background: var(--blue-soft); color: var(--blue); }
+    .btn-danger { color: var(--danger); background: color-mix(in srgb, var(--danger) 9%, var(--surface)); }
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      cursor: pointer;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .intro-copy, .decision-card {
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      box-shadow: var(--shadow-sm);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    h1 { margin: 18px 0 12px; max-width: 760px; font-size: clamp(34px, 5vw, 64px); line-height: 1.04; letter-spacing: -.055em; }
+    .intro-copy p { margin: 0; max-width: 720px; color: var(--muted); line-height: 1.8; }
+    .decision-card { display: flex; flex-direction: column; justify-content: space-between; background: var(--blue); color: white; }
+    .decision-card p { color: rgba(255,255,255,.76); line-height: 1.7; }
+    .decision-list { display: grid; gap: 10px; margin-top: 20px; }
+    .decision-item { display: flex; gap: 10px; align-items: center; font-size: 14px; }
+    .check { width: 22px; height: 22px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: var(--yellow); color: #182230; font-weight: 900; }
+
+    .section {
+      margin-top: 24px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 20px; }
+    .section-head h2 { margin: 0; font-size: 24px; letter-spacing: -.025em; }
+    .section-head p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+    .palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .swatch {
+      min-height: 132px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      cursor: pointer;
+      transition: transform .15s ease;
+    }
+    .swatch:hover { transform: translateY(-3px); }
+    .swatch strong, .swatch span { padding: 2px 6px; width: max-content; border-radius: 6px; background: rgba(255,255,255,.78); color: #182230; backdrop-filter: blur(8px); }
+    .swatch span { margin-top: 4px; font-size: 12px; font-weight: 650; }
+    .swatch-blue { background: #155eef; }
+    .swatch-yellow { background: #ffc83d; }
+    .swatch-canvas { background: #f6f8fc; }
+    .swatch-ink { background: #182230; }
+    .swatch-success { background: #16a34a; }
+
+    .component-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .tag-blue { color: var(--blue); background: var(--blue-soft); }
+    .tag-yellow { color: #8a5700; background: var(--yellow-soft); }
+    .tag-green { color: var(--success); background: color-mix(in srgb, var(--success) 11%, var(--surface)); }
+    .tag-grey { color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); }
+    .demo-input {
+      width: 250px;
+      min-height: 44px;
+      padding: 10px 13px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      outline: none;
+    }
+    .demo-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(21,94,239,.12); }
+
+    .device-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(320px, .55fr); gap: 24px; align-items: start; }
+    .browser {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--canvas);
+      box-shadow: var(--shadow-md);
+    }
+    .browser-chrome { height: 38px; display: flex; align-items: center; gap: 6px; padding: 0 14px; border-bottom: 1px solid var(--line); background: var(--surface); }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+    .market-topbar {
+      min-height: 66px;
+      display: grid;
+      grid-template-columns: auto minmax(180px, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .mini-brand { font-size: 20px; font-weight: 850; color: var(--blue); }
+    .search {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--canvas);
+    }
+    .search::before { content: "⌕"; font-size: 20px; color: var(--blue); }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .market-body { padding: 22px; }
+    .market-hero {
+      display: grid;
+      grid-template-columns: 1.4fr .6fr;
+      gap: 16px;
+      padding: 24px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 84% 26%, rgba(255,255,255,.65) 0 8%, transparent 9%),
+        linear-gradient(120deg, var(--blue) 0 64%, var(--yellow) 64%);
+      color: white;
+    }
+    .market-hero h3 { margin: 0 0 8px; font-size: 26px; }
+    .market-hero p { margin: 0; color: rgba(255,255,255,.78); }
+    .flight-card { align-self: center; justify-self: end; width: 120px; height: 70px; border-radius: 18px; transform: rotate(-6deg); background: rgba(255,255,255,.9); box-shadow: 0 12px 24px rgba(16,24,40,.18); }
+    .flight-card::before { content: ""; display: block; width: 54px; height: 8px; margin: 24px auto; border-radius: 8px; background: var(--blue); transform: skewX(-28deg); }
+    .chips { display: flex; gap: 8px; padding: 18px 0 14px; overflow: auto; }
+    .chip { white-space: nowrap; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); cursor: pointer; }
+    .chip.active { color: var(--blue); border-color: color-mix(in srgb, var(--blue) 45%, var(--line)); background: var(--blue-soft); font-weight: 700; }
+    .product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .product-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+    .product-card:hover { transform: translateY(-2px); border-color: rgba(21,94,239,.32); box-shadow: var(--shadow-md); }
+    .product-image { aspect-ratio: 4 / 3; display: grid; place-items: center; overflow: hidden; background: linear-gradient(145deg, var(--blue-soft), var(--yellow-soft)); }
+    .product-image img { width: 72%; height: 72%; object-fit: contain; transition: transform .16s ease; }
+    .product-card:hover .product-image img { transform: scale(1.03); }
+    .product-info { padding: 12px; }
+    .product-title { min-height: 42px; margin: 0 0 8px; font-size: 14px; line-height: 1.5; font-weight: 700; }
+    .price-line { display: flex; align-items: end; justify-content: space-between; gap: 8px; }
+    .price { color: var(--blue); font-size: 20px; font-weight: 850; }
+    .price small { font-size: 12px; }
+    .seller { display: flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--muted); font-size: 11px; }
+    .avatar { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: var(--yellow); color: #182230; font-weight: 800; }
+    .favorite {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,.88);
+      color: #667085;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      font-size: 17px;
+    }
+    .favorite.on { color: #e11d48; transform: scale(1.05); }
+
+    .phone {
+      width: min(100%, 390px);
+      margin: 0 auto;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 38px;
+      background: #111827;
+      box-shadow: var(--shadow-md);
+    }
+    .phone-screen { position: relative; height: 730px; overflow: hidden; border-radius: 29px; background: var(--canvas); }
+    .phone-status { height: 26px; padding: 7px 18px 0; display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; background: var(--surface); }
+    .mobile-head { padding: 10px 14px 12px; background: var(--surface); }
+    .mobile-head-line { display: flex; align-items: center; justify-content: space-between; }
+    .mobile-title { font-size: 22px; font-weight: 900; color: var(--blue); }
+    .mobile-search { margin-top: 10px; min-height: 40px; display: flex; align-items: center; padding: 0 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--canvas); font-size: 13px; }
+    .mobile-banner { margin: 12px 12px 8px; padding: 17px; border-radius: 18px; background: linear-gradient(125deg, var(--blue), #4f8cff 67%, var(--yellow) 67%); color: white; }
+    .mobile-banner strong { display: block; font-size: 18px; }
+    .mobile-banner span { display: block; margin-top: 5px; font-size: 12px; color: rgba(255,255,255,.75); }
+    .mobile-categories { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 9px 12px 12px; }
+    .mobile-cat { text-align: center; font-size: 11px; color: var(--muted); }
+    .mobile-cat i { width: 40px; height: 40px; margin: 0 auto 5px; display: grid; place-items: center; border-radius: 13px; background: var(--surface); border: 1px solid var(--line); color: var(--blue); font-style: normal; font-weight: 850; }
+    .mobile-products { height: 466px; padding: 0 12px 90px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow: auto; }
+    .mobile-products .product-card:nth-child(even) { transform: translateY(16px); }
+    .mobile-products .product-image { aspect-ratio: 1 / 1; }
+    .mobile-products .product-info { padding: 10px; }
+    .mobile-products .product-title { min-height: 36px; font-size: 12px; margin-bottom: 5px; }
+    .mobile-products .price { font-size: 17px; }
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 76px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      border-top: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      backdrop-filter: blur(18px);
+    }
+    .nav-item { padding: 8px 2px; text-align: center; border: 0; background: transparent; color: var(--muted); font-size: 10px; cursor: pointer; }
+    .nav-item b { display: block; margin-bottom: 3px; font-size: 16px; }
+    .nav-item.active { color: var(--blue); font-weight: 750; }
+    .publish-nav { transform: translateY(-12px); }
+    .publish-nav b { width: 48px; height: 48px; margin: auto; display: grid; place-items: center; border-radius: 50%; background: var(--yellow); color: #182230; box-shadow: 0 8px 18px rgba(245,158,11,.25); font-size: 26px; }
+
+    .admin-shell { overflow: hidden; display: grid; grid-template-columns: 220px 1fr; min-height: 600px; border: 1px solid var(--line); border-radius: 18px; background: var(--canvas); box-shadow: var(--shadow-md); }
+    .admin-side { padding: 18px 12px; color: white; background: #101828; }
+    .admin-logo { padding: 6px 10px 20px; color: var(--yellow); font-size: 18px; font-weight: 850; }
+    .admin-nav { display: grid; gap: 4px; }
+    .admin-link { padding: 10px 12px; border-radius: 9px; color: #aab4c5; font-size: 13px; cursor: pointer; }
+    .admin-link.active, .admin-link:hover { color: white; background: rgba(255,255,255,.10); }
+    .admin-main { min-width: 0; }
+    .admin-top { min-height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; border-bottom: 1px solid var(--line); background: var(--surface); }
+    .admin-content { padding: 22px; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .stat { padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .stat strong { display: block; margin-top: 8px; font-size: 24px; }
+    .table-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+    .table-tools { display: flex; justify-content: space-between; gap: 12px; padding: 14px; border-bottom: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); background: var(--surface-2); font-weight: 700; }
+    tr:last-child td { border-bottom: 0; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      z-index: 20;
+      padding: 11px 16px;
+      border-radius: 12px;
+      color: white;
+      background: #101828;
+      box-shadow: var(--shadow-md);
+      transform: translate(-50%, 100px);
+      opacity: 0;
+      transition: .22s ease;
+      pointer-events: none;
+      font-size: 13px;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    .footer { padding: 28px 0 10px; color: var(--muted); text-align: center; font-size: 12px; }
+
+    @media (max-width: 1080px) {
+      .intro { grid-template-columns: 1fr; }
+      .device-grid { grid-template-columns: 1fr; }
+      .product-grid { grid-template-columns: repeat(3, 1fr); }
+      .palette { grid-template-columns: repeat(3, 1fr); }
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 720px) {
+      .page-shell { padding: 14px; }
+      .preview-head { align-items: flex-start; }
+      .head-actions .btn-outline { display: none; }
+      .intro-copy, .decision-card, .section { padding: 20px; border-radius: 18px; }
+      h1 { font-size: 38px; }
+      .palette { grid-template-columns: 1fr 1fr; }
+      .market-topbar { grid-template-columns: auto 1fr; }
+      .top-actions { display: none; }
+      .market-hero { grid-template-columns: 1fr; }
+      .flight-card { display: none; }
+      .product-grid { grid-template-columns: 1fr 1fr; }
+      .product-grid .product-card:nth-child(n+5) { display: none; }
+      .admin-shell { grid-template-columns: 72px 1fr; }
+      .admin-side { padding-inline: 8px; }
+      .admin-logo { overflow: hidden; width: 48px; padding-inline: 4px; font-size: 0; }
+      .admin-logo::after { content: "管"; font-size: 17px; }
+      .admin-link { overflow: hidden; white-space: nowrap; font-size: 0; text-align: center; }
+      .admin-link::first-letter { font-size: 14px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .table-panel { overflow-x: auto; }
+      table { min-width: 620px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="preview-head">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span><strong>航集</strong><small>Campus Market UI Preview</small></span>
+      </div>
+      <div class="head-actions">
+        <button class="btn btn-outline" data-scroll="#student">学生端样板</button>
+        <button class="btn btn-outline" data-scroll="#admin">管理员样板</button>
+        <button class="icon-btn" id="themeToggle" aria-label="切换深浅色">◐</button>
+      </div>
+    </header>
+
+    <section class="intro">
+      <div class="intro-copy">
+        <span class="eyebrow">航空蓝 × 活力黄</span>
+        <h1>可信的校园交易，也可以轻松有趣。</h1>
+        <p>商品图片是主角，蓝色建立安全感，黄色推动发布和购买。学生端保持轻快，Windows 保持清楚高效，管理员后台保持克制和可追踪。</p>
+      </div>
+      <aside class="decision-card">
+        <div>
+          <strong style="font-size:22px">一套品牌，三种体验</strong>
+          <p>共享颜色、字体、组件和业务状态，但不强迫 Web、Windows、移动端使用完全相同的页面。</p>
+        </div>
+        <div class="decision-list">
+          <div class="decision-item"><span class="check">✓</span> 游客、学生买卖双方、管理员</div>
+          <div class="decision-item"><span class="check">✓</span> 邮箱登录与学校认证可扩展</div>
+          <div class="decision-item"><span class="check">✓</span> 适合课程项目继续成长</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div><h2>品牌色板</h2><p>点击色块复制色值。黄色只做行动强调，不作为大段白字背景。</p></div>
+      </div>
+      <div class="palette">
+        <div class="swatch swatch-blue" data-color="#155EEF"><strong>航空蓝</strong><span>#155EEF</span></div>
+        <div class="swatch swatch-yellow" data-color="#FFC83D"><strong>活力黄</strong><span>#FFC83D</span></div>
+        <div class="swatch swatch-canvas" data-color="#F6F8FC"><strong>页面背景</strong><span>#F6F8FC</span></div>
+        <div class="swatch swatch-ink" data-color="#182230"><strong style="color:white;background:rgba(0,0,0,.22)">主要文字</strong><span style="color:white;background:rgba(0,0,0,.22)">#182230</span></div>
+        <div class="swatch swatch-success" data-color="#16A34A"><strong>成功状态</strong><span>#16A34A</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div><h2>基础组件</h2><p>同一状态在所有平台使用相同语义。</p></div>
+      </div>
+      <div class="component-row" style="margin-bottom:16px">
+        <button class="btn btn-primary" data-demo="保存成功">主要按钮</button>
+        <button class="btn btn-action" data-demo="开始发布商品">发布 / 购买</button>
+        <button class="btn btn-outline">次要按钮</button>
+        <button class="btn btn-danger">危险操作</button>
+        <input class="demo-input" placeholder="搜索教材、数码、生活用品">
+      </div>
+      <div class="component-row">
+        <span class="tag tag-blue">学校已认证</span>
+        <span class="tag tag-green">当面交易</span>
+        <span class="tag tag-yellow">可议价</span>
+        <span class="tag tag-grey">已预留</span>
+      </div>
+    </section>
+
+    <section class="section" id="student">
+      <div class="section-head">
+        <div><h2>学生端 · Web 与移动</h2><p>Web 适合浏览比较；移动端保持单手操作和醒目的发布入口。</p></div>
+      </div>
+      <div class="device-grid">
+        <div class="browser">
+          <div class="browser-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="market-topbar">
+            <div class="mini-brand">航集</div>
+            <div class="search">搜索教材、耳机、台灯...</div>
+            <div class="top-actions">
+              <button class="btn btn-ghost">消息</button>
+              <button class="btn btn-action" data-demo="打开发布流程">＋ 发布闲置</button>
+              <button class="icon-btn">航</button>
+            </div>
+          </div>
+          <div class="market-body">
+            <div class="market-hero">
+              <div><h3>让闲置，在校园重新起飞</h3><p>真实学生 · 校园交接 · 轻松沟通</p></div>
+              <div class="flight-card" aria-hidden="true"></div>
+            </div>
+            <div class="chips">
+              <button class="chip active">为你推荐</button>
+              <button class="chip">教材书籍</button>
+              <button class="chip">数码电子</button>
+              <button class="chip">宿舍生活</button>
+              <button class="chip">运动户外</button>
+              <button class="chip">免费赠送</button>
+            </div>
+            <div class="product-grid">
+              <article class="product-card">
+                <button class="favorite" aria-label="收藏">♥</button>
+                <div class="product-image"><img src="../frontend/assets/images/book.svg" alt="高等数学教材"></div>
+                <div class="product-info"><p class="product-title">高等数学教材 第七版，笔记完整</p><div class="price-line"><span class="price"><small>￥</small>18</span><span class="tag tag-green">学院路</span></div><div class="seller"><span class="avatar">林</span> 林同学 · 已认证</div></div>
+              </article>
+              <article class="product-card">
+                <button class="favorite" aria-label="收藏">♥</button>
+                <div class="product-image"><img src="../frontend/assets/images/earphone.svg" alt="蓝牙耳机"></div>
+                <div class="product-info"><p class="product-title">蓝牙降噪耳机，续航正常</p><div class="price-line"><span class="price"><small>￥</small>68</span><span class="tag tag-yellow">可议价</span></div><div class="seller"><span class="avatar">陈</span> 陈同学 · 沙河</div></div>
+              </article>
+              <article class="product-card">
+                <button class="favorite" aria-label="收藏">♥</button>
+                <div class="product-image"><img src="../frontend/assets/images/lamp.svg" alt="宿舍台灯"></div>
+                <div class="product-info"><p class="product-title">宿舍小台灯，亮度三档可调</p><div class="price-line"><span class="price"><small>￥</small>25</span><span class="tag tag-green">当面交易</span></div><div class="seller"><span class="avatar">周</span> 周同学 · 已认证</div></div>
+              </article>
+              <article class="product-card">
+                <button class="favorite" aria-label="收藏">♥</button>
+                <div class="product-image"><img src="../frontend/assets/images/placeholder.svg" alt="收纳架"></div>
+                <div class="product-info"><p class="product-title">桌面收纳架，毕业免费送</p><div class="price-line"><span class="price"><small>￥</small>0</span><span class="tag tag-blue">免费赠送</span></div><div class="seller"><span class="avatar">许</span> 许同学 · 沙河</div></div>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-status"><span>9:41</span><span>5G 100%</span></div>
+            <div class="mobile-head">
+              <div class="mobile-head-line"><span class="mobile-title">航集</span><span class="tag tag-blue">校园已认证</span></div>
+              <div class="mobile-search">⌕ 搜索你的校园好物</div>
+            </div>
+            <div class="mobile-banner"><strong>毕业季循环计划</strong><span>让每一件闲置找到新同学</span></div>
+            <div class="mobile-categories">
+              <div class="mobile-cat"><i>书</i>教材</div>
+              <div class="mobile-cat"><i>数</i>数码</div>
+              <div class="mobile-cat"><i>宿</i>生活</div>
+              <div class="mobile-cat"><i>赠</i>免费送</div>
+            </div>
+            <div class="mobile-products">
+              <article class="product-card"><div class="product-image"><img src="../frontend/assets/images/book.svg" alt="教材"></div><div class="product-info"><p class="product-title">工科数学分析教材</p><span class="price"><small>￥</small>18</span></div></article>
+              <article class="product-card"><div class="product-image"><img src="../frontend/assets/images/earphone.svg" alt="耳机"></div><div class="product-info"><p class="product-title">蓝牙降噪耳机</p><span class="price"><small>￥</small>68</span></div></article>
+              <article class="product-card"><div class="product-image"><img src="../frontend/assets/images/lamp.svg" alt="台灯"></div><div class="product-info"><p class="product-title">宿舍护眼台灯</p><span class="price"><small>￥</small>25</span></div></article>
+              <article class="product-card"><div class="product-image"><img src="../frontend/assets/images/placeholder.svg" alt="收纳架"></div><div class="product-info"><p class="product-title">桌面收纳架免费送</p><span class="price"><small>￥</small>0</span></div></article>
+            </div>
+            <nav class="bottom-nav" aria-label="移动端主导航">
+              <button class="nav-item active"><b>⌂</b>首页</button>
+              <button class="nav-item"><b>◇</b>分类</button>
+              <button class="nav-item publish-nav" data-demo="打开四步发布流程"><b>＋</b>发布</button>
+              <button class="nav-item"><b>○</b>消息</button>
+              <button class="nav-item"><b>人</b>我的</button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="admin">
+      <div class="section-head">
+        <div><h2>管理员端 · 高密度但不拥挤</h2><p>一个管理员身份承接首期后台工作，页面仍按任务分类，所有操作留下记录。</p></div>
+      </div>
+      <div class="admin-shell">
+        <aside class="admin-side">
+          <div class="admin-logo">航集管理台</div>
+          <nav class="admin-nav">
+            <div class="admin-link active">控制台</div>
+            <div class="admin-link">用户管理</div>
+            <div class="admin-link">商品管理</div>
+            <div class="admin-link">订单管理</div>
+            <div class="admin-link">举报处理</div>
+            <div class="admin-link">内容运营</div>
+            <div class="admin-link">管理日志</div>
+          </nav>
+        </aside>
+        <div class="admin-main">
+          <header class="admin-top"><strong>控制台</strong><span class="tag tag-blue">管理员 · admin</span></header>
+          <div class="admin-content">
+            <div class="stats">
+              <div class="stat"><span>今日新增商品</span><strong>128</strong></div>
+              <div class="stat"><span>进行中订单</span><strong>84</strong></div>
+              <div class="stat"><span>待处理举报</span><strong style="color:var(--warning)">12</strong></div>
+              <div class="stat"><span>活跃学生</span><strong>2,451</strong></div>
+            </div>
+            <div class="table-panel">
+              <div class="table-tools"><strong>待处理商品</strong><div class="component-row"><input class="demo-input" style="width:190px;min-height:36px" placeholder="搜索商品"><button class="btn btn-outline" style="min-height:36px;padding-block:6px">筛选</button></div></div>
+              <table>
+                <thead><tr><th>商品</th><th>卖家</th><th>状态</th><th>提交时间</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>二手平板电脑 128G</td><td>陈同学</td><td><span class="tag tag-yellow">待审核</span></td><td>10:24</td><td><button class="btn btn-ghost" style="padding:5px 8px;min-height:30px">查看</button></td></tr>
+                  <tr><td>高等数学教材整套</td><td>林同学</td><td><span class="tag tag-green">在售</span></td><td>09:55</td><td><button class="btn btn-ghost" style="padding:5px 8px;min-height:30px">查看</button></td></tr>
+                  <tr><td>宿舍收纳用品</td><td>周同学</td><td><span class="tag tag-blue">免费赠送</span></td><td>09:31</td><td><button class="btn btn-ghost" style="padding:5px 8px;min-height:30px">查看</button></td></tr>
+                  <tr><td>校园卡相关商品</td><td>匿名用户</td><td><span class="tag" style="color:var(--danger);background:color-mix(in srgb,var(--danger) 10%,var(--surface))">已举报</span></td><td>08:46</td><td><button class="btn btn-danger" style="padding:5px 8px;min-height:30px">处理</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">交互视觉样板 v0.1 · 仅使用项目内示例图片 · 品牌名“航集”为占位名称</footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    var toast = document.getElementById("toast");
+    var toastTimer;
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add("show");
+      toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 2200);
+    }
+
+    document.getElementById("themeToggle").addEventListener("click", function () {
+      var dark = document.body.getAttribute("data-theme") === "dark";
+      document.body.setAttribute("data-theme", dark ? "light" : "dark");
+      showToast(dark ? "已切换浅色模式" : "已切换深色模式");
+    });
+
+    document.querySelectorAll("[data-scroll]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        document.querySelector(button.getAttribute("data-scroll")).scrollIntoView({ behavior: "smooth" });
+      });
+    });
+
+    document.querySelectorAll("[data-demo]").forEach(function (button) {
+      button.addEventListener("click", function () { showToast(button.getAttribute("data-demo")); });
+    });
+
+    document.querySelectorAll(".favorite").forEach(function (button) {
+      button.addEventListener("click", function () {
+        button.classList.toggle("on");
+        showToast(button.classList.contains("on") ? "已加入收藏" : "已取消收藏");
+      });
+    });
+
+    document.querySelectorAll(".chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        document.querySelectorAll(".chip").forEach(function (item) { item.classList.remove("active"); });
+        chip.classList.add("active");
+        showToast("已切换到：" + chip.textContent);
+      });
+    });
+
+    document.querySelectorAll(".nav-item").forEach(function (item) {
+      item.addEventListener("click", function () {
+        if (item.classList.contains("publish-nav")) return;
+        document.querySelectorAll(".nav-item").forEach(function (nav) { nav.classList.remove("active"); });
+        item.classList.add("active");
+      });
+    });
+
+    document.querySelectorAll(".swatch").forEach(function (swatch) {
+      swatch.addEventListener("click", function () {
+        var color = swatch.getAttribute("data-color");
+        if (navigator.clipboard) navigator.clipboard.writeText(color);
+        showToast("已复制色值 " + color);
+      });
+    });
+  </script>
+</body>
+</html>

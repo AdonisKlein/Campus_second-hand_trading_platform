@@ -36,7 +36,7 @@
 | 层次 | 技术 |
 |---|---|
 | 前端 | HTML、CSS、JavaScript |
-| 后端 | Java 24、Spring Boot 3.5.14、Spring Web、Spring Data JPA |
+| 后端 | Java 25 LTS、Spring Boot 3.5.14、Spring Web、Spring Data JPA |
 | 数据库 | MySQL 8.x |
 | 安全相关 | Spring Security Crypto BCrypt |
 | 邮件 | Spring Boot Mail |
@@ -66,7 +66,7 @@ Campus_second-hand_trading_platform/
 
 ## 环境要求
 
-- JDK 24.0.2。
+- JDK 25 LTS。
 - Maven 3.8 或以上。
 - MySQL 8.x。
 - Chrome、Edge 或 Firefox。
