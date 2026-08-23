@@ -10,35 +10,43 @@
 <body>
     <header class="topbar">
         <a class="brand" href="index.html">航集 Campus Market</a>
-        <nav>
-            <a href="index.html">首页</a>
-            <a class="active" href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a href="profile.html">个人中心</a>
-            <a href="admin.html">管理中心</a>
+        <nav aria-label="主导航">
+            <a href="index.html" data-icon="⌂">首页</a>
+            <a class="active" href="publish.html" aria-current="page" data-icon="＋">发布物品</a>
+            <a href="orders.html" data-icon="▤">订单管理</a>
+            <a href="profile.html" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇">管理中心</a>
         </nav>
     </header>
 
-    <main class="layout narrow">
-        <p class="eyebrow">SELL SOMETHING</p>
-        <h1>发布二手物品</h1>
-        <form class="form-panel" id="publishForm">
+    <main class="layout">
+        <section class="page-heading">
+            <div><p class="eyebrow">SELL SOMETHING</p><h1>发布二手物品</h1><p>几步完成发布，让闲置在校园里重新发挥价值。</p></div>
+            <span class="page-step">01 · 填写商品信息</span>
+        </section>
+        <div class="editor-shell">
+        <aside class="editor-guide">
+            <p class="section-kicker">PUBLISH GUIDE</p><h2>更快成交的小建议</h2>
+            <ol class="guide-list"><li><strong>标题清楚</strong><span>写明品牌、型号或教材版本</span></li><li><strong>价格合理</strong><span>参考购入价和物品成色</span></li><li><strong>描述真实</strong><span>说明使用痕迹与交付地点</span></li></ol>
+            <div class="safe-note"><strong>校园交易提示</strong><p>建议在校内公共区域当面验货，确认无误后完成交易。</p></div>
+        </aside>
+        <form class="form-panel editor-form" id="publishForm">
+            <div class="form-heading"><span>商品资料</span><small>带 * 为必填项</small></div>
             <label>标题<input name="title" required maxlength="120"></label>
-            <label>分类
+            <div class="form-grid"><label>分类
                 <select name="category" required>
                     <option value="书籍">书籍</option>
                     <option value="生活用品">生活用品</option>
                     <option value="电子产品">电子产品</option>
                     <option value="其他">其他</option>
                 </select>
-            </label>
-            <label>价格<input name="price" type="number" min="0" step="0.01" required></label>
-            <label>图片地址<input name="imageUrl" placeholder="例如：https://example.com/item.jpg"></label>
+            </label><label>价格（元）<input name="price" type="number" min="0" step="0.01" required></label></div>
+            <label>图片地址<input name="imageUrl" maxlength="255" placeholder="例如：https://example.com/item.jpg"></label>
             <!-- sellerId will be filled automatically from current logged-in user -->
-            <label>描述<textarea name="description" rows="5"></textarea></label>
-            <button type="submit">立即发布</button>
-            <p class="form-message" id="publishMessage"></p>
+            <label>描述<textarea name="description" rows="5" maxlength="1000"></textarea></label>
+            <div class="form-submit"><p class="form-message" id="publishMessage" role="status" aria-live="polite"></p><button type="submit">立即发布</button></div>
         </form>
+        </div>
     </main>
 
     <script src="assets/js/api.js"></script>

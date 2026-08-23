@@ -23,12 +23,11 @@ function renderItem(item) {
     const image = item.imageUrl || "assets/images/placeholder.svg";
     return `
         <a class="item-card" href="detail.html?id=${encodeURIComponent(item.id)}">
-            <img src="${escapeHtml(image)}" alt="${escapeHtml(item.title)}">
+            <div class="item-media"><img src="${escapeHtml(image)}" alt="${escapeHtml(item.title)}"><span class="tag">${escapeHtml(item.category)}</span></div>
             <div class="item-card-body">
-                <span class="tag">${escapeHtml(item.category)}</span>
                 <h3>${escapeHtml(item.title)}</h3>
-                <p class="price">￥${Number(item.price).toFixed(2)}</p>
                 <p class="item-description">${escapeHtml(item.description || "卖家暂未填写商品描述")}</p>
+                <div class="item-card-footer"><p class="price">￥${Number(item.price).toFixed(2)}</p><span>查看详情 →</span></div>
             </div>
         </a>
     `;

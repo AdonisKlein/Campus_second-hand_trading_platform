@@ -118,6 +118,8 @@ function switchTab(tab) {
         const active = button.dataset.adminTab === tab;
         button.classList.toggle("active", active);
         button.classList.toggle("secondary", !active);
+        button.setAttribute("aria-selected", String(active));
+        button.tabIndex = active ? 0 : -1;
     });
     document.querySelectorAll(".admin-section").forEach(section => {
         section.style.display = section.dataset.adminSection === tab ? "" : "none";
@@ -126,6 +128,21 @@ function switchTab(tab) {
 
 document.querySelectorAll(".admin-tabs button").forEach(button => {
     button.addEventListener("click", () => switchTab(button.dataset.adminTab));
+});
+
+document.querySelector(".admin-tabs")?.addEventListener("keydown", event => {
+    const tabs = [...document.querySelectorAll(".admin-tabs button")];
+    const currentIndex = tabs.indexOf(document.activeElement);
+    if (currentIndex < 0) return;
+    let nextIndex = currentIndex;
+    if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
+    else if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    switchTab(tabs[nextIndex].dataset.adminTab);
+    tabs[nextIndex].focus();
 });
 
 adminUserList.addEventListener("click", async event => {

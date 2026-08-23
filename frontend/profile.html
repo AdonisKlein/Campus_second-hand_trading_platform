@@ -10,27 +10,31 @@
 <body>
     <header class="topbar">
         <a class="brand" href="index.html">航集 Campus Market</a>
-        <nav>
-            <a href="index.html">首页</a>
-            <a href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a class="active" href="profile.html">个人中心</a>
-            <a href="admin.html">管理中心</a>
+        <nav aria-label="主导航">
+            <a href="index.html" data-icon="⌂">首页</a>
+            <a href="publish.html" data-icon="＋">发布物品</a>
+            <a href="orders.html" data-icon="▤">订单管理</a>
+            <a class="active" href="profile.html" aria-current="page" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇">管理中心</a>
         </nav>
     </header>
 
-    <main class="layout narrow">
-        <p class="eyebrow">MY CAMPUS MARKET</p>
-        <h1>个人中心</h1>
+    <main class="layout auth-layout">
+        <section class="auth-intro">
+            <p class="eyebrow">MY CAMPUS MARKET</p><h1>欢迎回到航集</h1>
+            <p>登录后发布闲置、参与留言，并在订单中心跟进你的每一次校园交易。</p>
+            <div class="auth-feature-list"><div><b>01</b><span><strong>校园好物</strong><small>发现同学发布的真实闲置</small></span></div><div><b>02</b><span><strong>轻松沟通</strong><small>在商品详情中公开留言</small></span></div><div><b>03</b><span><strong>当面交易</strong><small>校内验货后再确认完成</small></span></div></div>
+        </section>
+        <div class="auth-content">
 
         <!-- Login form -->
         <form class="form-panel" id="loginForm">
-            <h2>登录</h2>
+            <div class="form-heading"><span>账号登录</span><small>EMAIL SIGN IN</small></div>
             <p class="small">使用校园邮箱账号登录，继续发布、沟通和交易。</p>
             <label>邮箱<input name="email" type="email" required></label>
             <label>密码<input name="password" type="password" required></label>
             <button type="submit">登录</button>
-            <p class="form-message" id="loginMessage"></p>
+            <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
             <p class="small">
                 如无账号，点击 <a href="register.html">前往注册</a>
                 &ensp;|&ensp;
@@ -40,7 +44,7 @@
 
         <!-- Forgot password form -->
         <form class="form-panel" id="forgotPasswordForm" style="display:none;">
-            <h2>忘记密码</h2>
+            <div class="form-heading"><span>重置密码</span><small>RESET PASSWORD</small></div>
 
             <!-- Step 1: send code -->
             <div id="fpStep1">
@@ -67,17 +71,17 @@
 
         <!-- Profile view / edit (shown when logged in) -->
         <section id="profileSection" class="form-panel" style="display:none;">
-            <h2>我的资料</h2>
-            <div id="profileView">
-                <p>用户名：<span id="viewUsername"></span></p>
-                <p>昵称：<span id="viewNickname"></span></p>
-                <p>联系方式（手机号）：<span id="viewPhone"></span></p>
-                <p>邮箱：<span id="viewEmail"></span></p>
+            <div class="profile-identity"><span class="profile-avatar" aria-hidden="true">航</span><div><p class="section-kicker">STUDENT ACCOUNT</p><h2>我的资料</h2></div></div>
+            <div id="profileView" class="profile-facts">
+                <p><small>用户名</small><span id="viewUsername"></span></p>
+                <p><small>昵称</small><span id="viewNickname"></span></p>
+                <p><small>联系方式</small><span id="viewPhone"></span></p>
+                <p><small>登录邮箱</small><span id="viewEmail"></span></p>
             </div>
 
             <form id="profileForm" style="display:none;">
-                <label>昵称<input name="nickname"></label>
-                <label>联系方式（手机号）<input name="phone"></label>
+                <label>昵称<input name="nickname" maxlength="80"></label>
+                <label>联系方式（手机号）<input name="phone" maxlength="30"></label>
                 <p class="small">邮箱是登录账号，修改邮箱功能将在下一轮加入。</p>
 
                 <div class="actions">
@@ -91,6 +95,7 @@
                 <button type="button" id="logoutBtn" class="secondary">退出登录</button>
             </div>
         </section>
+        </div>
     </main>
 
     <!-- Toast / confirm container -->

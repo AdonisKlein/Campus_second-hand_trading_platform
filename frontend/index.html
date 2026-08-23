@@ -10,20 +10,25 @@
 <body>
     <header class="topbar">
         <a class="brand" href="index.html">航集 Campus Market</a>
-        <nav>
-            <a class="active" href="index.html" aria-current="page">首页</a>
-            <a href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a href="profile.html">个人中心</a>
-            <a href="admin.html">管理中心</a>
+        <nav aria-label="主导航">
+            <a class="active" href="index.html" aria-current="page" data-icon="⌂">首页</a>
+            <a href="publish.html" data-icon="＋">发布物品</a>
+            <a href="orders.html" data-icon="▤">订单管理</a>
+            <a href="profile.html" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇">管理中心</a>
         </nav>
     </header>
 
     <main class="layout">
         <section class="hero">
-            <p class="eyebrow">BUAA CAMPUS MARKET</p>
-            <h1>校园闲置，好物流转</h1>
-            <p>让每一件闲置重新找到需要它的人。浏览校园好物，在线沟通，线下安心交易。</p>
+            <div class="hero-copy">
+                <p class="eyebrow">BUAA CAMPUS MARKET</p>
+                <h1>校园闲置，<br><span>好物流转</span></h1>
+                <p>让每一件闲置重新找到需要它的人。校园身份、在线沟通、线下安心交易。</p>
+                <div class="hero-points" aria-label="平台特点">
+                    <span>校园用户</span><span>当面交易</span><span>轻松发布</span>
+                </div>
+            </div>
             <form class="search-bar" id="searchForm">
                 <input id="keyword" type="search" placeholder="搜索物品关键词" aria-label="搜索物品关键词">
                 <select id="category" aria-label="选择物品分类">
@@ -37,9 +42,9 @@
             </form>
         </section>
 
-        <section>
+        <section class="home-section">
             <div class="section-title">
-                <h2>最新物品</h2>
+                <div><p class="section-kicker">FRESH ON CAMPUS</p><h2>最新物品</h2></div>
                 <span id="itemCount" role="status" aria-live="polite">加载中</span>
             </div>
             <div class="item-grid" id="itemGrid"></div>

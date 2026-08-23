@@ -17,8 +17,11 @@ requireLoginForPublish();
 
 publishForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const submitButton = publishForm.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
     const currentUser = await requireLoginForPublish();
     if (!currentUser) {
+        submitButton.disabled = false;
         return;
     }
 
@@ -34,5 +37,7 @@ publishForm.addEventListener("submit", async (event) => {
     if (result.success) {
         alert("发布成功！");
         location.href = "index.html";
+    } else {
+        submitButton.disabled = false;
     }
 });

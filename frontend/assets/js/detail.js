@@ -1,5 +1,6 @@
 const params = new URLSearchParams(location.search);
 const itemId = params.get("id");
+const validItemId = /^[1-9]\d*$/.test(itemId || "");
 const itemDetail = document.querySelector("#itemDetail");
 const messageList = document.querySelector("#messageList");
 const messageForm = document.querySelector("#messageForm");
@@ -18,7 +19,7 @@ function createMessageEditForm(content) {
     const form = document.createElement("form");
     form.className = "message-edit-form";
     form.innerHTML = `
-        <textarea name="content" rows="3" maxlength="500" required>${escapeHtml(content)}</textarea>
+        <textarea name="content" rows="3" maxlength="500" aria-label="编辑留言内容" required>${escapeHtml(content)}</textarea>
         <div class="message-edit-actions">
             <button type="submit">保存</button>
             <button class="secondary" type="button" data-action="cancel">取消</button>
@@ -52,15 +53,23 @@ async function loadDetail() {
 
     currentItem = item;
     itemDetail.innerHTML = `
-        <img class="detail-image" src="${escapeHtml(item.imageUrl || "assets/images/placeholder.svg")}" alt="${escapeHtml(item.title)}">
-        <h1>${escapeHtml(item.title)}</h1>
-        <p><span class="tag">${escapeHtml(item.category)}</span> <span class="status-badge ${item.status === "ON_SALE" ? "completed" : "cancelled"}">${item.status === "ON_SALE" ? "正在出售" : "已被预留或售出"}</span></p>
-        <p class="price">￥${Number(item.price).toFixed(2)}</p>
-        <p>${escapeHtml(item.description || "卖家暂未填写商品描述")}</p>
-        ${item.status === "ON_SALE" ? '<button id="createOrder">立即下单并预留</button>' : '<button disabled>当前不可下单</button>'}
+        <div class="detail-product">
+            <div class="detail-media"><img class="detail-image" src="${escapeHtml(item.imageUrl || "assets/images/placeholder.svg")}" alt="${escapeHtml(item.title)}"><span class="detail-photo-note">商品实拍 / 示意图</span></div>
+            <div class="detail-summary">
+                <div class="detail-badges"><span class="tag">${escapeHtml(item.category)}</span><span class="status-badge ${item.status === "ON_SALE" ? "completed" : "cancelled"}">${item.status === "ON_SALE" ? "正在出售" : "已被预留或售出"}</span></div>
+                <h1>${escapeHtml(item.title)}</h1>
+                <p class="detail-price-label">校园转让价</p><p class="price detail-price">￥${Number(item.price).toFixed(2)}</p>
+                <div class="detail-description"><strong>商品描述</strong><p>${escapeHtml(item.description || "卖家暂未填写商品描述")}</p></div>
+                <div class="seller-strip"><span class="seller-avatar">卖</span><div><small>发布同学</small><strong>校园用户 #${item.sellerId}</strong></div><span>建议当面验货</span></div>
+                ${item.status === "ON_SALE" ? '<button id="createOrder" class="order-cta">立即下单并预留</button>' : '<button disabled>当前不可下单</button>'}
+                <p class="cta-note">下单后商品将临时预留，请及时与卖家约定校内交易地点。</p>
+            </div>
+        </div>
     `;
 
-    document.querySelector("#createOrder")?.addEventListener("click", async () => {
+    document.querySelector("#createOrder")?.addEventListener("click", async event => {
+        const submitButton = event.currentTarget;
+        submitButton.disabled = true;
         const currentUser = await session.current();
         if (!currentUser || !currentUser.id) {
             alert("请先登录后下单");
@@ -76,6 +85,8 @@ async function loadDetail() {
         alert(order.success ? "订单创建成功" : order.message);
         if (order.success) {
             loadDetail();
+        } else {
+            submitButton.disabled = false;
         }
     });
 }
@@ -231,5 +242,10 @@ messageList.addEventListener("submit", async (event) => {
     loadMessages();
 });
 
-loadDetail();
-loadMessages();
+if (validItemId) {
+    loadDetail();
+    loadMessages();
+} else {
+    itemDetail.innerHTML = '<p class="empty-state">商品编号无效，请返回商品列表重新选择。</p>';
+    messageForm.hidden = true;
+}

@@ -54,7 +54,7 @@ sendCodeBtn.addEventListener('click', async () => {
         });
         if (res && res.success) {
             registerMessage.textContent = '验证码已发送，请查收邮箱';
-            startCountdown(300);
+            startCountdown(60);
         } else {
             registerMessage.textContent = res && res.message ? res.message : '发送失败，请稍候再试';
             sendCodeBtn.disabled = false;

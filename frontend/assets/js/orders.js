@@ -25,14 +25,21 @@ function renderOrder(order) {
         CANCELLED: "cancelled",
         EXPIRED: "expired"
     }[order.status] || "";
+    const statusHints = {
+        PENDING_SELLER_CONFIRMATION: "等待卖家确认订单，请留意状态变化",
+        WAITING_HANDOVER: "双方可约定校内地点，当面验货交易",
+        COMPLETED: "这笔交易已经顺利完成",
+        CANCELLED: "订单已取消，商品会重新进入可售状态",
+        EXPIRED: "预留时间已结束，商品已释放"
+    };
     return `
         <div class="table-row order-card">
             <div class="order-card__head">
-                <strong>订单 #${order.id}</strong>
+                <div><small>ORDER NO.</small><strong>#${order.id}</strong></div>
                 <span class="status-badge ${statusClass}">${escapeHtml(statusLabels[order.status] || order.status)}</span>
             </div>
             <div class="order-card__body">
-                <div><small>商品</small><strong>${escapeHtml(order.itemTitle || order.itemId)}</strong></div>
+                <div class="order-item-name"><small>商品</small><strong>${escapeHtml(order.itemTitle || order.itemId)}</strong><span>${escapeHtml(statusHints[order.status] || "")}</span></div>
                 <div><small>成交价</small><strong class="price">${order.itemPrice != null ? `￥${order.itemPrice}` : "-"}</strong></div>
                 <div><small>买家</small><span>${escapeHtml(order.buyerNickname || order.buyerId)}</span></div>
                 <div><small>卖家</small><span>${escapeHtml(order.sellerNickname || order.sellerId)}</span></div>
@@ -67,20 +74,22 @@ async function loadOrders() {
         : '<p class="empty-state">暂无订单，去首页看看校园好物吧。</p>';
 }
 
-async function performOrderAction(orderId, action) {
+async function performOrderAction(orderId, action, button) {
+    button.disabled = true;
     const result = await request(`/orders/${orderId}/actions`, {
         method: "POST",
         body: JSON.stringify({ action })
     });
 
     alert(result.success ? "订单状态更新成功" : result.message);
-    loadOrders();
+    if (result.success) loadOrders();
+    else button.disabled = false;
 }
 
 orderList.addEventListener("click", event => {
     const button = event.target.closest("button[data-order-action]");
     if (!button || !orderList.contains(button)) return;
-    performOrderAction(Number(button.dataset.orderId), button.dataset.orderAction);
+    performOrderAction(Number(button.dataset.orderId), button.dataset.orderAction, button);
 });
 
 loadOrders();
