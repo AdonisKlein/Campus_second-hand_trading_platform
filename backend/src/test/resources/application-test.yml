@@ -6,8 +6,14 @@ spring:
         password:
     jpa:
         hibernate:
-            ddl-auto: create-drop
+            ddl-auto: validate
         show-sql: false
+    flyway:
+        enabled: true
+    session:
+        store-type: jdbc
+        jdbc:
+            initialize-schema: never
 app:
     verification:
         pepper: test-only-verification-pepper-at-least-32-bytes

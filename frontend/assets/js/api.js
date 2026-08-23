@@ -1,4 +1,5 @@
-const API_BASE = window.CAMPUS_API_BASE || "http://localhost:8080/api";
+const API_BASE = window.CAMPUS_API_BASE
+    || (location.port === "5500" ? "http://localhost:8080/api" : "/api");
 let csrfToken = null;
 let sessionUser = null;
 let sessionUserPromise = null;

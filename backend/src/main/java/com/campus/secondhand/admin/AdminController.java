@@ -3,6 +3,8 @@ package com.campus.secondhand.admin;
 import com.campus.secondhand.common.ApiResponse;
 import com.campus.secondhand.item.Item;
 import com.campus.secondhand.item.ItemRepository;
+import com.campus.secondhand.item.ItemStatus;
+import com.campus.secondhand.item.ItemModerationStatus;
 import com.campus.secondhand.message.Message;
 import com.campus.secondhand.message.MessageRepository;
 import com.campus.secondhand.user.User;
@@ -104,13 +106,13 @@ public class AdminController {
     @PutMapping("/items/{id}/status")
     public ApiResponse<Item> updateItemStatus(@PathVariable Long id,
                                               @Valid @RequestBody UpdateItemStatusRequest request) {
-        if (!"ON_SALE".equals(request.status()) && !"REMOVED".equals(request.status())) {
+        if (!"VISIBLE".equals(request.status()) && !"REMOVED".equals(request.status())) {
             return ApiResponse.fail("商品状态不合法");
         }
 
         return itemRepository.findById(id)
             .map(item -> {
-                item.setStatus(request.status());
+                item.setModerationStatus(ItemModerationStatus.valueOf(request.status()));
                 return ApiResponse.ok(itemRepository.save(item));
             })
             .orElseGet(() -> ApiResponse.fail("物品不存在"));

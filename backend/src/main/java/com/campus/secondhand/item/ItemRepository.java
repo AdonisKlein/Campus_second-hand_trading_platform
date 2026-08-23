@@ -10,11 +10,13 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByOrderByCreatedAtDesc();
 
-    List<Item> findByStatusOrderByCreatedAtDesc(String status);
+    List<Item> findByStatusAndModerationStatusOrderByCreatedAtDesc(ItemStatus status, ItemModerationStatus moderationStatus);
 
-    List<Item> findByCategoryAndStatusOrderByCreatedAtDesc(String category, String status);
+    List<Item> findByCategoryAndStatusAndModerationStatusOrderByCreatedAtDesc(
+        String category, ItemStatus status, ItemModerationStatus moderationStatus);
 
-    List<Item> findByTitleContainingAndStatusOrderByCreatedAtDesc(String keyword, String status);
+    List<Item> findByTitleContainingAndStatusAndModerationStatusOrderByCreatedAtDesc(
+        String keyword, ItemStatus status, ItemModerationStatus moderationStatus);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Item> findLockedById(Long id);

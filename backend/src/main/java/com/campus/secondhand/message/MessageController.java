@@ -5,6 +5,7 @@ import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
 import com.campus.secondhand.security.CurrentActorService;
 import com.campus.secondhand.item.ItemRepository;
+import com.campus.secondhand.item.ItemModerationStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -39,6 +40,10 @@ public class MessageController {
 
     @GetMapping("/item/{itemId}")
     public ApiResponse<List<MessageView>> listByItem(@PathVariable Long itemId) {
+        var item = itemRepository.findById(itemId);
+        if (item.isEmpty() || item.get().getModerationStatus() != ItemModerationStatus.VISIBLE) {
+            return ApiResponse.fail("物品不存在");
+        }
         List<MessageView> messages = messageRepository.findByItemIdOrderByCreatedAtAsc(itemId)
             .stream()
             .map(this::toView)

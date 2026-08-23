@@ -94,7 +94,7 @@ async function loadItems() {
     const items = result.data || [];
     adminItemCount.textContent = `${items.length} 件商品`;
     adminItemList.innerHTML = items.length ? items.map(item => {
-        const removed = item.status === "REMOVED";
+        const removed = item.moderationStatus === "REMOVED";
         return `
             <div class="table-row admin-row">
                 <div>
@@ -104,7 +104,7 @@ async function loadItems() {
                 <div>卖家 #${item.sellerId}</div>
                 <div><span class="tag">${removed ? "已下架" : item.status}</span></div>
                 <div class="admin-row-actions">
-                    <button type="button" class="${removed ? "" : "secondary"}" data-action="item-status" data-item-id="${item.id}" data-status="${removed ? "ON_SALE" : "REMOVED"}">
+                    <button type="button" class="${removed ? "" : "secondary"}" data-action="item-status" data-item-id="${item.id}" data-status="${removed ? "VISIBLE" : "REMOVED"}">
                         ${removed ? "重新上架" : "下架"}
                     </button>
                 </div>

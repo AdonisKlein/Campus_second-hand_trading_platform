@@ -14,6 +14,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import java.util.stream.Collectors;
 import com.campus.secondhand.user.VerificationRateLimitException;
 import org.springframework.security.access.AccessDeniedException;
+import com.campus.secondhand.order.TradingRuleException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -60,6 +61,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail("无权执行此操作"));
+    }
+
+    @ExceptionHandler(TradingRuleException.class)
+    public ResponseEntity<ApiResponse<Object>> handleTradingRule(TradingRuleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
     }
 }
 

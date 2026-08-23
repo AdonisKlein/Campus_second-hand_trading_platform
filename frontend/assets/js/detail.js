@@ -57,10 +57,10 @@ async function loadDetail() {
         <p><span class="tag">${escapeHtml(item.category)}</span></p>
         <p class="price">￥${Number(item.price).toFixed(2)}</p>
         <p>${escapeHtml(item.description || "")}</p>
-        <button id="createOrder">创建订单</button>
+        ${item.status === "ON_SALE" ? '<button id="createOrder">创建订单</button>' : '<button disabled>当前不可下单</button>'}
     `;
 
-    document.querySelector("#createOrder").addEventListener("click", async () => {
+    document.querySelector("#createOrder")?.addEventListener("click", async () => {
         const currentUser = await session.current();
         if (!currentUser || !currentUser.id) {
             alert("请先登录后下单");

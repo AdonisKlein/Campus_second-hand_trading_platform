@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -34,8 +37,16 @@ public class Item {
     @Column(nullable = false)
     private Long sellerId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String status = "ON_SALE";
+    private ItemStatus status = ItemStatus.ON_SALE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ItemModerationStatus moderationStatus = ItemModerationStatus.VISIBLE;
+
+    @Version
+    private Long version;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -95,13 +106,16 @@ public class Item {
         this.sellerId = sellerId;
     }
 
-    public String getStatus() {
+    public ItemStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ItemStatus status) {
         this.status = status;
     }
+
+    public ItemModerationStatus getModerationStatus() { return moderationStatus; }
+    public void setModerationStatus(ItemModerationStatus value) { this.moderationStatus = value; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

@@ -35,17 +35,20 @@ public class ItemController {
     public ApiResponse<List<Item>> list(@RequestParam(required = false) String category,
                                         @RequestParam(required = false) String keyword) {
         if (keyword != null && !keyword.isBlank()) {
-            return ApiResponse.ok(itemRepository.findByTitleContainingAndStatusOrderByCreatedAtDesc(keyword, "ON_SALE"));
+            return ApiResponse.ok(itemRepository.findByTitleContainingAndStatusAndModerationStatusOrderByCreatedAtDesc(
+                keyword, ItemStatus.ON_SALE, ItemModerationStatus.VISIBLE));
         }
         if (category != null && !category.isBlank()) {
-            return ApiResponse.ok(itemRepository.findByCategoryAndStatusOrderByCreatedAtDesc(category, "ON_SALE"));
+            return ApiResponse.ok(itemRepository.findByCategoryAndStatusAndModerationStatusOrderByCreatedAtDesc(
+                category, ItemStatus.ON_SALE, ItemModerationStatus.VISIBLE));
         }
-        return ApiResponse.ok(itemRepository.findByStatusOrderByCreatedAtDesc("ON_SALE"));
+        return ApiResponse.ok(itemRepository.findByStatusAndModerationStatusOrderByCreatedAtDesc(
+            ItemStatus.ON_SALE, ItemModerationStatus.VISIBLE));
     }
 
     @GetMapping("/{id}")
     public ApiResponse<Item> detail(@PathVariable Long id) {
-        return itemRepository.findById(id)
+        return itemRepository.findById(id).filter(item -> item.getModerationStatus() == ItemModerationStatus.VISIBLE)
             .map(ApiResponse::ok)
             .orElseGet(() -> ApiResponse.fail("物品不存在"));
     }

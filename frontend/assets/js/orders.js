@@ -7,6 +7,17 @@ function escapeHtml(value) {
 }
 
 function renderOrder(order) {
+    const actionLabels = { ACCEPT: "接受订单", COMPLETE: "确认收货", CANCEL: "取消订单" };
+    const statusLabels = {
+        PENDING_SELLER_CONFIRMATION: "待卖家确认",
+        WAITING_HANDOVER: "待当面交易",
+        COMPLETED: "交易完成",
+        CANCELLED: "已取消",
+        EXPIRED: "预留已过期"
+    };
+    const actions = (order.allowedActions || []).map(action =>
+        `<button type="button" data-order-id="${order.id}" data-order-action="${action}">${actionLabels[action]}</button>`
+    ).join("");
     return `
         <div class="table-row">
             <span>订单 #${order.id}</span>
@@ -14,12 +25,8 @@ function renderOrder(order) {
             <span>价格：${order.itemPrice ? `￥${order.itemPrice}` : "-"}</span>
             <span>买家：${escapeHtml(order.buyerNickname || order.buyerId)}</span>
             <span>卖家：${escapeHtml(order.sellerNickname || order.sellerId)}</span>
-            <span>状态：${escapeHtml(order.status)}</span>
-            <span>
-                <button onclick="updateOrderStatus(${order.id}, 'CONFIRMED')">确认</button>
-                <button onclick="updateOrderStatus(${order.id}, 'COMPLETED')">完成</button>
-                <button onclick="updateOrderStatus(${order.id}, 'CANCELLED')">取消</button>
-            </span>
+            <span>状态：${escapeHtml(statusLabels[order.status] || order.status)}</span>
+            <span>${actions || "暂无可用操作"}</span>
         </div>
     `;
 }
@@ -49,15 +56,20 @@ async function loadOrders() {
         : "<p>暂无订单</p>";
 }
 
-async function updateOrderStatus(orderId, status) {
-    const result = await request(`/orders/${orderId}/status`, {
-        method: "PUT",
-        body: JSON.stringify({ status })
+async function performOrderAction(orderId, action) {
+    const result = await request(`/orders/${orderId}/actions`, {
+        method: "POST",
+        body: JSON.stringify({ action })
     });
 
     alert(result.success ? "订单状态更新成功" : result.message);
     loadOrders();
 }
 
-window.updateOrderStatus = updateOrderStatus;
+orderList.addEventListener("click", event => {
+    const button = event.target.closest("button[data-order-action]");
+    if (!button || !orderList.contains(button)) return;
+    performOrderAction(Number(button.dataset.orderId), button.dataset.orderAction);
+});
+
 loadOrders();
