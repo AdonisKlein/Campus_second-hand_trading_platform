@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的发布 - 校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="index.html">航集 Campus Market</a>
+        <nav aria-label="主导航">
+            <a href="index.html" data-icon="⌂">首页</a>
+            <a href="publish.html" data-icon="＋">发布物品</a>
+            <a href="orders.html" data-icon="▤">订单管理</a>
+            <a class="active" href="profile.html" aria-current="page" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇">管理中心</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <section class="page-heading inventory-heading">
+            <div><p class="eyebrow">MY LISTINGS</p><h1>我的发布</h1><p>维护商品资料和在售状态，交易中的商品会自动锁定关键操作。</p></div>
+            <a class="button-link compact-link" href="publish.html">＋ 发布新商品</a>
+        </section>
+
+        <section class="inventory-overview" aria-label="商品状态概览">
+            <div><span class="overview-dot on-sale"></span><p><strong id="onSaleCount">0</strong><small>正在出售</small></p></div>
+            <div><span class="overview-dot reserved"></span><p><strong id="reservedCount">0</strong><small>交易处理中</small></p></div>
+            <div><span class="overview-dot withdrawn"></span><p><strong id="withdrawnCount">0</strong><small>已下架</small></p></div>
+            <div><span class="overview-dot sold"></span><p><strong id="soldCount">0</strong><small>已售出</small></p></div>
+            <div><span class="overview-dot moderated"></span><p><strong id="moderatedCount">0</strong><small>管理员下架</small></p></div>
+        </section>
+
+        <p id="inventoryMessage" class="form-message inventory-message" role="status" aria-live="polite"></p>
+
+        <div class="section-title inventory-title">
+            <div><p class="section-kicker">LISTING MANAGER</p><h2>全部商品</h2></div>
+            <span id="inventoryCount" role="status" aria-live="polite">加载中</span>
+        </div>
+        <section id="inventoryList" class="inventory-list" aria-live="polite"></section>
+    </main>
+
+    <dialog id="itemEditor" class="item-editor" aria-labelledby="itemEditorTitle">
+        <form id="itemEditorForm" method="dialog" class="form-panel">
+            <div class="form-heading"><div><p class="section-kicker">EDIT LISTING</p><span id="itemEditorTitle">修改商品</span></div><button type="button" class="dialog-close secondary" aria-label="关闭编辑窗口" data-close-editor>×</button></div>
+            <input type="hidden" name="itemId">
+            <label>标题<input name="title" maxlength="120" required></label>
+            <div class="form-grid"><label>分类<select name="category" required><option value="书籍">书籍</option><option value="生活用品">生活用品</option><option value="电子产品">电子产品</option><option value="其他">其他</option></select></label><label>价格（元）<input name="price" type="number" min="0" step="0.01" required></label></div>
+            <label>图片地址<input name="imageUrl" maxlength="255"></label>
+            <label>描述<textarea name="description" rows="5" maxlength="1000"></textarea></label>
+            <p id="itemEditorMessage" class="form-message" role="status" aria-live="polite"></p>
+            <div class="dialog-actions"><button type="button" class="secondary" data-close-editor>取消</button><button type="submit">保存修改</button></div>
+        </form>
+    </dialog>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/my-items.js"></script>
+</body>
+</html>

@@ -10,6 +10,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByOrderByCreatedAtDesc();
 
+    List<Item> findBySellerIdOrderByCreatedAtDesc(Long sellerId);
+
     List<Item> findByStatusAndModerationStatusOrderByCreatedAtDesc(ItemStatus status, ItemModerationStatus moderationStatus);
 
     List<Item> findByCategoryAndStatusAndModerationStatusOrderByCreatedAtDesc(

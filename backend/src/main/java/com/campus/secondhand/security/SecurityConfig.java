@@ -57,6 +57,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionFixation(fixation -> fixation.migrateSession()))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.GET, "/items/mine").authenticated()
                 .requestMatchers(HttpMethod.GET, "/items/**", "/messages/item/**", "/auth/csrf",
                     "/actuator/health", "/actuator/health/liveness").permitAll()
                 .requestMatchers("/auth/login", "/auth/register", "/auth/verification/**", "/auth/password/**", "/error").permitAll()

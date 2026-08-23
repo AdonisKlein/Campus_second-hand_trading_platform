@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import com.campus.secondhand.user.VerificationRateLimitException;
 import org.springframework.security.access.AccessDeniedException;
 import com.campus.secondhand.order.TradingRuleException;
+import com.campus.secondhand.item.SellerInventoryRuleException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -65,6 +66,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TradingRuleException.class)
     public ResponseEntity<ApiResponse<Object>> handleTradingRule(TradingRuleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(SellerInventoryRuleException.class)
+    public ResponseEntity<ApiResponse<Object>> handleSellerInventoryRule(SellerInventoryRuleException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
     }

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import com.campus.secondhand.security.CurrentActorService;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/admin")
@@ -104,13 +105,14 @@ public class AdminController {
     }
 
     @PutMapping("/items/{id}/status")
+    @Transactional
     public ApiResponse<Item> updateItemStatus(@PathVariable Long id,
                                               @Valid @RequestBody UpdateItemStatusRequest request) {
         if (!"VISIBLE".equals(request.status()) && !"REMOVED".equals(request.status())) {
             return ApiResponse.fail("商品状态不合法");
         }
 
-        return itemRepository.findById(id)
+        return itemRepository.findLockedById(id)
             .map(item -> {
                 item.setModerationStatus(ItemModerationStatus.valueOf(request.status()));
                 return ApiResponse.ok(itemRepository.save(item));

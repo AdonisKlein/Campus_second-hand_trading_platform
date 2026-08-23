@@ -2,6 +2,10 @@ package com.campus.secondhand;
 
 import com.campus.secondhand.item.ItemRepository;
 import com.campus.secondhand.item.ItemStatus;
+import com.campus.secondhand.item.ItemModerationStatus;
+import com.campus.secondhand.item.SellerInventory;
+import com.campus.secondhand.item.SellerInventoryRuleException;
+import com.campus.secondhand.item.SellerItemAction;
 import com.campus.secondhand.message.MessageRepository;
 import com.campus.secondhand.order.TradeOrderRepository;
 import com.campus.secondhand.order.OrderStatus;
@@ -15,6 +19,7 @@ import com.campus.secondhand.user.VerificationPurpose;
 import com.campus.secondhand.user.VerificationService;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +52,7 @@ class SecondhandApplicationTests {
     @Autowired PasswordEncoder passwords;
     @Autowired VerificationService verificationService;
     @Autowired TradingService tradingService;
+    @Autowired SellerInventory sellerInventory;
     @MockitoBean JavaMailSender mailSender;
 
     @BeforeEach
@@ -102,6 +108,90 @@ class SecondhandApplicationTests {
                 .content("{\"title\":\"教材\",\"category\":\"书籍\",\"price\":20,\"sellerId\":%d}".formatted(victim.getId())))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.sellerId").value(seller.getId()));
+    }
+
+    @Test
+    void sellerInventoryInterfaceOwnsLifecycleRules() {
+        User seller = saveUser("seller", "seller@example.com", "STUDENT");
+        User buyer = saveUser("buyer", "buyer@example.com", "STUDENT");
+        User stranger = saveUser("stranger", "stranger@example.com", "STUDENT");
+        User disabled = saveUser("disabled", "disabled@example.com", "STUDENT");
+        User admin = saveUser("inventory-admin", "inventory-admin@example.com", "ADMIN");
+        disabled.setStatus("DISABLED");
+        users.saveAndFlush(disabled);
+        var draft = new SellerInventory.ItemDraft(" 教材 ", "书籍", java.math.BigDecimal.valueOf(20), " 八成新 ", " ");
+
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
+            () -> sellerInventory.publish(Long.MAX_VALUE, draft));
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
+            () -> sellerInventory.publish(disabled.getId(), draft));
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
+            () -> sellerInventory.publish(admin.getId(), draft));
+
+        var published = sellerInventory.publish(seller.getId(), draft);
+        org.junit.jupiter.api.Assertions.assertEquals("教材", published.title());
+        org.junit.jupiter.api.Assertions.assertNull(published.imageUrl());
+        org.junit.jupiter.api.Assertions.assertEquals(List.of(SellerItemAction.WITHDRAW), published.allowedActions());
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
+            () -> sellerInventory.revise(stranger.getId(), published.id(), draft));
+
+        var withdrawn = sellerInventory.act(seller.getId(), published.id(), SellerItemAction.WITHDRAW);
+        org.junit.jupiter.api.Assertions.assertEquals(ItemStatus.WITHDRAWN, withdrawn.status());
+        org.junit.jupiter.api.Assertions.assertEquals(List.of(SellerItemAction.RELIST), withdrawn.allowedActions());
+
+        var item = items.findById(published.id()).orElseThrow();
+        item.setModerationStatus(ItemModerationStatus.REMOVED);
+        items.saveAndFlush(item);
+        org.junit.jupiter.api.Assertions.assertThrows(SellerInventoryRuleException.class,
+            () -> sellerInventory.act(seller.getId(), published.id(), SellerItemAction.RELIST));
+
+        item = items.findById(published.id()).orElseThrow();
+        item.setModerationStatus(ItemModerationStatus.VISIBLE);
+        items.saveAndFlush(item);
+        sellerInventory.act(seller.getId(), published.id(), SellerItemAction.RELIST);
+        tradingService.placeOrder(buyer.getId(), published.id());
+        org.junit.jupiter.api.Assertions.assertThrows(SellerInventoryRuleException.class,
+            () -> sellerInventory.revise(seller.getId(), published.id(), draft));
+        org.junit.jupiter.api.Assertions.assertThrows(SellerInventoryRuleException.class,
+            () -> sellerInventory.act(seller.getId(), published.id(), SellerItemAction.WITHDRAW));
+    }
+
+    @Test
+    void mineAndSellerWritesUseSessionOwnerAndValidateInput() throws Exception {
+        User seller = saveUser("seller", "seller@example.com", "STUDENT");
+        User stranger = saveUser("stranger", "stranger@example.com", "STUDENT");
+        MockCookie sellerSession = login(seller.getEmail());
+        MockCookie strangerSession = login(stranger.getEmail());
+
+        mvc.perform(get("/items/mine")).andExpect(status().isUnauthorized());
+        MvcResult publish = mvc.perform(post("/items").cookie(sellerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"台灯\",\"category\":\"生活用品\",\"price\":25}"))
+            .andExpect(status().isOk()).andReturn();
+        Long itemId = items.findAll().getFirst().getId();
+
+        mvc.perform(get("/items/mine").cookie(sellerSession))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data", hasSize(1)))
+            .andExpect(jsonPath("$.data[0].sellerId").value(seller.getId()))
+            .andExpect(jsonPath("$.data[0].allowedActions[0]").value("WITHDRAW"));
+        mvc.perform(put("/items/{id}", itemId).cookie(strangerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"冒充修改\",\"category\":\"其他\",\"price\":1}"))
+            .andExpect(status().isForbidden());
+        mvc.perform(put("/items/{id}", itemId).cookie(sellerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"修改后的台灯\",\"category\":\"生活用品\",\"price\":20}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.title").value("修改后的台灯"));
+        mvc.perform(post("/items/{id}/seller-actions", itemId).cookie(sellerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"action\":\"WITHDRAW\"}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.status").value("WITHDRAWN"));
+        mvc.perform(get("/items")).andExpect(jsonPath("$.data", hasSize(0)));
+        mvc.perform(post("/items").cookie(sellerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"负价商品\",\"category\":\"其他\",\"price\":-1}"))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

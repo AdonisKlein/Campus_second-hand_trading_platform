@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "校园二手平台 - Session API",
-    "description": "第一轮安全契约：Postman Cookie Jar 保存 JSESSIONID，写请求使用 csrfToken。按顺序先执行“获取 CSRF”。",
+    "description": "Session 安全契约：Postman Cookie Jar 保存 SESSION，写请求使用 csrfToken。按顺序先执行“获取 CSRF”和登录。",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -69,6 +69,34 @@
             "url": "{{baseUrl}}/items"
           }
         },
+        { "name": "我的发布（不传 sellerId）", "request": { "method": "GET", "url": "{{baseUrl}}/items/mine" } },
+        {
+          "name": "编辑自己的商品",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"修改后的教材\",\n  \"category\": \"书籍\",\n  \"price\": 18,\n  \"description\": \"八成新，无缺页\"\n}" },
+            "url": "{{baseUrl}}/items/{{itemId}}"
+          }
+        },
+        {
+          "name": "卖家下架",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"WITHDRAW\"\n}" },
+            "url": "{{baseUrl}}/items/{{itemId}}/seller-actions"
+          }
+        },
+        {
+          "name": "卖家重新上架",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"RELIST\"\n}" },
+            "url": "{{baseUrl}}/items/{{itemId}}/seller-actions"
+          }
+        },
         {
           "name": "创建订单（不传 buyerId/sellerId）",
           "request": {
@@ -95,7 +123,16 @@
       "item": [
         { "name": "用户列表（不传 adminId）", "request": { "method": "GET", "url": "{{baseUrl}}/admin/users" } },
         { "name": "留言列表", "request": { "method": "GET", "url": "{{baseUrl}}/admin/messages" } },
-        { "name": "商品列表", "request": { "method": "GET", "url": "{{baseUrl}}/admin/items" } }
+        { "name": "商品列表", "request": { "method": "GET", "url": "{{baseUrl}}/admin/items" } },
+        {
+          "name": "管理员下架或恢复商品",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"REMOVED\"\n}" },
+            "url": "{{baseUrl}}/admin/items/{{itemId}}/status"
+          }
+        }
       ]
     }
   ]
