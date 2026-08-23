@@ -3,6 +3,8 @@ package com.campus.secondhand.message;
 import com.campus.secondhand.common.ApiResponse;
 import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
+import com.campus.secondhand.security.CurrentActorService;
+import com.campus.secondhand.item.ItemRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,10 +26,15 @@ public class MessageController {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
+    private final CurrentActorService actors;
 
-    public MessageController(MessageRepository messageRepository, UserRepository userRepository) {
+    public MessageController(MessageRepository messageRepository, UserRepository userRepository,
+                             ItemRepository itemRepository, CurrentActorService actors) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
+        this.itemRepository = itemRepository;
+        this.actors = actors;
     }
 
     @GetMapping("/item/{itemId}")
@@ -41,7 +48,8 @@ public class MessageController {
 
     @PostMapping
     public ApiResponse<Message> send(@Valid @RequestBody SendMessageRequest request) {
-        var senderOptional = userRepository.findById(request.senderId());
+        Long senderId = actors.require().userId();
+        var senderOptional = userRepository.findById(senderId);
         if (senderOptional.isEmpty()) {
             return ApiResponse.fail("发送用户不存在");
         }
@@ -51,8 +59,11 @@ public class MessageController {
 
         Message message = new Message();
         message.setItemId(request.itemId());
-        message.setSenderId(request.senderId());
-        message.setReceiverId(request.receiverId());
+        message.setSenderId(senderId);
+        var itemOptional = itemRepository.findById(request.itemId());
+        if (itemOptional.isEmpty()) return ApiResponse.fail("物品不存在");
+        var item = itemOptional.get();
+        message.setReceiverId(item.getSellerId());
         message.setContent(request.content());
         return ApiResponse.created(messageRepository.save(message));
     }
@@ -61,7 +72,7 @@ public class MessageController {
     public ApiResponse<Message> update(@PathVariable Long id, @Valid @RequestBody UpdateMessageRequest request) {
         return messageRepository.findById(id)
             .map(message -> {
-                if (!message.getSenderId().equals(request.senderId())) {
+                if (!message.getSenderId().equals(actors.require().userId())) {
                     return ApiResponse.<Message>fail("只能修改自己的留言");
                 }
                 message.setContent(request.content());
@@ -71,10 +82,10 @@ public class MessageController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<String> delete(@PathVariable Long id, @Valid @RequestBody DeleteMessageRequest request) {
+    public ApiResponse<String> delete(@PathVariable Long id) {
         return messageRepository.findById(id)
             .map(message -> {
-                if (!message.getSenderId().equals(request.senderId())) {
+                if (!message.getSenderId().equals(actors.require().userId())) {
                     return ApiResponse.<String>fail("只能删除自己的留言");
                 }
                 messageRepository.delete(message);
@@ -85,20 +96,12 @@ public class MessageController {
 
     public record SendMessageRequest(
         @NotNull Long itemId,
-        @NotNull Long senderId,
-        @NotNull Long receiverId,
         @NotBlank @Size(max = 500) String content
     ) {
     }
 
     public record UpdateMessageRequest(
-        @NotNull Long senderId,
         @NotBlank @Size(max = 500) String content
-    ) {
-    }
-
-    public record DeleteMessageRequest(
-        @NotNull Long senderId
     ) {
     }
 

@@ -8,3 +8,10 @@ spring:
         hibernate:
             ddl-auto: create-drop
         show-sql: false
+app:
+    verification:
+        pepper: test-only-verification-pepper-at-least-32-bytes
+management:
+    health:
+        mail:
+            enabled: false

@@ -23,13 +23,7 @@
         <!-- Login form -->
         <form class="form-panel" id="loginForm">
             <h2>登录</h2>
-            <div class="login-tabs" role="group" aria-label="登录方式">
-                <button type="button" class="active" data-login-type="username">用户名登录</button>
-                <button type="button" class="secondary" data-login-type="email">邮箱登录</button>
-            </div>
-            <input type="hidden" name="loginType" value="username">
-            <label id="usernameLoginField">用户名<input name="username" required></label>
-            <label id="emailLoginField" style="display:none;">邮箱<input name="email" type="email"></label>
+            <label>邮箱<input name="email" type="email" required></label>
             <label>密码<input name="password" type="password" required></label>
             <button type="submit">登录</button>
             <p class="form-message" id="loginMessage"></p>
@@ -80,12 +74,7 @@
             <form id="profileForm" style="display:none;">
                 <label>昵称<input name="nickname"></label>
                 <label>联系方式（手机号）<input name="phone"></label>
-                <label>邮箱<input name="email" type="email"></label>
-                <div class="inline-field">
-                    <label>邮箱验证码<input name="emailCode" maxlength="6" placeholder="6位数字"></label>
-                    <button type="button" id="sendEmailCodeBtn">发送验证码</button>
-                    <span id="emailCountdown" class="small"></span>
-                </div>
+                <p class="small">邮箱是登录账号，修改邮箱功能将在下一轮加入。</p>
 
                 <div class="actions">
                     <button type="submit" id="saveBtn">保存资料</button>

@@ -3,6 +3,7 @@ package com.campus.secondhand.item;
 import com.campus.secondhand.common.ApiResponse;
 import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
+import com.campus.secondhand.security.CurrentActorService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,10 +23,12 @@ public class ItemController {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final CurrentActorService actors;
 
-    public ItemController(ItemRepository itemRepository, UserRepository userRepository) {
+    public ItemController(ItemRepository itemRepository, UserRepository userRepository, CurrentActorService actors) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.actors = actors;
     }
 
     @GetMapping
@@ -49,7 +52,8 @@ public class ItemController {
 
     @PostMapping
     public ApiResponse<Item> publish(@Valid @RequestBody PublishItemRequest request) {
-        var sellerOptional = userRepository.findById(request.sellerId());
+        Long sellerId = actors.require().userId();
+        var sellerOptional = userRepository.findById(sellerId);
         if (sellerOptional.isEmpty()) {
             return ApiResponse.fail("卖家不存在");
         }
@@ -63,7 +67,7 @@ public class ItemController {
         item.setPrice(request.price());
         item.setDescription(request.description());
         item.setImageUrl(request.imageUrl());
-        item.setSellerId(request.sellerId());
+        item.setSellerId(sellerId);
         return ApiResponse.created(itemRepository.save(item));
     }
 
@@ -72,8 +76,7 @@ public class ItemController {
         @NotBlank String category,
         @NotNull BigDecimal price,
         String description,
-        String imageUrl,
-        @NotNull Long sellerId
+        String imageUrl
     ) {
     }
 

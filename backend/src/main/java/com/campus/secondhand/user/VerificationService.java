@@ -1,68 +1,101 @@
 package com.campus.secondhand.user;
 
 import com.campus.secondhand.common.EmailService;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Random;
+import java.util.HexFormat;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Service
 public class VerificationService {
-
+    private static final int MAX_ATTEMPTS = 5;
     private final EmailVerificationRepository repository;
     private final EmailService emailService;
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
+    private final byte[] pepper;
+    private final TransactionTemplate transactions;
 
-    public VerificationService(EmailVerificationRepository repository, EmailService emailService) {
+    public VerificationService(EmailVerificationRepository repository, EmailService emailService,
+                               @Value("${app.verification.pepper}") String pepper,
+                               TransactionTemplate transactions) {
         this.repository = repository;
         this.emailService = emailService;
+        if (pepper.length() < 32) throw new IllegalStateException("VERIFICATION_PEPPER 至少需要 32 个字符");
+        this.pepper = pepper.getBytes(StandardCharsets.UTF_8);
+        this.transactions = transactions;
     }
 
-    @Transactional
-    public EmailVerification sendCode(String email) {
-        // Check latest code for email
-        Optional<EmailVerification> latestOpt = repository.findFirstByEmailOrderByCreatedAtDesc(email);
-        if (latestOpt.isPresent()) {
-            EmailVerification latest = latestOpt.get();
-            if (!latest.isUsed() && latest.getExpiresAt().isAfter(LocalDateTime.now())) {
-                // not expired yet -> do not resend, return existing record
-                return latest;
-            }
-        }
-
+    public void sendCode(String email, VerificationPurpose purpose) {
         String code = String.format("%06d", random.nextInt(1_000_000));
-        EmailVerification v = new EmailVerification();
-        v.setEmail(email);
-        v.setCode(code);
-        v.setCreatedAt(LocalDateTime.now());
-        v.setExpiresAt(LocalDateTime.now().plusMinutes(5));
-        v.setAttempts(0);
-        v.setUsed(false);
-        EmailVerification saved = repository.save(v);
-        // Try to send email, but swallow exceptions so tests can proceed without Mailtrap
+        try {
+            transactions.executeWithoutResult(status -> {
+                LocalDateTime now = LocalDateTime.now();
+                EmailVerification challenge = repository.findByEmailAndPurpose(email, purpose).map(latest -> {
+                    if (latest.getCreatedAt().plusSeconds(60).isAfter(now)) {
+                        throw new VerificationRateLimitException("请稍后再获取验证码");
+                    }
+                    return latest;
+                }).orElseGet(EmailVerification::new);
+                challenge.setEmail(email);
+                challenge.setPurpose(purpose);
+                challenge.setCodeHash(hash(email, purpose, code));
+                challenge.setCreatedAt(now);
+                challenge.setExpiresAt(now.plusMinutes(10));
+                challenge.setAttempts(0);
+                challenge.setUsed(false);
+                repository.saveAndFlush(challenge);
+            });
+        } catch (DataIntegrityViolationException ex) {
+            throw new VerificationRateLimitException("请稍后再获取验证码");
+        }
         try {
             emailService.sendVerificationCode(email, code);
-        } catch (Exception ignored) {
-            // ignore email send failures for test/dev environment
+        } catch (RuntimeException ex) {
+            transactions.executeWithoutResult(status -> repository.findByEmailAndPurpose(email, purpose).ifPresent(saved -> {
+                saved.setUsed(true);
+                repository.save(saved);
+            }));
+            throw ex;
         }
-        return saved;
     }
 
     @Transactional
-    public boolean verifyCode(String email, String code) {
-        Optional<EmailVerification> latestOpt = repository.findFirstByEmailOrderByCreatedAtDesc(email);
-        if (latestOpt.isEmpty()) return false;
-        EmailVerification latest = latestOpt.get();
-        if (latest.isUsed()) return false;
-        if (latest.getExpiresAt().isBefore(LocalDateTime.now())) return false;
-        if (!latest.getCode().equals(code)) {
-            latest.setAttempts(latest.getAttempts() + 1);
-            repository.save(latest);
+    public boolean verifyCode(String email, VerificationPurpose purpose, String code) {
+        var optional = repository.findByEmailAndPurpose(email, purpose);
+        if (optional.isEmpty()) return false;
+        EmailVerification challenge = optional.get();
+        if (challenge.isUsed() || challenge.getExpiresAt().isBefore(LocalDateTime.now())
+            || challenge.getAttempts() >= MAX_ATTEMPTS) return false;
+        boolean matches = MessageDigest.isEqual(
+            challenge.getCodeHash().getBytes(StandardCharsets.US_ASCII),
+            hash(email, purpose, code).getBytes(StandardCharsets.US_ASCII));
+        if (!matches) {
+            challenge.setAttempts(challenge.getAttempts() + 1);
+            if (challenge.getAttempts() >= MAX_ATTEMPTS) challenge.setUsed(true);
+            repository.save(challenge);
             return false;
         }
-        latest.setUsed(true);
-        repository.save(latest);
+        challenge.setUsed(true);
+        repository.save(challenge);
         return true;
+    }
+
+    String hash(String email, VerificationPurpose purpose, String code) {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(pepper, "HmacSHA256"));
+            return HexFormat.of().formatHex(mac.doFinal((purpose + "\0" + email + "\0" + code)
+                .getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception ex) {
+            throw new IllegalStateException("无法生成验证码摘要", ex);
+        }
     }
 }

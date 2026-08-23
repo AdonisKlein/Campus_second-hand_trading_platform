@@ -3,8 +3,8 @@ USE campus_secondhand;
 INSERT INTO users (username, password_hash, nickname, phone, email, role, status)
 VALUES
     ('admin', '$2b$12$DMlMB9kSN8zCYPV1dfpbE.Mhf6ftfAqSmfZ1XMeDmffBF3K0NQg8a', 'admin', '13800000000', 'admin@example.com', 'ADMIN', 'ACTIVE'),
-    ('alice', '$2a$10$iZdchjEMJXd.39QWJb9dxeDZLSxJuMZa5JfGG7/shWVDhzhLgVoXC', '小艾', '13800000001', 'alice@example.com', 'USER', 'ACTIVE'),
-    ('bob', '$2a$10$iZdchjEMJXd.39QWJb9dxeDZLSxJuMZa5JfGG7/shWVDhzhLgVoXC', '小博', '13800000002', 'bob@example.com', 'USER', 'ACTIVE')
+    ('alice', '$2a$10$iZdchjEMJXd.39QWJb9dxeDZLSxJuMZa5JfGG7/shWVDhzhLgVoXC', '小艾', '13800000001', 'alice@example.com', 'STUDENT', 'ACTIVE'),
+    ('bob', '$2a$10$iZdchjEMJXd.39QWJb9dxeDZLSxJuMZa5JfGG7/shWVDhzhLgVoXC', '小博', '13800000002', 'bob@example.com', 'STUDENT', 'ACTIVE')
 AS new_users
 ON DUPLICATE KEY UPDATE
     password_hash = new_users.password_hash,

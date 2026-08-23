@@ -28,11 +28,11 @@ public class User {
     @Column(length = 30)
     private String phone;
 
-    @Column(length = 100)
+    @Column(nullable = false, unique = true, length = 254)
     private String email;
 
     @Column(nullable = false, length = 20)
-    private String role = "USER";
+    private String role = "STUDENT";
 
     @Column(nullable = false, length = 20)
     private String status = "ACTIVE";
@@ -42,6 +42,9 @@ public class User {
 
     @Column(name = "locked_until")
     private LocalDateTime lockedUntil;
+
+    @Column(name = "auth_version", nullable = false)
+    private Integer authVersion = 0;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -129,6 +132,9 @@ public class User {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public Integer getAuthVersion() { return authVersion; }
+    public void setAuthVersion(Integer authVersion) { this.authVersion = authVersion; }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;

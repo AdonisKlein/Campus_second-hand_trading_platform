@@ -1,8 +1,8 @@
 const publishForm = document.querySelector("#publishForm");
 const publishMessage = document.querySelector("#publishMessage");
 
-function requireLoginForPublish() {
-    const currentUser = getCurrentUser();
+async function requireLoginForPublish() {
+    const currentUser = await session.current();
     if (!currentUser || !currentUser.id) {
         publishMessage.textContent = "请先登录后再发布物品";
         setTimeout(() => {
@@ -17,14 +17,13 @@ requireLoginForPublish();
 
 publishForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const currentUser = requireLoginForPublish();
+    const currentUser = await requireLoginForPublish();
     if (!currentUser) {
         return;
     }
 
     const data = formToJson(publishForm);
     data.price = Number(data.price);
-    data.sellerId = Number(currentUser.id);
 
     const result = await request("/items", {
         method: "POST",

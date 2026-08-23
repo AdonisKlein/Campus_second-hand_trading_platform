@@ -1,77 +1,78 @@
-const API_BASE = "http://localhost:8080/api";
+const API_BASE = window.CAMPUS_API_BASE || "http://localhost:8080/api";
+let csrfToken = null;
+let sessionUser = null;
+let sessionUserPromise = null;
+
+async function ensureCsrf() {
+    if (csrfToken) return csrfToken;
+    const response = await fetch(`${API_BASE}/auth/csrf`, { credentials: "include" });
+    const payload = await response.json();
+    csrfToken = payload.data;
+    return csrfToken;
+}
 
 async function request(path, options = {}) {
+    const method = (options.method || "GET").toUpperCase();
+    const headers = { ...(options.headers || {}) };
+    if (options.body) headers["Content-Type"] = "application/json";
+    if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
+        headers["X-XSRF-TOKEN"] = await ensureCsrf();
+    }
     const response = await fetch(`${API_BASE}${path}`, {
-        headers: {
-            "Content-Type": "application/json",
-            ...(options.headers || {})
-        },
-        ...options
+        ...options,
+        method,
+        headers,
+        credentials: "include"
     });
-
-    // Read raw text first so we can show it even if it's not valid JSON
     const text = await response.text();
     let payload = null;
     if (text) {
-        try {
-            payload = JSON.parse(text);
-        } catch (e) {
-            payload = text;
-        }
+        try { payload = JSON.parse(text); }
+        catch (_) { payload = { success: false, message: `HTTP ${response.status}` }; }
     }
-
-    if (!response.ok) {
-        if (payload && typeof payload === 'object' && ('success' in payload || 'message' in payload)) {
-            return payload;
-        }
-        // include raw text in message if available
-        const rawMsg = typeof payload === 'string' && payload.length > 0 ? payload : `HTTP ${response.status}`;
-        return { success: false, message: rawMsg };
+    if (response.status === 401) {
+        sessionUser = null;
+        sessionUserPromise = null;
     }
-
+    if (!response.ok && !(payload && typeof payload === "object")) {
+        payload = { success: false, message: `HTTP ${response.status}` };
+    }
     return payload;
 }
 
-function formToJson(form) {
-    return Object.fromEntries(new FormData(form).entries());
-}
-
-// Session helpers using localStorage to store a non-sensitive UserView object
-function setCurrentUser(user) {
-    try {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        window.currentUser = user;
-    } catch (e) {
-        console.error('setCurrentUser error', e);
+const session = {
+    async current({ refresh = false } = {}) {
+        if (refresh) sessionUserPromise = null;
+        if (sessionUser) return sessionUser;
+        if (!sessionUserPromise) {
+            sessionUserPromise = request("/users/me").then(result => {
+                sessionUser = result && result.success ? result.data : null;
+                return sessionUser;
+            });
+        }
+        return sessionUserPromise;
+    },
+    async login(email, password) {
+        const result = await request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+        sessionUser = result && result.success ? result.data : null;
+        sessionUserPromise = sessionUser ? Promise.resolve(sessionUser) : null;
+        return result;
+    },
+    async logout() {
+        const result = await request("/auth/logout", { method: "POST" });
+        sessionUser = null;
+        sessionUserPromise = null;
+        csrfToken = null;
+        return result;
+    },
+    set(user) {
+        sessionUser = user;
+        sessionUserPromise = Promise.resolve(user);
     }
-}
+};
 
-function getCurrentUser() {
-    if (window.currentUser) return window.currentUser;
-    try {
-        const s = localStorage.getItem('currentUser');
-        if (!s) return null;
-        const user = JSON.parse(s);
-        window.currentUser = user;
-        return user;
-    } catch (e) {
-        console.error('getCurrentUser error', e);
-        return null;
-    }
-}
+function formToJson(form) { return Object.fromEntries(new FormData(form).entries()); }
 
-function clearCurrentUser() {
-    try {
-        localStorage.removeItem('currentUser');
-        window.currentUser = null;
-    } catch (e) {
-        console.error('clearCurrentUser error', e);
-    }
-}
-
-// expose helpers globally for other scripts to use
 window.request = request;
 window.formToJson = formToJson;
-window.setCurrentUser = setCurrentUser;
-window.getCurrentUser = getCurrentUser;
-window.clearCurrentUser = clearCurrentUser;
+window.session = session;

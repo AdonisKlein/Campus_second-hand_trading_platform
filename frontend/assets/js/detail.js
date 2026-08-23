@@ -52,16 +52,16 @@ async function loadDetail() {
 
     currentItem = item;
     itemDetail.innerHTML = `
-        <img class="detail-image" src="${item.imageUrl || "assets/images/placeholder.svg"}" alt="${item.title}">
-        <h1>${item.title}</h1>
-        <p><span class="tag">${item.category}</span></p>
+        <img class="detail-image" src="${escapeHtml(item.imageUrl || "assets/images/placeholder.svg")}" alt="${escapeHtml(item.title)}">
+        <h1>${escapeHtml(item.title)}</h1>
+        <p><span class="tag">${escapeHtml(item.category)}</span></p>
         <p class="price">￥${Number(item.price).toFixed(2)}</p>
-        <p>${item.description || ""}</p>
+        <p>${escapeHtml(item.description || "")}</p>
         <button id="createOrder">创建订单</button>
     `;
 
     document.querySelector("#createOrder").addEventListener("click", async () => {
-        const currentUser = getCurrentUser();
+        const currentUser = await session.current();
         if (!currentUser || !currentUser.id) {
             alert("请先登录后下单");
             location.href = "profile.html";
@@ -70,11 +70,7 @@ async function loadDetail() {
 
         const order = await request("/orders", {
             method: "POST",
-            body: JSON.stringify({
-                itemId: item.id,
-                buyerId: Number(currentUser.id),
-                sellerId: item.sellerId
-            })
+            body: JSON.stringify({ itemId: item.id })
         });
 
         alert(order.success ? "订单创建成功" : order.message);
@@ -87,7 +83,7 @@ async function loadDetail() {
 async function loadMessages() {
     const result = await request(`/messages/item/${itemId}`);
     const messages = result.data || [];
-    const currentUser = getCurrentUser();
+    const currentUser = await session.current();
     const currentUserId = currentUser && currentUser.id ? Number(currentUser.id) : null;
 
     messageList.innerHTML = messages.length
@@ -119,7 +115,7 @@ async function loadMessages() {
 messageForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const currentUser = getCurrentUser();
+    const currentUser = await session.current();
     if (!currentUser || !currentUser.id) {
         alert("请先登录后留言");
         location.href = "profile.html";
@@ -132,8 +128,6 @@ messageForm.addEventListener("submit", async (event) => {
 
     const data = {
         itemId: Number(itemId),
-        senderId: Number(currentUser.id),
-        receiverId: Number(currentItem.sellerId),
         content: messageForm.content.value
     };
 
@@ -186,7 +180,7 @@ messageList.addEventListener("click", async (event) => {
     }
 
     if (action === "delete") {
-        const currentUser = getCurrentUser();
+        const currentUser = await session.current();
         if (!currentUser || !currentUser.id) {
             alert("请先登录");
             location.href = "profile.html";
@@ -197,8 +191,7 @@ messageList.addEventListener("click", async (event) => {
         }
 
         const result = await request(`/messages/${messageId}`, {
-            method: "DELETE",
-            body: JSON.stringify({ senderId: Number(currentUser.id) })
+            method: "DELETE"
         });
 
         if (!result.success) {
@@ -216,7 +209,7 @@ messageList.addEventListener("submit", async (event) => {
     }
     event.preventDefault();
 
-    const currentUser = getCurrentUser();
+    const currentUser = await session.current();
     if (!currentUser || !currentUser.id) {
         alert("请先登录");
         location.href = "profile.html";
@@ -227,10 +220,7 @@ messageList.addEventListener("submit", async (event) => {
     const messageId = messageItem.dataset.messageId;
     const result = await request(`/messages/${messageId}`, {
         method: "PUT",
-        body: JSON.stringify({
-            senderId: Number(currentUser.id),
-            content: form.content.value
-        })
+        body: JSON.stringify({ content: form.content.value })
     });
 
     if (!result.success) {

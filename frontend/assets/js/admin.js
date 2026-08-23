@@ -8,7 +8,7 @@ const userCount = document.querySelector("#userCount");
 const messageCount = document.querySelector("#messageCount");
 const adminItemCount = document.querySelector("#adminItemCount");
 
-const currentUser = getCurrentUser();
+let currentUser = null;
 
 function escapeHtml(value) {
     return String(value || "")
@@ -43,8 +43,7 @@ function requireAdmin() {
 }
 
 async function adminRequest(path, options = {}) {
-    const separator = path.includes("?") ? "&" : "?";
-    return request(`/admin${path}${separator}adminId=${encodeURIComponent(currentUser.id)}`, options);
+    return request(`/admin${path}`, options);
 }
 
 async function loadUsers() {
@@ -135,7 +134,7 @@ adminUserList.addEventListener("click", async event => {
 
     const result = await request(`/admin/users/${button.dataset.userId}/status`, {
         method: "PUT",
-        body: JSON.stringify({ adminId: Number(currentUser.id), status: button.dataset.status })
+        body: JSON.stringify({ status: button.dataset.status })
     });
     if (!result.success) {
         alert(result.message);
@@ -150,8 +149,7 @@ adminMessageList.addEventListener("click", async event => {
     if (!confirm("确定删除这条留言吗？")) return;
 
     const result = await request(`/admin/messages/${button.dataset.messageId}`, {
-        method: "DELETE",
-        body: JSON.stringify({ adminId: Number(currentUser.id) })
+        method: "DELETE"
     });
     if (!result.success) {
         alert(result.message);
@@ -166,7 +164,7 @@ adminItemList.addEventListener("click", async event => {
 
     const result = await request(`/admin/items/${button.dataset.itemId}/status`, {
         method: "PUT",
-        body: JSON.stringify({ adminId: Number(currentUser.id), status: button.dataset.status })
+        body: JSON.stringify({ status: button.dataset.status })
     });
     if (!result.success) {
         alert(result.message);
@@ -175,8 +173,11 @@ adminItemList.addEventListener("click", async event => {
     loadItems();
 });
 
-if (requireAdmin()) {
-    loadUsers();
-    loadMessages();
-    loadItems();
-}
+(async function initAdmin() {
+    currentUser = await session.current();
+    if (requireAdmin()) {
+        loadUsers();
+        loadMessages();
+        loadItems();
+    }
+})();

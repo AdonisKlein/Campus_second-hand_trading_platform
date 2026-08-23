@@ -1,524 +1,193 @@
 package com.campus.secondhand;
 
-import com.campus.secondhand.item.Item;
 import com.campus.secondhand.item.ItemRepository;
 import com.campus.secondhand.message.MessageRepository;
 import com.campus.secondhand.order.TradeOrderRepository;
-import com.campus.secondhand.user.EmailVerification;
 import com.campus.secondhand.user.EmailVerificationRepository;
 import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
-import java.math.BigDecimal;
+import com.campus.secondhand.user.EmailVerification;
+import com.campus.secondhand.user.VerificationPurpose;
+import com.campus.secondhand.user.VerificationService;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.mock.web.MockHttpSession;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@SpringBootTest
 class SecondhandApplicationTests {
-
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ItemRepository itemRepository;
-
-    @Autowired
-    private MessageRepository messageRepository;
-
-    @Autowired
-    private TradeOrderRepository orderRepository;
-
-    @Autowired
-    private EmailVerificationRepository emailVerificationRepository;
+    @Autowired MockMvc mvc;
+    @Autowired UserRepository users;
+    @Autowired ItemRepository items;
+    @Autowired MessageRepository messages;
+    @Autowired TradeOrderRepository orders;
+    @Autowired EmailVerificationRepository verifications;
+    @Autowired PasswordEncoder passwords;
+    @Autowired VerificationService verificationService;
+    @MockitoBean JavaMailSender mailSender;
 
     @BeforeEach
-    void cleanDatabase() {
-        orderRepository.deleteAll();
-        messageRepository.deleteAll();
-        itemRepository.deleteAll();
-        userRepository.deleteAll();
-        emailVerificationRepository.deleteAll();
+    void clean() {
+        orders.deleteAll();
+        messages.deleteAll();
+        items.deleteAll();
+        verifications.deleteAll();
+        users.deleteAll();
     }
 
     @Test
-    void contextLoads() {
+    void publicCanBrowseButCannotPublish() throws Exception {
+        mvc.perform(get("/items")).andExpect(status().isOk());
+        mvc.perform(post("/items").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"title\":\"教材\",\"category\":\"书籍\",\"price\":20}"))
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void registerLoginAndRejectWrongPassword() throws Exception {
-        saveVerificationCode("test@example.com", "123456");
-
-        mockMvc.perform(post("/users/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "testuser",
-                        "password": "abc123",
-                        "nickname": "测试用户",
-                        "email": "test@example.com",
-                        "code": "123456"
-                    }
-                    """))
+    void loginCreatesServerSessionAndLogoutInvalidatesIt() throws Exception {
+        saveUser("student", "student@example.com", "STUDENT");
+        MockHttpSession session = login("student@example.com");
+        mvc.perform(get("/users/me").session(session))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.username").value("testuser"));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "testuser",
-                        "password": "abc123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "loginType": "email",
-                        "email": "test@example.com",
-                        "password": "abc123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.username").value("testuser"));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "testuser",
-                        "password": "wrong123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("用户名或密码错误，剩余尝试次数：2"));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "testuser",
-                        "password": "abc123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "loginType": "email",
-                        "email": "test@example.com",
-                        "password": "wrong123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("邮箱或密码错误，剩余尝试次数：2"));
+            .andExpect(jsonPath("$.data.email").value("student@example.com"));
+        mvc.perform(post("/auth/logout").session(session).with(csrf()))
+            .andExpect(status().isOk());
+        mvc.perform(get("/users/me").session(session)).andExpect(status().isUnauthorized());
     }
 
     @Test
-    void lockUserAfterThreeFailedLogins() throws Exception {
-        saveUser("lockuser");
-
-        for (int i = 0; i < 2; i++) {
-            mockMvc.perform(post("/users/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("""
-                        {
-                            "username": "lockuser",
-                            "password": "wrong123"
-                        }
-                        """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(false));
-        }
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "lockuser",
-                        "password": "wrong123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("密码错误次数过多，账号已锁定10分钟"));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "lockuser",
-                        "password": "abc123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("账号已被临时锁定，请10分钟后再试"));
+    void loginFailureDoesNotRevealWhetherEmailExists() throws Exception {
+        saveUser("student", "student@example.com", "STUDENT");
+        String body = "{\"email\":\"%s\",\"password\":\"wrong123\"}";
+        mvc.perform(post("/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(body.formatted("student@example.com")))
+            .andExpect(status().isUnauthorized()).andExpect(jsonPath("$.message").value("邮箱或密码错误"));
+        mvc.perform(post("/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(body.formatted("missing@example.com")))
+            .andExpect(status().isUnauthorized()).andExpect(jsonPath("$.message").value("邮箱或密码错误"));
     }
 
     @Test
-    void resetPasswordWithVerificationCodeAndLoginWithNewPassword() throws Exception {
-        User user = saveUser("resetuser");
-        user.setEmail("reset@example.com");
-        userRepository.save(user);
-        saveVerificationCode("reset@example.com", "654321");
-
-        mockMvc.perform(post("/users/forgot-password/reset")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "email": "reset@example.com",
-                        "code": "654321",
-                        "newPassword": "new123"
-                    }
-                    """))
+    void publisherIdentityComesFromSessionEvenWhenBodyIsForged() throws Exception {
+        User seller = saveUser("seller", "seller@example.com", "STUDENT");
+        User victim = saveUser("victim", "victim@example.com", "STUDENT");
+        MockHttpSession session = login(seller.getEmail());
+        mvc.perform(post("/items").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"教材\",\"category\":\"书籍\",\"price\":20,\"sellerId\":%d}".formatted(victim.getId())))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data").value("密码重置成功"));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "resetuser",
-                        "password": "abc123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "resetuser",
-                        "password": "new123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.username").value("resetuser"));
+            .andExpect(jsonPath("$.data.sellerId").value(seller.getId()));
     }
 
     @Test
-    void publishAndSearchItems() throws Exception {
-        User seller = saveUser("seller");
-
-        mockMvc.perform(post("/items")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "title": "高等数学教材",
-                        "category": "书籍",
-                        "price": 18,
-                        "description": "八成新",
-                        "imageUrl": "assets/images/book.svg",
-                        "sellerId": %d
-                    }
-                    """.formatted(seller.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.title").value("高等数学教材"));
-
-        mockMvc.perform(get("/items").param("keyword", "数学"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data", hasSize(1)))
-            .andExpect(jsonPath("$.data[0].category").value("书籍"));
+    void studentCannotBecomeAdminBySubmittingAdminId() throws Exception {
+        User admin = saveUser("admin", "admin@example.com", "ADMIN");
+        User student = saveUser("student", "student@example.com", "STUDENT");
+        MockHttpSession session = login(student.getEmail());
+        mvc.perform(get("/admin/users").param("adminId", admin.getId().toString()).session(session))
+            .andExpect(status().isForbidden());
     }
 
     @Test
-    void sendAndListMessages() throws Exception {
-        User seller = saveUser("seller");
-        User buyer = saveUser("buyer");
-        Item item = saveItem(seller.getId());
-
-        mockMvc.perform(post("/messages")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "itemId": %d,
-                        "senderId": %d,
-                        "receiverId": %d,
-                        "content": "这个还能便宜吗？"
-                    }
-                    """.formatted(item.getId(), buyer.getId(), seller.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.content").value("这个还能便宜吗？"));
-
-        mockMvc.perform(get("/messages/item/{itemId}", item.getId()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data", hasSize(1)))
-            .andExpect(jsonPath("$.data[0].senderNickname").value("buyer"));
+    void disabledAdminLosesAccessOnExistingSession() throws Exception {
+        User admin = saveUser("admin", "admin@example.com", "ADMIN");
+        MockHttpSession session = login(admin.getEmail());
+        mvc.perform(get("/admin/users").session(session)).andExpect(status().isOk());
+        admin.setStatus("DISABLED");
+        users.saveAndFlush(admin);
+        mvc.perform(get("/admin/users").session(session)).andExpect(status().isForbidden());
     }
 
     @Test
-    void updateAndDeleteOwnMessageOnly() throws Exception {
-        User seller = saveUser("seller");
-        User buyer = saveUser("buyer");
-        User other = saveUser("other");
-        Item item = saveItem(seller.getId());
-
-        mockMvc.perform(post("/messages")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "itemId": %d,
-                        "senderId": %d,
-                        "receiverId": %d,
-                        "content": "这个还能便宜吗？"
-                    }
-                    """.formatted(item.getId(), buyer.getId(), seller.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true));
-
-        Long messageId = messageRepository.findAll().get(0).getId();
-
-        mockMvc.perform(put("/messages/{id}", messageId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "senderId": %d,
-                        "content": "明天可以当面交易吗？"
-                    }
-                    """.formatted(buyer.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.content").value("明天可以当面交易吗？"));
-
-        mockMvc.perform(delete("/messages/{id}", messageId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "senderId": %d
-                    }
-                    """.formatted(other.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("只能删除自己的留言"));
-
-        mockMvc.perform(delete("/messages/{id}", messageId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "senderId": %d
-                    }
-                    """.formatted(buyer.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true));
-
-        mockMvc.perform(get("/messages/item/{itemId}", item.getId()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data", hasSize(0)));
+    void authVersionChangeInvalidatesEveryExistingSession() throws Exception {
+        User student = saveUser("student", "student@example.com", "STUDENT");
+        MockHttpSession session = login(student.getEmail());
+        student.setAuthVersion(student.getAuthVersion() + 1);
+        users.saveAndFlush(student);
+        mvc.perform(get("/users/me").session(session)).andExpect(status().isForbidden());
     }
 
     @Test
-    void adminCanManageUsersMessagesAndItems() throws Exception {
-        User admin = saveAdmin("admin");
-        User seller = saveUser("seller");
-        User buyer = saveUser("buyer");
-        seller.setEmail("seller@example.com");
-        userRepository.save(seller);
-        Item item = saveItem(seller.getId());
-
-        mockMvc.perform(post("/messages")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "itemId": %d,
-                        "senderId": %d,
-                        "receiverId": %d,
-                        "content": "这条需要管理员删除"
-                    }
-                    """.formatted(item.getId(), buyer.getId(), seller.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true));
-
-        Long messageId = messageRepository.findAll().get(0).getId();
-
-        mockMvc.perform(put("/admin/users/{id}/status", buyer.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "adminId": %d,
-                        "status": "DISABLED"
-                    }
-                    """.formatted(admin.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.status").value("DISABLED"));
-
-        mockMvc.perform(post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "username": "buyer",
-                        "password": "abc123"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("账号已被管理员禁用"));
-
-        mockMvc.perform(delete("/admin/messages/{id}", messageId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "adminId": %d
-                    }
-                    """.formatted(admin.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true));
-
-        mockMvc.perform(put("/admin/items/{id}/status", item.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "adminId": %d,
-                        "status": "REMOVED"
-                    }
-                    """.formatted(admin.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.status").value("REMOVED"));
-
-        mockMvc.perform(get("/items"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data", hasSize(0)));
+    void restoredAccountDoesNotRestoreOldSession() throws Exception {
+        User admin = saveUser("admin", "admin@example.com", "ADMIN");
+        User student = saveUser("student", "student@example.com", "STUDENT");
+        MockHttpSession adminSession = login(admin.getEmail());
+        MockHttpSession oldStudentSession = login(student.getEmail());
+        mvc.perform(put("/admin/users/{id}/status", student.getId()).session(adminSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"DISABLED\"}"))
+            .andExpect(status().isOk());
+        mvc.perform(put("/admin/users/{id}/status", student.getId()).session(adminSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"ACTIVE\"}"))
+            .andExpect(status().isOk());
+        mvc.perform(get("/users/me").session(oldStudentSession)).andExpect(status().isForbidden());
     }
 
     @Test
-    void createOrderMarksItemSoldAndValidatesStatus() throws Exception {
-        User seller = saveUser("seller");
-        User buyer = saveUser("buyer");
-        Item item = saveItem(seller.getId());
-
-        mockMvc.perform(post("/orders")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "itemId": %d,
-                        "buyerId": %d,
-                        "sellerId": %d
-                    }
-                    """.formatted(item.getId(), buyer.getId(), seller.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.status").value("CREATED"));
-
-        Long orderId = orderRepository.findAll().get(0).getId();
-
-        mockMvc.perform(post("/orders")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "itemId": %d,
-                        "buyerId": %d,
-                        "sellerId": %d
-                    }
-                    """.formatted(item.getId(), buyer.getId(), seller.getId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("物品已被下单或售出"));
-
-        mockMvc.perform(put("/orders/{id}/status", orderId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "status": "CONFIRMED"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.status").value("CONFIRMED"));
-
-        mockMvc.perform(put("/orders/{id}/status", orderId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "status": "WRONG"
-                    }
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.message").value("订单状态不合法"));
-
-        mockMvc.perform(get("/items/{id}", item.getId()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.status").value("SOLD"));
+    void resendingCodeResetsUsedAndAttemptCount() {
+        EmailVerification challenge = new EmailVerification();
+        challenge.setEmail("code@example.com");
+        challenge.setPurpose(VerificationPurpose.REGISTER);
+        challenge.setCodeHash("0".repeat(64));
+        challenge.setAttempts(5);
+        challenge.setUsed(true);
+        challenge.setCreatedAt(LocalDateTime.now().minusMinutes(2));
+        challenge.setExpiresAt(LocalDateTime.now().minusMinutes(1));
+        verifications.saveAndFlush(challenge);
+        verificationService.sendCode("code@example.com", VerificationPurpose.REGISTER);
+        EmailVerification refreshed = verifications.findAll().getFirst();
+        org.junit.jupiter.api.Assertions.assertFalse(refreshed.isUsed());
+        org.junit.jupiter.api.Assertions.assertEquals(0, refreshed.getAttempts());
     }
 
-    private User saveUser(String username) {
+    @Test
+    void writesRequireCsrfAndOrderUsesCurrentBuyer() throws Exception {
+        User seller = saveUser("seller", "seller@example.com", "STUDENT");
+        User buyer = saveUser("buyer", "buyer@example.com", "STUDENT");
+        MockHttpSession sellerSession = login(seller.getEmail());
+        mvc.perform(post("/items").session(sellerSession).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"title\":\"教材\",\"category\":\"书籍\",\"price\":20}"));
+        Long itemId = items.findAll().getFirst().getId();
+        MockHttpSession buyerSession = login(buyer.getEmail());
+        mvc.perform(post("/orders").session(buyerSession).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"itemId\":%d}".formatted(itemId)))
+            .andExpect(status().isForbidden());
+        mvc.perform(post("/orders").session(buyerSession).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"itemId\":%d,\"buyerId\":%d}".formatted(itemId, seller.getId())))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.buyerId").value(buyer.getId()));
+        mvc.perform(get("/orders").session(buyerSession)).andExpect(jsonPath("$.data", hasSize(1)));
+    }
+
+    private User saveUser(String username, String email, String role) {
         User user = new User();
-        user.setUsername(username);
-        user.setPasswordHash(passwordEncoder.encode("abc123"));
+        user.setUsername(username + UUID.randomUUID().toString().substring(0, 6));
+        user.setEmail(email);
         user.setNickname(username);
-        user.setPhone("13800000000");
-        return userRepository.save(user);
+        user.setRole(role);
+        user.setPasswordHash(passwords.encode("abc123"));
+        return users.saveAndFlush(user);
     }
 
-    private User saveAdmin(String username) {
-        User user = saveUser(username);
-        user.setRole("ADMIN");
-        user.setEmail(username + "@example.com");
-        return userRepository.save(user);
-    }
-
-    private Item saveItem(Long sellerId) {
-        Item item = new Item();
-        item.setTitle("二手教材");
-        item.setCategory("书籍");
-        item.setPrice(BigDecimal.valueOf(20));
-        item.setDescription("测试商品");
-        item.setImageUrl("assets/images/book.svg");
-        item.setSellerId(sellerId);
-        return itemRepository.save(item);
-    }
-
-    private void saveVerificationCode(String email, String code) {
-        EmailVerification verification = new EmailVerification();
-        verification.setEmail(email);
-        verification.setCode(code);
-        verification.setCreatedAt(LocalDateTime.now());
-        verification.setExpiresAt(LocalDateTime.now().plusMinutes(5));
-        verification.setAttempts(0);
-        verification.setUsed(false);
-        emailVerificationRepository.save(verification);
+    private MockHttpSession login(String email) throws Exception {
+        MvcResult result = mvc.perform(post("/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"%s\",\"password\":\"abc123\"}".formatted(email)))
+            .andExpect(status().isOk()).andReturn();
+        return (MockHttpSession) result.getRequest().getSession(false);
     }
 }

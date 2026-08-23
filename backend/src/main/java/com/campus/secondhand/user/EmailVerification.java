@@ -4,8 +4,12 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "email_verification")
+@Table(name = "email_verification", uniqueConstraints =
+    @UniqueConstraint(name = "uq_email_verification_scope", columnNames = {"email", "purpose"}))
 public class EmailVerification {
+
+    @Version
+    private Long version;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,8 +18,12 @@ public class EmailVerification {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private String code;
+    @Column(name = "code_hash", nullable = false, length = 64)
+    private String codeHash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
+    private VerificationPurpose purpose;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -31,8 +39,10 @@ public class EmailVerification {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
+    public String getCodeHash() { return codeHash; }
+    public void setCodeHash(String codeHash) { this.codeHash = codeHash; }
+    public VerificationPurpose getPurpose() { return purpose; }
+    public void setPurpose(VerificationPurpose purpose) { this.purpose = purpose; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

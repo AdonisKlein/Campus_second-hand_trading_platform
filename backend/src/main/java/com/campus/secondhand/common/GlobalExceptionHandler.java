@@ -12,6 +12,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.util.stream.Collectors;
+import com.campus.secondhand.user.VerificationRateLimitException;
+import org.springframework.security.access.AccessDeniedException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -44,8 +46,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleOther(Exception ex) {
-        ApiResponse<Object> body = ApiResponse.fail("服务器内部错误: " + ex.getMessage());
+        ApiResponse<Object> body = ApiResponse.fail("服务器内部错误");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(body);
+    }
+
+    @ExceptionHandler(VerificationRateLimitException.class)
+    public ResponseEntity<ApiResponse<Object>> handleRateLimit(VerificationRateLimitException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail("无权执行此操作"));
     }
 }
 
