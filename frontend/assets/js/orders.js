@@ -7,39 +7,42 @@ function escapeHtml(value) {
 }
 
 function renderOrder(order) {
-    const actionLabels = { ACCEPT: "接受订单", COMPLETE: "确认收货", CANCEL: "取消订单" };
+    const actionLabels = { ACCEPT: "选定该买家", DECLINE: "暂不接受", COMPLETE: "确认已取货", CANCEL: "取消" };
     const statusLabels = {
-        PENDING_SELLER_CONFIRMATION: "待卖家确认",
+        PURCHASE_REQUESTED: "待卖家回应",
         WAITING_HANDOVER: "待当面交易",
         COMPLETED: "交易完成",
         CANCELLED: "已取消",
-        EXPIRED: "预留已过期"
+        DECLINED: "卖家未接受",
+        EXPIRED: "已过期"
     };
-    const actions = (order.allowedActions || []).map(action =>
+    const actions = (order.allowedActions || []).filter(action => actionLabels[action]).map(action =>
         `<button type="button" data-order-id="${order.id}" data-order-action="${action}">${actionLabels[action]}</button>`
     ).join("");
     const statusClass = {
-        PENDING_SELLER_CONFIRMATION: "pending",
+        PURCHASE_REQUESTED: "pending",
         WAITING_HANDOVER: "waiting",
         COMPLETED: "completed",
         CANCELLED: "cancelled",
+        DECLINED: "cancelled",
         EXPIRED: "expired"
     }[order.status] || "";
     const statusHints = {
-        PENDING_SELLER_CONFIRMATION: "等待卖家确认订单，请留意状态变化",
+        PURCHASE_REQUESTED: "购买意向已送达，商品仍在售，等待卖家回应",
         WAITING_HANDOVER: "双方可约定校内地点，当面验货交易",
         COMPLETED: "这笔交易已经顺利完成",
-        CANCELLED: "订单已取消，商品会重新进入可售状态",
-        EXPIRED: "预留时间已结束，商品已释放"
+        CANCELLED: "购买意向或交易已取消",
+        DECLINED: "卖家暂未选择与你交易",
+        EXPIRED: "当前交易阶段已超过有效时间"
     };
     return `
         <div class="table-row order-card">
             <div class="order-card__head">
                 <div><small>ORDER NO.</small><strong>#${order.id}</strong></div>
-                <span class="status-badge ${statusClass}">${escapeHtml(statusLabels[order.status] || order.status)}</span>
+                <span class="status-badge ${statusClass}">${escapeHtml(statusLabels[order.status] || "状态处理中")}</span>
             </div>
             <div class="order-card__body">
-                <div class="order-item-name"><small>商品</small><strong>${escapeHtml(order.itemTitle || order.itemId)}</strong><span>${escapeHtml(statusHints[order.status] || "")}</span></div>
+                <div class="order-item-name"><small>商品</small><strong>${escapeHtml(order.itemTitle || order.itemId)}</strong><span>${escapeHtml(order.closureReason || statusHints[order.status] || "")}</span></div>
                 <div><small>成交价</small><strong class="price">${order.itemPrice != null ? `￥${order.itemPrice}` : "-"}</strong></div>
                 <div><small>买家</small><span>${escapeHtml(order.buyerNickname || order.buyerId)}</span></div>
                 <div><small>卖家</small><span>${escapeHtml(order.sellerNickname || order.sellerId)}</span></div>

@@ -25,7 +25,7 @@ public class TradeOrderController {
 
     @PostMapping
     public ApiResponse<OrderView> create(@Valid @RequestBody CreateOrderRequest request) {
-        return ApiResponse.created(trading.placeOrder(actors.require().userId(), request.itemId()));
+        return ApiResponse.created(trading.requestPurchase(actors.require().userId(), request.itemId()));
     }
 
     @PostMapping("/{id}/actions")

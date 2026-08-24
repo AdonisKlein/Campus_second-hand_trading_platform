@@ -115,7 +115,7 @@
           }
         },
         {
-          "name": "创建订单（不传 buyerId/sellerId）",
+          "name": "提交购买意向（商品继续在售，不传 buyerId/sellerId）",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
@@ -125,7 +125,7 @@
         },
         { "name": "我的订单（不传 userId）", "request": { "method": "GET", "url": "{{baseUrl}}/orders" } },
         {
-          "name": "执行订单动作",
+          "name": "卖家选定买家（也可 DECLINE/COMPLETE/CANCEL）",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],

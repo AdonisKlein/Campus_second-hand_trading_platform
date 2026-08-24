@@ -1,9 +1,10 @@
 package com.campus.secondhand.order;
 
 public enum OrderStatus {
-    PENDING_SELLER_CONFIRMATION,
+    PURCHASE_REQUESTED,
     WAITING_HANDOVER,
     COMPLETED,
     CANCELLED,
+    DECLINED,
     EXPIRED
 }

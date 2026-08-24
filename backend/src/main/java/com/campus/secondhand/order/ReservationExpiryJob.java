@@ -10,7 +10,7 @@ public class ReservationExpiryJob {
     public ReservationExpiryJob(TradingService trading) { this.trading = trading; }
 
     @Scheduled(fixedDelayString = "${app.trading.expiry-scan-ms:60000}")
-    public void releaseExpiredReservations() {
-        trading.overdueReservationIds().forEach(trading::expireReservation);
+    public void expireStaleTradeStages() {
+        trading.overdueOrderIds().forEach(trading::expireOrder);
     }
 }

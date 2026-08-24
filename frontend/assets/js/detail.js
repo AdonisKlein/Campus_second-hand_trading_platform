@@ -42,6 +42,17 @@ function formatMessageTime(value) {
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+function itemAvailability(item) {
+    if (item.moderationStatus === "REMOVED") return { available: false, label: "管理员已下架", note: "该商品因平台治理暂不可交易。" };
+    const states = {
+        ON_SALE: { available: true, label: "正在出售", note: "提交意向不会锁定或隐藏商品。卖家选定买家后才会进入预留，请先私聊确认成色、价格和见面地点。" },
+        RESERVED: { available: false, label: "卖家已选定买家", note: "商品正在等待当面交接，暂不接受新的购买意向。" },
+        SOLD: { available: false, label: "已售出", note: "这件商品已经完成交易。" },
+        WITHDRAWN: { available: false, label: "卖家已下架", note: "卖家暂时停止出售这件商品。" }
+    };
+    return states[item.status] || { available: false, label: "当前不可交易", note: "商品状态正在处理中，请稍后再查看。" };
+}
+
 async function loadDetail() {
     const result = await request(`/items/${itemId}`);
     const item = result.data;
@@ -52,19 +63,20 @@ async function loadDetail() {
     }
 
     currentItem = item;
+    const availability = itemAvailability(item);
     const itemTags = (item.tags || []).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
     itemDetail.innerHTML = `
         <div class="detail-product">
             <div class="detail-media"><img class="detail-image" src="${escapeHtml(productImageUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}"><span class="detail-photo-note">商品实拍 / 示意图</span></div>
             <div class="detail-summary">
-                <div class="detail-badges"><span class="tag">${escapeHtml(item.category)}</span>${itemTags}<span class="status-badge ${item.status === "ON_SALE" ? "completed" : "cancelled"}">${item.status === "ON_SALE" ? "正在出售" : "已被预留或售出"}</span></div>
+                <div class="detail-badges"><span class="tag">${escapeHtml(item.category)}</span>${itemTags}<span class="status-badge ${availability.available ? "completed" : "cancelled"}">${escapeHtml(availability.label)}</span></div>
                 <h1>${escapeHtml(item.title)}</h1>
                 <p class="detail-price-label">校园转让价</p><p class="price detail-price">￥${Number(item.price).toFixed(2)}</p>
                 <div class="detail-description"><strong>商品描述</strong><p>${escapeHtml(item.description || "卖家暂未填写商品描述")}</p></div>
                 <div class="seller-strip"><span class="seller-avatar">卖</span><div><small>发布同学</small><strong>校园用户 #${item.sellerId}</strong></div><span>${escapeHtml(item.region || "校内交易")} · 建议当面验货</span></div>
-                ${item.status === "ON_SALE" ? '<div class="detail-trade-actions"><button id="chatSeller" class="secondary">私聊卖家</button><button id="createOrder" class="order-cta">立即下单并预留</button></div>' : '<button disabled>当前不可下单</button>'}
+                ${availability.available ? '<div class="detail-trade-actions"><button type="button" id="chatSeller" class="secondary">私聊卖家</button><button type="button" id="createOrder" class="order-cta">我想要 · 提交购买意向</button></div>' : `<div class="detail-unavailable"><strong>${escapeHtml(availability.label)}</strong><button type="button" disabled aria-label="${escapeHtml(availability.label)}，不可提交购买意向">当前不可提交购买意向</button></div>`}
                 <button type="button" class="secondary report-trigger" id="reportItem">举报该商品</button>
-                <p class="cta-note">下单后商品将临时预留，请及时与卖家约定校内交易地点。</p>
+                <p class="cta-note">${escapeHtml(availability.note)}</p>
             </div>
         </div>
     `;
@@ -86,7 +98,7 @@ async function loadDetail() {
     document.querySelector("#createOrder")?.addEventListener("click", async event => {
         const submitButton = event.currentTarget;
         submitButton.disabled = true;
-        const currentUser = await requireAuthenticatedUser({ message: "登录后才能下单并预留商品，是否前往登录？", returnTo: location.pathname + location.search });
+        const currentUser = await requireAuthenticatedUser({ message: "登录后才能提交购买意向，是否前往登录？", returnTo: location.pathname + location.search });
         if (!currentUser) {
             submitButton.disabled = false;
             return;
@@ -97,7 +109,7 @@ async function loadDetail() {
             body: JSON.stringify({ itemId: item.id })
         });
 
-        alert(order.success ? "订单创建成功" : order.message);
+        alert(order.success ? "购买意向已提交，商品仍会继续展示，请等待卖家回应" : order.message);
         if (order.success) {
             loadDetail();
         } else {

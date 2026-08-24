@@ -75,8 +75,9 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 
 ### 交易 module
 
-- Seam：`TradingService.placeOrder/listOrders/perform`。
-- Interface 不变量：商品锁顺序先于订单锁；买卖身份由 Session 和商品推导；合法动作由订单状态和参与方共同决定；过期释放与状态修改在同一事务提交。
+- Seam：`TradingService.requestPurchase/listOrders/perform`。
+- Interface 不变量：买家提交的是非独占购买意向，商品保持 `ON_SALE`；卖家接受其中一条后才把商品改为 `RESERVED`，并关闭其他待回应意向。
+- 商品锁顺序先于订单锁；买卖身份由 Session 和商品推导；合法动作由订单状态和参与方共同决定；意向过期不修改商品，待交接预留取消或过期才恢复在售。
 - Controller、定时任务和测试都必须穿过这个 interface，不要直接改订单状态。
 
 ### 商品管理 module（第五轮）
@@ -100,7 +101,7 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - 用户：`ACTIVE`/`DISABLED`，安全状态变化递增 `authVersion`，旧 Session 不会复活。
 - 商品交易状态：`ON_SALE`、`RESERVED`、`SOLD`、`WITHDRAWN`。
 - 商品审核状态：`VISIBLE`、`REMOVED`。
-- 订单：`PENDING_SELLER_CONFIRMATION` → `WAITING_HANDOVER` → `COMPLETED`；也可进入 `CANCELLED`/`EXPIRED`。
+- 订单：`PURCHASE_REQUESTED` → `WAITING_HANDOVER` → `COMPLETED`；也可进入 `DECLINED`、`CANCELLED` 或 `EXPIRED`。
 - 订单保存下单时的标题、价格、双方昵称快照。
 - 举报：`OPEN` → `RESOLVED` 或 `DISMISSED`；处理历史只追加，不由学生修改或删除。
 - 私聊：会话由商品、买家、卖家唯一确定；消息 sequence 只增不改，已读游标只前进不后退。

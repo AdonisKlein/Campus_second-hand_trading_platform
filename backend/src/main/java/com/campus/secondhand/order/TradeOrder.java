@@ -19,8 +19,9 @@ public class TradeOrder {
     @Column(nullable = false, length = 80) private String sellerNickname;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
-    private OrderStatus status = OrderStatus.PENDING_SELLER_CONFIRMATION;
-    @Column(nullable = false) private LocalDateTime reservationExpiresAt;
+    private OrderStatus status = OrderStatus.PURCHASE_REQUESTED;
+    @Column(name = "expires_at", nullable = false) private LocalDateTime expiresAt;
+    @Column(name = "closure_reason", length = 160) private String closureReason;
     @Column(nullable = false, updatable = false) private LocalDateTime createdAt = LocalDateTime.now();
     @Column(nullable = false) private LocalDateTime updatedAt = LocalDateTime.now();
     @Version private Long version;
@@ -44,8 +45,10 @@ public class TradeOrder {
     public void setSellerNickname(String sellerNickname) { this.sellerNickname = sellerNickname; }
     public OrderStatus getStatus() { return status; }
     public void setStatus(OrderStatus status) { this.status = status; }
-    public LocalDateTime getReservationExpiresAt() { return reservationExpiresAt; }
-    public void setReservationExpiresAt(LocalDateTime value) { this.reservationExpiresAt = value; }
+    public LocalDateTime getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(LocalDateTime value) { this.expiresAt = value; }
+    public String getClosureReason() { return closureReason; }
+    public void setClosureReason(String value) { this.closureReason = value; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

@@ -11,6 +11,7 @@ import com.campus.secondhand.order.TradeOrderRepository;
 import com.campus.secondhand.order.OrderStatus;
 import com.campus.secondhand.order.OrderAction;
 import com.campus.secondhand.order.TradingService;
+import com.campus.secondhand.order.TradingRuleException;
 import com.campus.secondhand.user.EmailVerificationRepository;
 import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
@@ -367,7 +368,9 @@ class SecondhandApplicationTests {
         item.setModerationStatus(ItemModerationStatus.VISIBLE);
         items.saveAndFlush(item);
         sellerInventory.act(seller.getId(), published.id(), SellerItemAction.RELIST);
-        tradingService.placeOrder(buyer.getId(), published.id());
+        var request = tradingService.requestPurchase(buyer.getId(), published.id());
+        sellerInventory.revise(seller.getId(), published.id(), draft);
+        tradingService.perform(seller.getId(), request.id(), OrderAction.ACCEPT);
         org.junit.jupiter.api.Assertions.assertThrows(SellerInventoryRuleException.class,
             () -> sellerInventory.revise(seller.getId(), published.id(), draft));
         org.junit.jupiter.api.Assertions.assertThrows(SellerInventoryRuleException.class,
@@ -488,9 +491,11 @@ class SecondhandApplicationTests {
                 .content("{\"itemId\":%d,\"buyerId\":%d}".formatted(itemId, seller.getId())))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.buyerId").value(buyer.getId()))
-            .andExpect(jsonPath("$.data.status").value("PENDING_SELLER_CONFIRMATION"))
+            .andExpect(jsonPath("$.data.status").value("PURCHASE_REQUESTED"))
             .andExpect(jsonPath("$.data.allowedActions[0]").value("CANCEL"));
         Long orderId = orders.findAll().getFirst().getId();
+        org.junit.jupiter.api.Assertions.assertEquals(ItemStatus.ON_SALE, items.findById(itemId).orElseThrow().getStatus());
+        mvc.perform(get("/items")).andExpect(jsonPath("$.data", hasSize(1)));
 
         mvc.perform(post("/orders/{id}/actions", orderId).cookie(sellerSession).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{\"action\":\"ACCEPT\"}"))
@@ -512,7 +517,7 @@ class SecondhandApplicationTests {
     }
 
     @Test
-    void expiredReservationReleasesItemForAnotherBuyer() {
+    void expiredPurchaseRequestNeverHidesOrReservesItem() {
         User seller = saveUser("seller", "seller@example.com", "STUDENT");
         User buyer = saveUser("buyer", "buyer@example.com", "STUDENT");
         var item = new com.campus.secondhand.item.Item();
@@ -522,12 +527,12 @@ class SecondhandApplicationTests {
         item.setSellerId(seller.getId());
         item = items.saveAndFlush(item);
 
-        tradingService.placeOrder(buyer.getId(), item.getId());
+        tradingService.requestPurchase(buyer.getId(), item.getId());
         var order = orders.findAll().getFirst();
-        order.setReservationExpiresAt(LocalDateTime.now().minusSeconds(1));
+        order.setExpiresAt(LocalDateTime.now().minusSeconds(1));
         orders.saveAndFlush(order);
 
-        org.junit.jupiter.api.Assertions.assertTrue(tradingService.expireReservation(order.getId()));
+        org.junit.jupiter.api.Assertions.assertTrue(tradingService.expireOrder(order.getId()));
         org.junit.jupiter.api.Assertions.assertEquals(OrderStatus.EXPIRED,
             orders.findById(order.getId()).orElseThrow().getStatus());
         org.junit.jupiter.api.Assertions.assertEquals(ItemStatus.ON_SALE,
@@ -546,15 +551,15 @@ class SecondhandApplicationTests {
         item.setSellerId(seller.getId());
         item = items.saveAndFlush(item);
 
-        tradingService.placeOrder(buyer.getId(), item.getId());
+        tradingService.requestPurchase(buyer.getId(), item.getId());
         var order = orders.findAll().getFirst();
-        order.setReservationExpiresAt(LocalDateTime.now().minusSeconds(1));
+        order.setExpiresAt(LocalDateTime.now().minusSeconds(1));
         orders.saveAndFlush(order);
 
         org.junit.jupiter.api.Assertions.assertThrows(
             com.campus.secondhand.order.TradingRuleException.class,
             () -> tradingService.perform(stranger.getId(), order.getId(), OrderAction.ACCEPT));
-        org.junit.jupiter.api.Assertions.assertEquals(OrderStatus.PENDING_SELLER_CONFIRMATION,
+        org.junit.jupiter.api.Assertions.assertEquals(OrderStatus.PURCHASE_REQUESTED,
             orders.findById(order.getId()).orElseThrow().getStatus());
 
         var result = tradingService.perform(seller.getId(), order.getId(), OrderAction.ACCEPT);
@@ -564,6 +569,38 @@ class SecondhandApplicationTests {
             orders.findById(order.getId()).orElseThrow().getStatus());
         org.junit.jupiter.api.Assertions.assertEquals(ItemStatus.ON_SALE,
             items.findById(item.getId()).orElseThrow().getStatus());
+    }
+
+    @Test
+    void sellerChoosesOneBuyerAndOnlyThenReservesItem() {
+        User seller = saveUser("choice-seller", "choice-seller@example.com", "STUDENT");
+        User buyerA = saveUser("choice-a", "choice-a@example.com", "STUDENT");
+        User buyerB = saveUser("choice-b", "choice-b@example.com", "STUDENT");
+        var item = new com.campus.secondhand.item.Item();
+        item.setTitle("多人想要的教材"); item.setCategory("书籍"); item.setPrice(java.math.BigDecimal.valueOf(30)); item.setSellerId(seller.getId());
+        item = items.saveAndFlush(item);
+        Long choiceItemId = item.getId();
+
+        var requestA = tradingService.requestPurchase(buyerA.getId(), choiceItemId);
+        var requestB = tradingService.requestPurchase(buyerB.getId(), choiceItemId);
+        org.junit.jupiter.api.Assertions.assertEquals(OrderStatus.PURCHASE_REQUESTED, requestA.status());
+        org.junit.jupiter.api.Assertions.assertEquals(OrderStatus.PURCHASE_REQUESTED, requestB.status());
+        org.junit.jupiter.api.Assertions.assertEquals(ItemStatus.ON_SALE, items.findById(choiceItemId).orElseThrow().getStatus());
+        org.junit.jupiter.api.Assertions.assertThrows(TradingRuleException.class,
+            () -> tradingService.requestPurchase(buyerA.getId(), choiceItemId));
+
+        var accepted = tradingService.perform(seller.getId(), requestB.id(), OrderAction.ACCEPT);
+        org.junit.jupiter.api.Assertions.assertEquals(OrderStatus.WAITING_HANDOVER, accepted.status());
+        org.junit.jupiter.api.Assertions.assertEquals(ItemStatus.RESERVED, items.findById(choiceItemId).orElseThrow().getStatus());
+        var declined = orders.findById(requestA.id()).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals(OrderStatus.DECLINED, declined.getStatus());
+        org.junit.jupiter.api.Assertions.assertEquals("卖家已选择其他买家", declined.getClosureReason());
+
+        declined = orders.findById(requestB.id()).orElseThrow();
+        declined.setExpiresAt(LocalDateTime.now().minusSeconds(1));
+        orders.saveAndFlush(declined);
+        org.junit.jupiter.api.Assertions.assertTrue(tradingService.expireOrder(declined.getId()));
+        org.junit.jupiter.api.Assertions.assertEquals(ItemStatus.ON_SALE, items.findById(choiceItemId).orElseThrow().getStatus());
     }
 
     private User saveUser(String username, String email, String role) {
