@@ -29,7 +29,7 @@ if (!home.includes("data-search-scope")) failures.push("index.html: 搜索后必
 
 for (const file of htmlFiles) {
     const html = fs.readFileSync(path.join(frontend, file), "utf8");
-    const protectedLinks = html.match(/<a[^>]+href="(?:publish|orders|my-items)\.html[^>]*>/g) || [];
+    const protectedLinks = html.match(/<a[^>]+href="(?:publish|orders|my-items|reports)\.html[^>]*>/g) || [];
     for (const link of protectedLinks) {
         if (!link.includes("data-requires-auth")) failures.push(`${file}: 登录后操作入口缺少 data-requires-auth`);
     }
@@ -41,6 +41,15 @@ if (!admin.includes("admin-dashboard-stats")) failures.push("admin.html: 缺少�
 const api = fs.readFileSync(path.join(frontend, "assets/js/api.js"), "utf8");
 if (!api.includes("hydrateRoleNavigation")) failures.push("api.js: 缺少统一角色导航 hydration");
 if (!api.includes("confirmAuthentication")) failures.push("api.js: 缺少统一的页面内登录确认 module");
+if (!api.includes("openReportDialog")) failures.push("api.js: 缺少统一举报 dialog module");
+
+const detail = fs.readFileSync(path.join(frontend, "assets/js/detail.js"), "utf8");
+if (!detail.includes('openReportDialog("ITEM"') || !detail.includes('openReportDialog("MESSAGE"')) {
+    failures.push("detail.js: 商品和留言举报入口必须同时接入统一 module");
+}
+const main = fs.readFileSync(path.join(frontend, "assets/js/main.js"), "utf8");
+if (!main.includes('openReportDialog("USER"')) failures.push("main.js: 用户搜索结果缺少举报用户入口");
+if (!admin.includes("adminReportsPanel")) failures.push("admin.html: 缺少管理员举报队列");
 
 if (failures.length) {
     console.error(failures.join("\n"));

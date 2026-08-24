@@ -132,6 +132,23 @@
             "body": { "mode": "raw", "raw": "{\n  \"action\": \"ACCEPT\"\n}" },
             "url": "{{baseUrl}}/orders/{{orderId}}/actions"
           }
+        },
+        {
+          "name": "举报商品（身份来自 Session）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"targetType\": \"ITEM\",\n  \"targetId\": {{itemId}},\n  \"reasonCode\": \"FRAUD\",\n  \"description\": \"商品信息与实际情况明显不一致，请管理员核查\"\n}" },
+            "url": "{{baseUrl}}/reports"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const body = pm.response.json();",
+            "if (body.success) pm.collectionVariables.set('reportId', body.data.id);"
+          ] } }]
+        },
+        {
+          "name": "我的举报（不传 reporterId）",
+          "request": { "method": "GET", "url": "{{baseUrl}}/reports/mine" }
         }
       ]
     },
@@ -148,6 +165,16 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
             "body": { "mode": "raw", "raw": "{\n  \"status\": \"REMOVED\"\n}" },
             "url": "{{baseUrl}}/admin/items/{{itemId}}/status"
+          }
+        },
+        { "name": "待处理举报队列", "request": { "method": "GET", "url": "{{baseUrl}}/admin/reports?status=OPEN" } },
+        {
+          "name": "处理举报（管理员身份来自 Session）",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"RESOLVED\",\n  \"action\": \"REMOVE_ITEM\",\n  \"note\": \"核查成立，商品已下架\"\n}" },
+            "url": "{{baseUrl}}/admin/reports/{{reportId}}"
           }
         }
       ]

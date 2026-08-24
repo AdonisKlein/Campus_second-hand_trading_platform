@@ -14,6 +14,7 @@ backend/src/main/java/com/campus/secondhand/
   user/         邮箱注册登录、验证码、个人资料
   item/         商品发布、公开查询、卖家商品管理
   search/       多关键词商品/用户搜索、筛选、排序与安全公开投影
+  report/       学生举报、管理员治理决策与追加式处理审计
   media/        商品图片验证、标准化、持久存储与公开读取
   message/      商品公开留言及本人维护
   order/        预留、订单状态机、超时释放
@@ -52,6 +53,15 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - Interface：游客点击发布、订单、留言、下单等操作时留在当前页面显示确认框；用户确认后才前往登录，登录成功回到原目标。
 - `postLoginTarget` 只能接受站内相对目标；前端提示仅改善体验，后端 Session、CSRF 和资源鉴权仍是安全边界。
 
+### 内容治理 module（第九轮）
+
+- Seam：`ContentGovernance.submit/listMine/listForAdmin/decide`；学生入口 `/reports`，管理员入口 `/admin/reports`。
+- Interface 不变量：举报人和管理员都只从当前 Session 推导；学生只能举报商品、留言或学生用户，不能举报自己；同一学生对同一对象只形成一条举报。
+- 举报保存对象简要快照，即使留言之后被移除，处理记录仍可审计；普通学生只能查看自己的举报，管理员队列才包含举报人信息。
+- 举报状态只允许 `OPEN → RESOLVED | DISMISSED`。确认成立时治理措施必须与对象匹配：商品下架、留言移除、用户禁用；驳回不得改变对象。
+- 每次最终处理追加一条 `report_actions` 审计，记录真实管理员、结果、措施、说明和时间；同一举报以行锁保证只能最终处理一次。
+- 学生每 24 小时最多提交 20 条举报；数据库唯一约束继续防止并发重复提交。
+
 ### 交易 module
 
 - Seam：`TradingService.placeOrder/listOrders/perform`。
@@ -81,6 +91,7 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - 商品审核状态：`VISIBLE`、`REMOVED`。
 - 订单：`PENDING_SELLER_CONFIRMATION` → `WAITING_HANDOVER` → `COMPLETED`；也可进入 `CANCELLED`/`EXPIRED`。
 - 订单保存下单时的标题、价格、双方昵称快照。
+- 举报：`OPEN` → `RESOLVED` 或 `DISMISSED`；处理历史只追加，不由学生修改或删除。
 
 ## 当前部署事实
 

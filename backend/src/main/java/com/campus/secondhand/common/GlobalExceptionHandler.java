@@ -19,6 +19,8 @@ import com.campus.secondhand.item.SellerInventoryRuleException;
 import com.campus.secondhand.media.ProductImageException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import com.campus.secondhand.search.SearchQueryException;
+import com.campus.secondhand.report.GovernanceRuleException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -94,6 +96,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SearchQueryException.class)
     public ResponseEntity<ApiResponse<Object>> handleSearchQuery(SearchQueryException ex) {
         return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(GovernanceRuleException.class)
+    public ResponseEntity<ApiResponse<Void>> handleGovernanceRule(GovernanceRuleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDataConflict(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.fail("数据冲突，请刷新后重试"));
     }
 }
 

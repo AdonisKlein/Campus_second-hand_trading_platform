@@ -155,6 +155,57 @@ function consumePostLoginTarget() {
     return target ? safeReturnTarget(target) : null;
 }
 
+function reportDialog() {
+    let dialog = document.querySelector("#contentReportDialog");
+    if (dialog) return dialog;
+    dialog = document.createElement("dialog");
+    dialog.id = "contentReportDialog";
+    dialog.className = "report-dialog";
+    dialog.innerHTML = `
+        <form method="dialog" class="report-dialog-form">
+            <p class="section-kicker">CONTENT REPORT</p><h2 id="contentReportTitle">提交举报</h2>
+            <p data-report-summary></p>
+            <label>举报原因<select name="reasonCode" required><option value="FRAUD">疑似诈骗或虚假信息</option><option value="PROHIBITED_CONTENT">违规内容</option><option value="HARASSMENT">骚扰或不友善行为</option><option value="SPAM">垃圾广告</option><option value="OTHER">其他问题</option></select></label>
+            <label>具体说明<textarea name="description" minlength="10" maxlength="1000" rows="5" required placeholder="请用至少 10 个字说明问题，便于管理员核查"></textarea></label>
+            <p class="form-message" data-report-message role="status" aria-live="polite"></p>
+            <div class="report-dialog-actions"><button type="button" class="secondary" data-report-cancel>取消</button><button type="submit">提交举报</button></div>
+        </form>`;
+    dialog.querySelector("[data-report-cancel]").addEventListener("click", () => dialog.close());
+    dialog.setAttribute("aria-labelledby", "contentReportTitle");
+    document.body.append(dialog);
+    return dialog;
+}
+
+async function openReportDialog(targetType, targetId, summary = "该内容") {
+    const user = await requireAuthenticatedUser({ message: "登录后才能提交举报，是否前往登录？", returnTo: location.pathname + location.search });
+    if (!user) return false;
+    const dialog = reportDialog();
+    const form = dialog.querySelector("form");
+    form.reset();
+    dialog.querySelector("[data-report-summary]").textContent = `举报对象：${summary}`;
+    dialog.querySelector("[data-report-message]").textContent = "";
+    dialog.showModal();
+    return new Promise(resolve => {
+        let submitted = false;
+        const submit = async event => {
+            event.preventDefault();
+            const button = form.querySelector('button[type="submit"]');
+            button.disabled = true;
+            const data = formToJson(form);
+            const result = await request("/reports", { method: "POST", body: JSON.stringify({
+                targetType, targetId: Number(targetId), reasonCode: data.reasonCode, description: data.description
+            }) });
+            button.disabled = false;
+            if (!result.success) { dialog.querySelector("[data-report-message]").textContent = result.message || "举报提交失败"; return; }
+            submitted = true;
+            form.removeEventListener("submit", submit);
+            dialog.close();
+        };
+        form.addEventListener("submit", submit, { once: false });
+        dialog.addEventListener("close", () => { form.removeEventListener("submit", submit); resolve(submitted); }, { once: true });
+    });
+}
+
 function applyRoleNavigation(user) {
     const isAdmin = user && user.role === "ADMIN";
     document.querySelectorAll("[data-admin-only]").forEach(link => {
@@ -212,6 +263,7 @@ window.hydrateRoleNavigation = hydrateRoleNavigation;
 window.confirmAuthentication = confirmAuthentication;
 window.requireAuthenticatedUser = requireAuthenticatedUser;
 window.consumePostLoginTarget = consumePostLoginTarget;
+window.openReportDialog = openReportDialog;
 
 document.addEventListener("click", event => {
     const link = event.target.closest("a[data-requires-auth]");

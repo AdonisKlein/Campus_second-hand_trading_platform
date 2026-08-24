@@ -11,6 +11,10 @@ const adminStatUsers = document.querySelector("#adminStatUsers");
 const adminStatItems = document.querySelector("#adminStatItems");
 const adminStatMessages = document.querySelector("#adminStatMessages");
 const adminStatRemoved = document.querySelector("#adminStatRemoved");
+const adminReportList = document.querySelector("#adminReportList");
+const adminReportCount = document.querySelector("#adminReportCount");
+const adminReportStatus = document.querySelector("#adminReportStatus");
+const adminReportMessage = document.querySelector("#adminReportMessage");
 
 let currentUser = null;
 
@@ -121,6 +125,26 @@ async function loadItems() {
     }).join("") : "<p>暂无商品</p>";
 }
 
+function adminReportLabel(value) { return ({ FRAUD:"疑似诈骗", PROHIBITED_CONTENT:"违规内容", HARASSMENT:"骚扰行为", SPAM:"垃圾广告", OTHER:"其他问题" })[value] || value; }
+function adminTargetLabel(value) { return ({ ITEM:"商品", MESSAGE:"留言", USER:"用户" })[value] || value; }
+function adminStatusLabel(value) { return ({ OPEN:"待处理", RESOLVED:"已确认", DISMISSED:"已驳回" })[value] || value; }
+function expectedAction(type) { return ({ ITEM:"REMOVE_ITEM", MESSAGE:"REMOVE_MESSAGE", USER:"DISABLE_USER" })[type]; }
+
+async function loadReports() {
+    const query = adminReportStatus.value ? `?status=${adminReportStatus.value}` : "";
+    const result = await adminRequest(`/reports${query}`);
+    const reports = result.data?.reports || [];
+    adminReportCount.textContent = `${reports.length} 条举报`;
+    adminReportList.innerHTML = reports.length ? reports.map(report => `
+        <article class="report-card admin-report-card" data-report-id="${report.id}">
+            <div class="report-card-top"><span class="status-badge ${report.status === "OPEN" ? "pending" : report.status === "RESOLVED" ? "completed" : "cancelled"}">${adminStatusLabel(report.status)}</span><time>${escapeHtml(formatTime(report.createdAt))}</time></div>
+            <h3>${adminTargetLabel(report.targetType)} #${report.targetId}：${escapeHtml(report.targetSummary)}</h3>
+            <p><strong>${escapeHtml(report.reporterName)}</strong> 举报为“${adminReportLabel(report.reasonCode)}”</p><p>${escapeHtml(report.description)}</p>
+            ${report.resolutionNote ? `<div class="report-resolution"><strong>处理说明</strong><p>${escapeHtml(report.resolutionNote)}</p></div>` : ""}
+            ${report.status === "OPEN" ? `<div class="admin-row-actions"><button type="button" data-action="resolve-report" data-report-id="${report.id}" data-target-type="${report.targetType}">确认并治理</button><button type="button" class="secondary" data-action="dismiss-report" data-report-id="${report.id}">驳回举报</button></div>` : ""}
+        </article>`).join("") : '<p class="empty-state">当前筛选下没有举报。</p>';
+}
+
 function switchTab(tab) {
     document.querySelectorAll(".admin-tabs button").forEach(button => {
         const active = button.dataset.adminTab === tab;
@@ -198,11 +222,28 @@ adminItemList.addEventListener("click", async event => {
     loadItems();
 });
 
+adminReportStatus.addEventListener("change", loadReports);
+adminReportList.addEventListener("click", async event => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    const resolving = button.dataset.action === "resolve-report";
+    const note = prompt(resolving ? "请填写确认举报及治理说明" : "请填写驳回原因");
+    if (!note || note.trim().length < 2) { adminReportMessage.textContent = "处理说明至少需要 2 个字"; return; }
+    button.disabled = true;
+    const result = await adminRequest(`/reports/${button.dataset.reportId}`, { method:"PUT", body:JSON.stringify({
+        status: resolving ? "RESOLVED" : "DISMISSED", action: resolving ? expectedAction(button.dataset.targetType) : "NONE", note: note.trim()
+    }) });
+    button.disabled = false;
+    adminReportMessage.textContent = result.success ? "举报处理完成，治理措施已经生效" : (result.message || "处理失败");
+    if (result.success) { loadReports(); loadUsers(); loadMessages(); loadItems(); }
+});
+
 (async function initAdmin() {
     currentUser = await session.current();
     if (requireAdmin()) {
         loadUsers();
         loadMessages();
         loadItems();
+        loadReports();
     }
 })();

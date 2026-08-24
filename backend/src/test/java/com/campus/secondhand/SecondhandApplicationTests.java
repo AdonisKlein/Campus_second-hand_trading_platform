@@ -18,6 +18,8 @@ import com.campus.secondhand.user.EmailVerification;
 import com.campus.secondhand.user.VerificationPurpose;
 import com.campus.secondhand.user.VerificationService;
 import com.campus.secondhand.media.ProductImages;
+import com.campus.secondhand.report.ContentReportRepository;
+import com.campus.secondhand.report.ReportActionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -58,16 +60,54 @@ class SecondhandApplicationTests {
     @Autowired TradingService tradingService;
     @Autowired SellerInventory sellerInventory;
     @Autowired ProductImages productImages;
+    @Autowired ContentReportRepository contentReports;
+    @Autowired ReportActionRepository reportActions;
     @Autowired ObjectMapper objectMapper;
     @MockitoBean JavaMailSender mailSender;
 
     @BeforeEach
     void clean() {
+        reportActions.deleteAll();
+        contentReports.deleteAll();
         orders.deleteAll();
         messages.deleteAll();
         items.deleteAll();
         verifications.deleteAll();
         users.deleteAll();
+    }
+
+    @Test
+    void reportWorkflowUsesSessionIdentityAndAdminDecisionRemovesItem() throws Exception {
+        User seller = saveUser("report-seller", "report-seller@example.com", "STUDENT");
+        User reporter = saveUser("reporter", "reporter@example.com", "STUDENT");
+        User admin = saveUser("report-admin", "report-admin@example.com", "ADMIN");
+        var item = sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "疑似虚假商品", "其他", java.math.BigDecimal.TEN, "需要管理员核查", ""));
+        MockCookie reporterSession = login(reporter.getEmail());
+        MockCookie adminSession = login(admin.getEmail());
+
+        String body = "{\"targetType\":\"ITEM\",\"targetId\":%d,\"reasonCode\":\"FRAUD\",\"description\":\"商品描述与实际情况明显不一致，请核查\",\"reporterId\":%d}"
+            .formatted(item.id(), seller.getId());
+        mvc.perform(post("/reports").cookie(reporterSession).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.reporterId").value(reporter.getId()))
+            .andExpect(jsonPath("$.data.status").value("OPEN"));
+        mvc.perform(post("/reports").cookie(reporterSession).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+            .andExpect(status().isConflict());
+        mvc.perform(get("/admin/reports").cookie(reporterSession)).andExpect(status().isForbidden());
+        mvc.perform(get("/reports/mine").cookie(reporterSession))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.reports", hasSize(1)));
+        Long reportId = contentReports.findAll().getFirst().getId();
+
+        mvc.perform(put("/admin/reports/{id}", reportId).cookie(adminSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\":\"RESOLVED\",\"action\":\"REMOVE_ITEM\",\"note\":\"核查成立，商品已下架\",\"adminId\":999}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.status").value("RESOLVED"))
+            .andExpect(jsonPath("$.data.history", hasSize(1)));
+        org.junit.jupiter.api.Assertions.assertEquals(ItemModerationStatus.REMOVED,
+            items.findById(item.id()).orElseThrow().getModerationStatus());
+        org.junit.jupiter.api.Assertions.assertEquals(admin.getId(), reportActions.findAll().getFirst().getAdminId());
     }
 
     @Test

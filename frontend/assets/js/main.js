@@ -88,7 +88,7 @@ function renderUsers(users) {
         <article class="user-result-card">
             <span class="profile-avatar" aria-hidden="true">${escapeHtml((user.nickname || user.username || "航").slice(0, 1))}</span>
             <div><h3>${escapeHtml(user.nickname || user.username)}</h3><p>@${escapeHtml(user.username)} · ${escapeHtml(user.region || "未设置区域")}</p><div class="user-result-meta"><span>信用 ${escapeHtml(user.creditScore)}</span><span>${formatActivity(user.lastActiveAt)}</span></div></div>
-            <button type="button" class="secondary" data-view-seller="${user.id}">查看在售</button>
+            <div class="user-result-actions"><button type="button" class="secondary" data-view-seller="${user.id}">查看在售</button><button type="button" class="secondary danger" data-report-user="${user.id}" data-report-name="${escapeHtml(user.nickname || user.username)}">举报用户</button></div>
         </article>`).join("") : '<p class="empty-state">没有找到匹配的校园用户。</p>';
 }
 
@@ -179,6 +179,12 @@ document.querySelector("#clearFilters").addEventListener("click", () => {
 });
 
 userGrid.addEventListener("click", event => {
+    const reportButton = event.target.closest("[data-report-user]");
+    if (reportButton) {
+        openReportDialog("USER", reportButton.dataset.reportUser, reportButton.dataset.reportName)
+            .then(submitted => { if (submitted) alert("举报已提交，可在个人中心查看处理进度"); });
+        return;
+    }
     const button = event.target.closest("[data-view-seller]");
     if (!button) return;
     state.scope = "ITEMS";

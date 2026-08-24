@@ -3182,6 +3182,34 @@ button.danger,
 }
 
 /* Round 7 mobile polish must remain after legacy responsive overrides. */
+
+/* Round 9: reports and content governance */
+.report-dialog {
+    width: min(520px, calc(100% - 28px));
+    border: 0;
+    border-radius: 22px;
+    padding: 0;
+    box-shadow: 0 28px 80px rgba(15, 34, 61, .24);
+}
+
+.report-dialog::backdrop { background: rgba(15, 34, 61, .56); }
+.report-dialog-form { display: grid; gap: 16px; padding: 26px; }
+.report-dialog-form h2, .report-dialog-form p { margin: 0; }
+.report-dialog-actions, .user-result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.report-trigger { margin-top: 10px; width: 100%; }
+.reports-panel, .report-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; }
+.reports-panel { padding: 24px; }
+.report-list { display: grid; gap: 14px; }
+.report-card { padding: 18px; box-shadow: 0 8px 24px rgba(15, 34, 61, .05); }
+.report-card h3 { margin: 10px 0 8px; }
+.report-card > p { color: var(--muted); overflow-wrap: anywhere; }
+.report-card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.report-card-top time { color: var(--muted); font-size: 13px; }
+.report-resolution { margin-top: 12px; padding: 12px; border-radius: 12px; background: #f2f6ff; }
+.report-resolution p { margin: 5px 0 0; }
+.admin-report-card .admin-row-actions { margin-top: 14px; }
+.admin-section .section-title > div { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
 @media (max-width: 720px) {
     .topbar nav {
         grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
@@ -3218,4 +3246,9 @@ button.danger,
         font-size: 13px;
         font-weight: 800;
     }
+
+    .admin-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); overflow-x: auto; }
+    .report-dialog-form { padding: 20px; }
+    .reports-panel { padding: 18px 14px; }
+    .report-dialog-actions button, .user-result-actions button { flex: 1 1 120px; }
 }

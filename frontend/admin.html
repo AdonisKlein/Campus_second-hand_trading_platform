@@ -20,7 +20,7 @@
     </header>
 
     <main class="layout">
-        <section class="page-heading admin-heading"><div><p class="eyebrow">ADMIN CONSOLE</p><h1>管理中心</h1><p>集中处理账号状态、公开留言与平台商品。</p></div><span id="adminUserInfo" class="user-chip"></span></section>
+        <section class="page-heading admin-heading"><div><p class="eyebrow">ADMIN CONSOLE</p><h1>管理中心</h1><p>集中处理举报、账号状态、公开留言与平台商品。</p></div><span id="adminUserInfo" class="user-chip"></span></section>
 
         <section id="adminGate" class="form-panel" style="display:none;">
             <p>请使用管理员账号登录后访问管理中心。</p>
@@ -33,6 +33,7 @@
                 <button id="adminTabUsers" type="button" class="active" role="tab" aria-selected="true" aria-controls="adminUsersPanel" tabindex="0" data-admin-tab="users"><span>用户管理</span><small>账号状态与权限</small></button>
                 <button id="adminTabMessages" type="button" class="secondary" role="tab" aria-selected="false" aria-controls="adminMessagesPanel" tabindex="-1" data-admin-tab="messages"><span>留言管理</span><small>公开内容维护</small></button>
                 <button id="adminTabItems" type="button" class="secondary" role="tab" aria-selected="false" aria-controls="adminItemsPanel" tabindex="-1" data-admin-tab="items"><span>商品管理</span><small>商品上下架处理</small></button>
+                <button id="adminTabReports" type="button" class="secondary" role="tab" aria-selected="false" aria-controls="adminReportsPanel" tabindex="-1" data-admin-tab="reports"><span>举报管理</span><small>核查与治理记录</small></button>
             </div>
             <p class="admin-sidebar-note">管理操作会立即生效，请确认目标信息后再执行。</p></aside>
             <div class="admin-workspace">
@@ -72,6 +73,11 @@
                     <span id="adminItemCount"></span>
                 </div>
                 <div id="adminItemList" class="table-list"></div>
+            </section>
+            <section id="adminReportsPanel" class="admin-section" role="tabpanel" aria-labelledby="adminTabReports" data-admin-section="reports" style="display:none;">
+                <div class="section-title"><div><h2>举报队列</h2><select id="adminReportStatus" aria-label="按举报状态筛选"><option value="OPEN">待处理</option><option value="">全部</option><option value="RESOLVED">已确认</option><option value="DISMISSED">已驳回</option></select></div><span id="adminReportCount"></span></div>
+                <p id="adminReportMessage" class="form-message" role="status" aria-live="polite"></p>
+                <div id="adminReportList" class="report-list admin-report-list"></div>
             </section>
             </div>
         </section>

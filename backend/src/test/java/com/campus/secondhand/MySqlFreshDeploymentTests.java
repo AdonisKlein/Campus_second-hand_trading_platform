@@ -39,7 +39,7 @@ class MySqlFreshDeploymentTests {
     @Test
     void freshSchemaValidatesAndJdbcSessionRowsCascade() {
         flyway.validate();
-        assertEquals(2, jdbc.queryForObject(
+        assertEquals(3, jdbc.queryForObject(
             "SELECT COUNT(*) FROM flyway_schema_history WHERE success = 1", Integer.class));
 
         long now = Instant.now().toEpochMilli();

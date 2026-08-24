@@ -63,11 +63,16 @@ async function loadDetail() {
                 <div class="detail-description"><strong>商品描述</strong><p>${escapeHtml(item.description || "卖家暂未填写商品描述")}</p></div>
                 <div class="seller-strip"><span class="seller-avatar">卖</span><div><small>发布同学</small><strong>校园用户 #${item.sellerId}</strong></div><span>${escapeHtml(item.region || "校内交易")} · 建议当面验货</span></div>
                 ${item.status === "ON_SALE" ? '<button id="createOrder" class="order-cta">立即下单并预留</button>' : '<button disabled>当前不可下单</button>'}
+                <button type="button" class="secondary report-trigger" id="reportItem">举报该商品</button>
                 <p class="cta-note">下单后商品将临时预留，请及时与卖家约定校内交易地点。</p>
             </div>
         </div>
     `;
     installImageFallbacks(itemDetail);
+
+    document.querySelector("#reportItem")?.addEventListener("click", async () => {
+        if (await openReportDialog("ITEM", item.id, item.title)) alert("举报已提交，可在个人中心查看处理进度");
+    });
 
     document.querySelector("#createOrder")?.addEventListener("click", async event => {
         const submitButton = event.currentTarget;
@@ -115,7 +120,7 @@ async function loadMessages() {
                             <button class="secondary message-action" type="button" data-action="edit">编辑</button>
                             <button class="secondary message-action danger" type="button" data-action="delete">删除</button>
                         </div>
-                    ` : ""}
+                    ` : `<div class="message-actions"><button class="secondary message-action" type="button" data-action="report">举报</button></div>`}
                 </div>
                 <p class="message-content">${escapeHtml(message.content)}</p>
             </div>
@@ -164,6 +169,12 @@ messageList.addEventListener("click", async (event) => {
     const messageItem = button.closest(".message-item");
     const messageId = messageItem && messageItem.dataset.messageId;
     const action = button.dataset.action;
+
+    if (action === "report") {
+        const summary = messageItem.querySelector(".message-content")?.textContent || "这条留言";
+        if (await openReportDialog("MESSAGE", messageId, summary.slice(0, 40))) alert("举报已提交，可在个人中心查看处理进度");
+        return;
+    }
 
     if (action === "edit") {
         const messageContent = messageItem.querySelector(".message-content");
