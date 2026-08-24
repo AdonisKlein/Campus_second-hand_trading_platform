@@ -13,6 +13,7 @@ backend/src/main/java/com/campus/secondhand/
   security/     Session 当前身份、Security 配置、Client IP
   user/         邮箱注册登录、验证码、个人资料
   item/         商品发布、公开查询、卖家商品管理
+  search/       多关键词商品/用户搜索、筛选、排序与安全公开投影
   media/        商品图片验证、标准化、持久存储与公开读取
   message/      商品公开留言及本人维护
   order/        预留、订单状态机、超时释放
@@ -36,11 +37,20 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - 页面角色导航由 `api.js` 统一 hydration；所有 `data-admin-only` 入口必须在 HTML 默认 `hidden`，仅当前 Session 的 `/users/me` 返回 ADMIN 后显示。这个规则只改善体验，不替代后端授权。
 - 会话读取带 generation；登录、退出或 401 后，旧请求不得覆盖新会话的页面状态。
 
-### 公开商品目录 module（第七轮）
+### 校园搜索 module（第八轮）
 
-- Seam：`ItemRepository.searchPublic(category, keyword, status, moderationStatus)`。
-- Interface：分类和关键词都是可选条件；两者同时存在时返回交集，只公开 `ON_SALE + VISIBLE` 商品并按发布时间倒序。
-- 首页桌面结构以 `market-shell` 为根，包含分类侧栏、活动横幅、快捷分类和商品网格；移动端隐藏侧栏，但查询语义保持一致。
+- Seam：`CampusSearch.search(SearchQuery, viewerRegion)`，HTTP 入口为公开的 `GET /search`。
+- Interface：最多 8 个空格/逗号分隔关键词；关键词之间取交集，单个关键词可匹配商品标题、描述或标签。搜索范围明确分为 `ITEMS` 与 `USERS`。
+- 商品只返回 `ON_SALE + VISIBLE` 且卖家仍为 `ACTIVE` 的记录，可按价格、校园区域、商品标签和卖家筛选，并支持相关度、最新、最近活跃、同区域优先、信用、价格排序。
+- 用户搜索只匹配用户名/昵称，只返回 id、用户名、昵称、校园区域、信用分和最近活跃时间；不得暴露邮箱、手机号或其他登录资料。
+- “离我最近”当前只表示登录用户与商品/用户处于同一校园区域时优先；尚未使用 GPS 或精确位置。
+- 首页不使用商品分类侧栏。搜索前展示最新商品；提交搜索后才展开商品/用户切换、排序、价格、区域和标签筛选。
+
+### 受保护操作导航 module（第八轮）
+
+- Seam：前端 `api.js` 的 `requireAuthenticatedUser()`、`confirmAuthentication()` 和 `data-requires-auth`。
+- Interface：游客点击发布、订单、留言、下单等操作时留在当前页面显示确认框；用户确认后才前往登录，登录成功回到原目标。
+- `postLoginTarget` 只能接受站内相对目标；前端提示仅改善体验，后端 Session、CSRF 和资源鉴权仍是安全边界。
 
 ### 交易 module
 
@@ -77,6 +87,7 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - Docker 服务：`mysql`、`backend`、`web`，只向宿主机暴露 Web 80 端口；`media-data` 保存商品图片。
 - Nginx 同源代理 `/api/`；生产 TLS 需把 Session Cookie Secure 设为 true。
 - Flyway 从空 MySQL 建库；本项目没有历史生产库升级负担。
+- 当前本地验收数据库是 Docker Desktop 中的 `mysql:8.4`，通过 Compose 私有网络连接并保存在 Docker volume；不是远程数据库，也不是宿主机单独安装的 MySQL 服务。
 - `database/seed.sql` 仅允许全新空业务库执行一次，禁止生产导入。
 
 ## 已知非阻断债务

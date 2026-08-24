@@ -50,15 +50,12 @@ function renderOrder(order) {
 }
 
 async function loadOrders() {
-    const currentUser = await session.current();
-    if (!currentUser || !currentUser.id) {
+    const currentUser = await requireAuthenticatedUser({ message: "登录后才能查看和处理订单，是否前往登录？", returnTo: "orders.html" });
+    if (!currentUser) {
         if (currentUserInfo) {
             currentUserInfo.textContent = "";
         }
         orderList.innerHTML = "<p>请先登录以查看订单</p>";
-        setTimeout(() => {
-            location.href = "profile.html";
-        }, 800);
         return;
     }
 

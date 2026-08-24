@@ -46,6 +46,15 @@ public class User {
     @Column(name = "auth_version", nullable = false)
     private Integer authVersion = 0;
 
+    @Column(name = "campus_region", length = 40)
+    private String campusRegion = "学院路校区";
+
+    @Column(name = "credit_score", nullable = false)
+    private Integer creditScore = 100;
+
+    @Column(name = "last_active_at", nullable = false)
+    private LocalDateTime lastActiveAt = LocalDateTime.now();
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -135,6 +144,15 @@ public class User {
 
     public Integer getAuthVersion() { return authVersion; }
     public void setAuthVersion(Integer authVersion) { this.authVersion = authVersion; }
+
+    public String getCampusRegion() { return campusRegion; }
+    public void setCampusRegion(String campusRegion) { this.campusRegion = campusRegion; }
+
+    public Integer getCreditScore() { return creditScore; }
+    public void setCreditScore(Integer creditScore) { this.creditScore = creditScore; }
+
+    public LocalDateTime getLastActiveAt() { return lastActiveAt; }
+    public void setLastActiveAt(LocalDateTime lastActiveAt) { this.lastActiveAt = lastActiveAt; }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;

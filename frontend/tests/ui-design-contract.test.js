@@ -16,9 +16,22 @@ for (const file of htmlFiles) {
 }
 
 const home = fs.readFileSync(path.join(frontend, "index.html"), "utf8");
-for (const selector of ["market-shell", "category-sidebar", "campaign-banner", "category-chips"]) {
+for (const selector of ["student-market-header", "market-search", "campaign-banner", "discovery-chips", "search-filter-panel"]) {
     if (!home.includes(`class=\"${selector}`) && !home.includes(` ${selector}`)) {
         failures.push(`index.html: 缺少设计预览结构 .${selector}`);
+    }
+}
+if (home.includes("category-sidebar")) failures.push("index.html: 学生端不应使用商品分类侧边栏");
+if (/<section class="campaign-banner">[\s\S]*?<a class="button-link"/.test(home)) {
+    failures.push("index.html: 活动横幅不应复用全宽 button-link");
+}
+if (!home.includes("data-search-scope")) failures.push("index.html: 搜索后必须能切换商品/用户");
+
+for (const file of htmlFiles) {
+    const html = fs.readFileSync(path.join(frontend, file), "utf8");
+    const protectedLinks = html.match(/<a[^>]+href="(?:publish|orders|my-items)\.html[^>]*>/g) || [];
+    for (const link of protectedLinks) {
+        if (!link.includes("data-requires-auth")) failures.push(`${file}: 登录后操作入口缺少 data-requires-auth`);
     }
 }
 
@@ -27,6 +40,7 @@ if (!admin.includes("admin-dashboard-stats")) failures.push("admin.html: 缺少�
 
 const api = fs.readFileSync(path.join(frontend, "assets/js/api.js"), "utf8");
 if (!api.includes("hydrateRoleNavigation")) failures.push("api.js: 缺少统一角色导航 hydration");
+if (!api.includes("confirmAuthentication")) failures.push("api.js: 缺少统一的页面内登录确认 module");
 
 if (failures.length) {
     console.error(failures.join("\n"));

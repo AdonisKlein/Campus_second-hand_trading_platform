@@ -8,79 +8,54 @@
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <header class="topbar">
+    <header class="topbar student-market-header">
         <a class="brand" href="index.html">航集 Campus Market</a>
+        <form class="market-search" id="searchForm" role="search">
+            <span aria-hidden="true">⌕</span>
+            <input id="keyword" type="search" maxlength="160" placeholder="输入多个关键词，例如：高数 教材 第七版" aria-label="搜索商品或用户">
+            <button type="submit">搜索</button>
+        </form>
         <nav aria-label="主导航">
-            <a class="active" href="index.html" aria-current="page" data-icon="⌂">首页</a>
-            <a href="publish.html" data-icon="＋">发布物品</a>
-            <a href="orders.html" data-icon="▤">订单管理</a>
+            <a href="orders.html" data-icon="▤" data-requires-auth>订单</a>
+            <a href="publish.html" data-icon="＋" data-requires-auth>＋ 发布闲置</a>
             <a href="profile.html" data-icon="○">个人中心</a>
             <a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
     <main class="layout home-layout">
-        <section class="market-shell">
-            <aside class="category-sidebar" aria-label="商品分类">
-                <div class="category-sidebar-heading"><span>分类浏览</span><small>CATEGORIES</small></div>
-                <button type="button" class="active" data-category-filter=""><span aria-hidden="true">⌂</span>全部闲置</button>
-                <button type="button" data-category-filter="书籍"><span aria-hidden="true">▤</span>书籍资料</button>
-                <button type="button" data-category-filter="电子产品"><span aria-hidden="true">⌁</span>电子产品</button>
-                <button type="button" data-category-filter="生活用品"><span aria-hidden="true">◇</span>生活用品</button>
-                <button type="button" data-category-filter="其他"><span aria-hidden="true">＋</span>其他物品</button>
-                <div class="campus-trust-card">
-                    <strong>校内安心流转</strong>
-                    <p>校园用户发布，建议在校内公共区域当面验货交易。</p>
+        <div class="market-main">
+            <section class="campaign-banner">
+                <div><p class="section-kicker">CAMPUS CIRCULATION</p><h1>让闲置，在校园重新起飞</h1><p>真实学生 · 校园交接 · 轻松沟通</p></div>
+                <div class="campaign-mark" aria-hidden="true"><span>BUAA</span><strong>好物<br>继续飞</strong></div>
+            </section>
+
+            <nav class="discovery-chips" aria-label="商品标签推荐">
+                <span>为你推荐</span>
+                <button type="button" data-discovery-tag="可小刀">可小刀</button><button type="button" data-discovery-tag="仅自提">仅自提</button><button type="button" data-discovery-tag="支持验货">支持验货</button><button type="button" data-discovery-tag="九成新">九成新</button><button type="button" data-discovery-tag="急出">急出</button><button type="button" data-discovery-tag="免费赠送">免费赠送</button>
+            </nav>
+
+            <section class="search-filter-panel" id="searchFilters" hidden aria-label="搜索筛选与排序">
+                <div class="search-scope-tabs" role="tablist" aria-label="搜索范围">
+                    <button type="button" class="active" role="tab" aria-selected="true" data-search-scope="ITEMS">商品</button>
+                    <button type="button" role="tab" aria-selected="false" data-search-scope="USERS">用户</button>
                 </div>
-            </aside>
+                <form id="filterForm" class="search-filter-form">
+                    <label>排序<select id="searchSort"><option value="RELEVANCE">综合相关</option><option value="NEWEST">最新发布</option><option value="ACTIVE">最近活跃</option><option value="NEAREST">离我最近</option><option value="CREDIT">信用优先</option><option value="PRICE_ASC">价格从低到高</option><option value="PRICE_DESC">价格从高到低</option></select></label>
+                    <div class="price-filter" data-item-filter><label>最低价<input id="minPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="不限"></label><span>—</span><label>最高价<input id="maxPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="不限"></label></div>
+                    <label>区域<select id="searchRegion"><option value="">全部区域</option><option>学院路校区</option><option>沙河校区</option><option>大运村</option><option>其他校内区域</option></select></label>
+                    <button type="submit">应用筛选</button><button type="button" class="secondary" id="clearFilters">清除</button>
+                </form>
+                <div class="tag-filter" data-item-filter aria-label="商品标签筛选"><span>商品标签</span><button type="button" aria-pressed="false" data-tag-filter="可小刀">可小刀</button><button type="button" aria-pressed="false" data-tag-filter="仅自提">仅自提</button><button type="button" aria-pressed="false" data-tag-filter="支持验货">支持验货</button><button type="button" aria-pressed="false" data-tag-filter="九成新">九成新</button><button type="button" aria-pressed="false" data-tag-filter="急出">急出</button><button type="button" aria-pressed="false" data-tag-filter="免费赠送">免费赠送</button></div>
+            </section>
 
-            <div class="market-main">
-                <section class="hero home-welcome">
-                    <div class="hero-copy">
-                        <p class="eyebrow">BUAA CAMPUS MARKET</p>
-                        <h1>校园闲置，<span>好物流转</span></h1>
-                        <p>搜索同学发布的教材、数码和生活好物。</p>
-                    </div>
-                    <form class="search-bar" id="searchForm">
-                        <input id="keyword" type="search" placeholder="搜索物品关键词" aria-label="搜索物品关键词">
-                        <select id="category" aria-label="选择物品分类">
-                            <option value="">全部分类</option>
-                            <option value="书籍">书籍</option>
-                            <option value="生活用品">生活用品</option>
-                            <option value="电子产品">电子产品</option>
-                            <option value="其他">其他</option>
-                        </select>
-                        <button type="submit">搜索</button>
-                    </form>
-                </section>
-
-                <section class="campaign-banner">
-                    <div>
-                        <p class="section-kicker">CAMPUS CIRCULATION</p>
-                        <h2>毕业季循环计划</h2>
-                        <p>让闲置跨过宿舍楼，成为下一位同学的新装备。</p>
-                        <a class="button-link" href="publish.html">发布我的闲置</a>
-                    </div>
-                    <div class="campaign-mark" aria-hidden="true"><span>BUAA</span><strong>让好物<br>继续飞</strong></div>
-                </section>
-
-                <nav class="category-chips" aria-label="快捷分类">
-                    <button type="button" class="active" data-category-filter="">全部</button>
-                    <button type="button" data-category-filter="书籍">书籍资料</button>
-                    <button type="button" data-category-filter="电子产品">电子产品</button>
-                    <button type="button" data-category-filter="生活用品">生活用品</button>
-                    <button type="button" data-category-filter="其他">其他</button>
-                </nav>
-
-                <section class="home-section">
-                    <div class="section-title">
-                        <div><p class="section-kicker">FRESH ON CAMPUS</p><h2>最新物品</h2></div>
-                        <span id="itemCount" role="status" aria-live="polite">加载中</span>
-                    </div>
-                    <div class="item-grid" id="itemGrid"></div>
-                </section>
-            </div>
-        </section>
+            <section class="home-section">
+                <div class="section-title"><div><p class="section-kicker" id="resultKicker">FRESH ON CAMPUS</p><h2 id="resultTitle">最新物品</h2></div><span id="itemCount" role="status" aria-live="polite">加载中</span></div>
+                <div class="item-grid" id="itemGrid"></div>
+                <div class="user-result-grid" id="userGrid" hidden></div>
+                <button type="button" class="secondary load-more" id="loadMore" hidden>加载更多</button>
+            </section>
+        </div>
     </main>
 
     <script src="assets/js/api.js"></script>

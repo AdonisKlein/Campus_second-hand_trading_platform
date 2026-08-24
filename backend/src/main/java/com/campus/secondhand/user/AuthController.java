@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import java.util.Locale;
+import java.time.LocalDateTime;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,6 +96,8 @@ public class AuthController {
             SecurityContextHolder.setContext(context);
             contexts.saveContext(context, servletRequest, servletResponse);
             User current = users.findByEmailIgnoreCase(auth.getName()).orElseThrow();
+            current.setLastActiveAt(LocalDateTime.now());
+            current = users.save(current);
             servletRequest.getSession(false).setAttribute("AUTH_VERSION", current.getAuthVersion());
             return ResponseEntity.ok(ApiResponse.ok(UserController.UserView.from(current)));
         } catch (AuthenticationException ex) {

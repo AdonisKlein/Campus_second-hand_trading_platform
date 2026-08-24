@@ -18,6 +18,7 @@ import com.campus.secondhand.order.TradingRuleException;
 import com.campus.secondhand.item.SellerInventoryRuleException;
 import com.campus.secondhand.media.ProductImageException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import com.campus.secondhand.search.SearchQueryException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -88,6 +89,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
             .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail("图片不能超过 5MB"));
+    }
+
+    @ExceptionHandler(SearchQueryException.class)
+    public ResponseEntity<ApiResponse<Object>> handleSearchQuery(SearchQueryException ex) {
+        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
     }
 }
 

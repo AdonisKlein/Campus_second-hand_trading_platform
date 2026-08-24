@@ -52,15 +52,16 @@ async function loadDetail() {
     }
 
     currentItem = item;
+    const itemTags = (item.tags || []).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
     itemDetail.innerHTML = `
         <div class="detail-product">
             <div class="detail-media"><img class="detail-image" src="${escapeHtml(productImageUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}"><span class="detail-photo-note">商品实拍 / 示意图</span></div>
             <div class="detail-summary">
-                <div class="detail-badges"><span class="tag">${escapeHtml(item.category)}</span><span class="status-badge ${item.status === "ON_SALE" ? "completed" : "cancelled"}">${item.status === "ON_SALE" ? "正在出售" : "已被预留或售出"}</span></div>
+                <div class="detail-badges"><span class="tag">${escapeHtml(item.category)}</span>${itemTags}<span class="status-badge ${item.status === "ON_SALE" ? "completed" : "cancelled"}">${item.status === "ON_SALE" ? "正在出售" : "已被预留或售出"}</span></div>
                 <h1>${escapeHtml(item.title)}</h1>
                 <p class="detail-price-label">校园转让价</p><p class="price detail-price">￥${Number(item.price).toFixed(2)}</p>
                 <div class="detail-description"><strong>商品描述</strong><p>${escapeHtml(item.description || "卖家暂未填写商品描述")}</p></div>
-                <div class="seller-strip"><span class="seller-avatar">卖</span><div><small>发布同学</small><strong>校园用户 #${item.sellerId}</strong></div><span>建议当面验货</span></div>
+                <div class="seller-strip"><span class="seller-avatar">卖</span><div><small>发布同学</small><strong>校园用户 #${item.sellerId}</strong></div><span>${escapeHtml(item.region || "校内交易")} · 建议当面验货</span></div>
                 ${item.status === "ON_SALE" ? '<button id="createOrder" class="order-cta">立即下单并预留</button>' : '<button disabled>当前不可下单</button>'}
                 <p class="cta-note">下单后商品将临时预留，请及时与卖家约定校内交易地点。</p>
             </div>
@@ -71,10 +72,9 @@ async function loadDetail() {
     document.querySelector("#createOrder")?.addEventListener("click", async event => {
         const submitButton = event.currentTarget;
         submitButton.disabled = true;
-        const currentUser = await session.current();
-        if (!currentUser || !currentUser.id) {
-            alert("请先登录后下单");
-            location.href = "profile.html";
+        const currentUser = await requireAuthenticatedUser({ message: "登录后才能下单并预留商品，是否前往登录？", returnTo: location.pathname + location.search });
+        if (!currentUser) {
+            submitButton.disabled = false;
             return;
         }
 
@@ -127,10 +127,8 @@ async function loadMessages() {
 messageForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const currentUser = await session.current();
-    if (!currentUser || !currentUser.id) {
-        alert("请先登录后留言");
-        location.href = "profile.html";
+    const currentUser = await requireAuthenticatedUser({ message: "登录后才能向卖家留言，是否前往登录？", returnTo: location.pathname + location.search });
+    if (!currentUser) {
         return;
     }
     if (!currentItem) {

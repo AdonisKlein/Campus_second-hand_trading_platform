@@ -27,6 +27,7 @@ function itemStatus(item) {
 
 function renderItem(item) {
     const status = itemStatus(item);
+    const tags = (item.tags || []).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
     const actions = (item.allowedActions || []).map(action => {
         const label = action === "WITHDRAW" ? "下架商品" : "重新上架";
         return `<button type="button" class="secondary" data-inventory-action="${action}" data-item-id="${item.id}">${label}</button>`;
@@ -35,10 +36,10 @@ function renderItem(item) {
         <article class="inventory-card" data-item-id="${item.id}">
             <img src="${escapeHtml(productImageUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}">
             <div class="inventory-card__content">
-                <div class="inventory-card__meta"><span class="tag">${escapeHtml(item.category)}</span><span class="status-badge ${status.className}">${escapeHtml(status.label)}</span></div>
+                <div class="inventory-card__meta"><span class="tag">${escapeHtml(item.category)}</span>${tags}<span class="status-badge ${status.className}">${escapeHtml(status.label)}</span></div>
                 <h3>${escapeHtml(item.title)}</h3>
                 <p class="item-description">${escapeHtml(item.description || "暂未填写商品描述")}</p>
-                <div class="inventory-card__footer"><strong class="price">￥${Number(item.price).toFixed(2)}</strong><small>商品 #${item.id}</small></div>
+                <div class="inventory-card__footer"><strong class="price">￥${Number(item.price).toFixed(2)}</strong><small>${escapeHtml(item.region || "校内")} · 商品 #${item.id}</small></div>
             </div>
             <div class="inventory-card__actions">
                 ${item.editable ? `<button type="button" data-edit-item="${item.id}">编辑资料</button>` : ""}
@@ -64,9 +65,8 @@ function showInventoryMessage(message, isError = false) {
 }
 
 async function loadInventory() {
-    const currentUser = await session.current();
+    const currentUser = await requireAuthenticatedUser({ message: "登录后才能管理自己发布的商品，是否前往登录？", returnTo: "my-items.html" });
     if (!currentUser) {
-        location.href = "profile.html";
         return;
     }
     const result = await request("/items/mine");
@@ -81,7 +81,7 @@ async function loadInventory() {
     inventoryCount.textContent = `${ownedItems.length} 件商品`;
     updateCounts(ownedItems);
     inventoryList.innerHTML = ownedItems.length ? ownedItems.map(renderItem).join("")
-        : '<div class="empty-state"><strong>还没有发布商品</strong><p>整理一件闲置，让它在校园里重新发挥价值。</p><a class="button-link compact-link" href="publish.html">发布第一件商品</a></div>';
+        : '<div class="empty-state"><strong>还没有发布商品</strong><p>整理一件闲置，让它在校园里重新发挥价值。</p><a class="button-link compact-link" href="publish.html" data-requires-auth>发布第一件商品</a></div>';
     installImageFallbacks(inventoryList);
 }
 
@@ -96,6 +96,8 @@ function openEditor(itemId) {
     editorImage.value = "";
     editorImagePreview.src = productImageUrl(item.imageUrl);
     itemEditorForm.description.value = item.description || "";
+    itemEditorForm.region.value = item.region || "学院路校区";
+    itemEditorForm.querySelectorAll('input[name="tags"]').forEach(input => { input.checked = (item.tags || []).includes(input.value); });
     itemEditorMessage.textContent = "";
     itemEditor.showModal();
 }
@@ -157,6 +159,13 @@ itemEditorForm.addEventListener("submit", async event => {
     delete data.itemId;
     delete data.imageFile;
     data.price = Number(data.price);
+    data.tags = [...itemEditorForm.querySelectorAll('input[name="tags"]:checked')].map(input => input.value);
+    if (data.tags.length > 4) {
+        itemEditorMessage.textContent = "商品标签最多选择 4 个";
+        editorButtons.forEach(button => button.disabled = false);
+        itemEditorForm.removeAttribute("aria-busy");
+        return;
+    }
     const imageFile = editorImage.files[0];
     const imageError = validateProductImageFile(imageFile);
     if (imageError) {

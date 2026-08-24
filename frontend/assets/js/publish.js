@@ -18,15 +18,7 @@ publishImage.addEventListener("change", () => {
 });
 
 async function requireLoginForPublish() {
-    const currentUser = await session.current();
-    if (!currentUser || !currentUser.id) {
-        publishMessage.textContent = "请先登录后再发布物品";
-        setTimeout(() => {
-            location.href = "profile.html";
-        }, 800);
-        return null;
-    }
-    return currentUser;
+    return requireAuthenticatedUser({ message: "登录后才能发布闲置，是否前往登录？", returnTo: "publish.html" });
 }
 
 requireLoginForPublish();
@@ -44,6 +36,12 @@ publishForm.addEventListener("submit", async (event) => {
     const data = formToJson(publishForm);
     delete data.imageFile;
     data.price = Number(data.price);
+    data.tags = [...publishForm.querySelectorAll('input[name="tags"]:checked')].map(input => input.value);
+    if (data.tags.length > 4) {
+        publishMessage.textContent = "商品标签最多选择 4 个";
+        submitButton.disabled = false;
+        return;
+    }
 
     const imageFile = publishImage.files[0];
     const imageError = validateProductImageFile(imageFile);

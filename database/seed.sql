@@ -8,17 +8,25 @@ CREATE TEMPORARY TABLE local_demo_seed_guard (
 INSERT INTO local_demo_seed_guard VALUES (@business_rows);
 DROP TEMPORARY TABLE local_demo_seed_guard;
 
-INSERT INTO users (username, password_hash, nickname, phone, email, role, status)
+INSERT INTO users (username, password_hash, nickname, phone, email, role, status, campus_region, credit_score)
 VALUES
-    ('admin', '$2b$12$DMlMB9kSN8zCYPV1dfpbE.Mhf6ftfAqSmfZ1XMeDmffBF3K0NQg8a', 'admin', '13800000000', 'admin@example.com', 'ADMIN', 'ACTIVE'),
-    ('alice', '$2b$12$DMlMB9kSN8zCYPV1dfpbE.Mhf6ftfAqSmfZ1XMeDmffBF3K0NQg8a', '小艾', '13800000001', 'alice@example.com', 'STUDENT', 'ACTIVE'),
-    ('bob', '$2b$12$DMlMB9kSN8zCYPV1dfpbE.Mhf6ftfAqSmfZ1XMeDmffBF3K0NQg8a', '小博', '13800000002', 'bob@example.com', 'STUDENT', 'ACTIVE');
+    ('admin', '$2b$12$DMlMB9kSN8zCYPV1dfpbE.Mhf6ftfAqSmfZ1XMeDmffBF3K0NQg8a', 'admin', '13800000000', 'admin@example.com', 'ADMIN', 'ACTIVE', '学院路校区', 100),
+    ('alice', '$2b$12$DMlMB9kSN8zCYPV1dfpbE.Mhf6ftfAqSmfZ1XMeDmffBF3K0NQg8a', '小艾', '13800000001', 'alice@example.com', 'STUDENT', 'ACTIVE', '学院路校区', 108),
+    ('bob', '$2b$12$DMlMB9kSN8zCYPV1dfpbE.Mhf6ftfAqSmfZ1XMeDmffBF3K0NQg8a', '小博', '13800000002', 'bob@example.com', 'STUDENT', 'ACTIVE', '沙河校区', 102);
 
 SET @alice_id = (SELECT id FROM users WHERE email = 'alice@example.com');
 SET @bob_id = (SELECT id FROM users WHERE email = 'bob@example.com');
 
-INSERT INTO items (title, category, price, description, image_url, seller_id)
+INSERT INTO items (title, category, price, description, image_url, seller_id, region)
 VALUES
-    ('高等数学教材', '书籍', 18.00, '八成新，适合期末复习使用。', 'assets/images/book.svg', @alice_id),
-    ('宿舍小台灯', '生活用品', 25.00, '亮度可调，功能正常。', 'assets/images/lamp.svg', @bob_id),
-    ('二手蓝牙耳机', '电子产品', 68.00, '续航正常，外观轻微使用痕迹。', 'assets/images/earphone.svg', @alice_id);
+    ('高等数学教材', '书籍', 18.00, '八成新，适合期末复习使用。', 'assets/images/book.svg', @alice_id, '学院路校区'),
+    ('宿舍小台灯', '生活用品', 25.00, '亮度可调，功能正常。', 'assets/images/lamp.svg', @bob_id, '沙河校区'),
+    ('二手蓝牙耳机', '电子产品', 68.00, '续航正常，外观轻微使用痕迹。', 'assets/images/earphone.svg', @alice_id, '学院路校区');
+
+INSERT INTO item_tags (item_id, tag)
+SELECT id, '可小刀' FROM items WHERE title = '高等数学教材'
+UNION ALL SELECT id, '仅自提' FROM items WHERE title = '高等数学教材'
+UNION ALL SELECT id, '支持验货' FROM items WHERE title = '宿舍小台灯'
+UNION ALL SELECT id, '九成新' FROM items WHERE title = '宿舍小台灯'
+UNION ALL SELECT id, '可小刀' FROM items WHERE title = '二手蓝牙耳机'
+UNION ALL SELECT id, '支持验货' FROM items WHERE title = '二手蓝牙耳机';

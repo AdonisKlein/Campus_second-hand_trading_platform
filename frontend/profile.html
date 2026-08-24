@@ -12,8 +12,8 @@
         <a class="brand" href="index.html">航集 Campus Market</a>
         <nav aria-label="主导航">
             <a href="index.html" data-icon="⌂">首页</a>
-            <a href="publish.html" data-icon="＋">发布物品</a>
-            <a href="orders.html" data-icon="▤">订单管理</a>
+            <a href="publish.html" data-icon="＋" data-requires-auth>发布物品</a>
+            <a href="orders.html" data-icon="▤" data-requires-auth>订单管理</a>
             <a class="active" href="profile.html" aria-current="page" data-icon="○">个人中心</a>
             <a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
@@ -77,11 +77,14 @@
                 <p><small>昵称</small><span id="viewNickname"></span></p>
                 <p><small>联系方式</small><span id="viewPhone"></span></p>
                 <p><small>登录邮箱</small><span id="viewEmail"></span></p>
+                <p><small>常用区域</small><span id="viewRegion"></span></p>
+                <p><small>信用分</small><span id="viewCredit"></span></p>
             </div>
 
             <form id="profileForm" style="display:none;">
                 <label>昵称<input name="nickname" maxlength="80"></label>
                 <label>联系方式（手机号）<input name="phone" maxlength="30"></label>
+                <label>常用校园区域<select name="campusRegion"><option>学院路校区</option><option>沙河校区</option><option>大运村</option><option>其他校内区域</option></select></label>
                 <p class="small">邮箱是登录账号，修改邮箱功能将在下一轮加入。</p>
 
                 <div class="actions">
@@ -91,7 +94,7 @@
             </form>
 
             <div class="profile-controls">
-                <a class="button-link secondary-link" href="my-items.html">管理我的发布</a>
+                <a class="button-link secondary-link" href="my-items.html" data-requires-auth>管理我的发布</a>
                 <button type="button" id="editProfileBtn">修改资料</button>
                 <button type="button" id="logoutBtn" class="secondary">退出登录</button>
             </div>

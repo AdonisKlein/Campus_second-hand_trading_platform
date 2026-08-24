@@ -18,6 +18,8 @@ function createHarness() {
     const adminLink = { hidden: true };
     const document = {
         documentElement: { dataset: {} },
+        addEventListener() {},
+        querySelector() { return null; },
         querySelectorAll(selector) {
             if (selector === "[data-admin-only]") return [adminLink];
             if (selector === "img") return [];

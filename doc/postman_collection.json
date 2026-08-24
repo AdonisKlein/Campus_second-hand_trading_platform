@@ -61,12 +61,14 @@
       "name": "02 交易（需学生 Session）",
       "item": [
         { "name": "公开商品列表", "request": { "method": "GET", "url": "{{baseUrl}}/items" } },
+        { "name": "校园搜索（多关键词/筛选/排序）", "request": { "method": "GET", "url": "{{baseUrl}}/search?scope=ITEMS&q=教材%20九成新&sort=RELEVANCE&minPrice=0&maxPrice=100&region=学院路校区&tags=可小刀" } },
+        { "name": "搜索校园用户", "request": { "method": "GET", "url": "{{baseUrl}}/search?scope=USERS&q=小艾&sort=ACTIVE" } },
         {
           "name": "发布商品（不传 sellerId）",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
-            "body": { "mode": "raw", "raw": "{\n  \"title\": \"二手教材\",\n  \"category\": \"书籍\",\n  \"price\": 20,\n  \"description\": \"八成新\",\n  \"imageUrl\": \"{{imageUrl}}\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"二手教材\",\n  \"category\": \"书籍\",\n  \"price\": 20,\n  \"description\": \"八成新\",\n  \"imageUrl\": \"{{imageUrl}}\",\n  \"region\": \"学院路校区\",\n  \"tags\": [\"可小刀\", \"支持验货\"]\n}" },
             "url": "{{baseUrl}}/items"
           }
         },

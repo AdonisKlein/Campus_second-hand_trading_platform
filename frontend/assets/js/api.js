@@ -4,6 +4,7 @@ let csrfToken = null;
 let sessionUser = null;
 let sessionUserPromise = null;
 let sessionGeneration = 0;
+let authConfirmResolver = null;
 
 async function ensureCsrf() {
     if (csrfToken) return csrfToken;
@@ -97,6 +98,63 @@ function invalidateSession() {
     applyRoleNavigation(null);
 }
 
+function safeReturnTarget(value) {
+    if (!value || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(value)) return "index.html";
+    return value.startsWith("/") || /^[a-zA-Z0-9_-]+\.html(?:[?#].*)?$/.test(value) ? value : "index.html";
+}
+
+function authenticationDialog() {
+    let dialog = document.querySelector("#authenticationPrompt");
+    if (dialog) return dialog;
+    dialog = document.createElement("dialog");
+    dialog.id = "authenticationPrompt";
+    dialog.className = "auth-confirm-dialog";
+    dialog.innerHTML = `
+        <div class="auth-confirm-content">
+            <p class="section-kicker">SIGN IN REQUIRED</p>
+            <h2>登录后继续操作</h2>
+            <p data-auth-message>发布、留言和交易功能需要登录校园账号。</p>
+            <div class="auth-confirm-actions"><button type="button" class="secondary" data-auth-cancel>暂不登录</button><button type="button" data-auth-confirm>前往登录</button></div>
+        </div>`;
+    dialog.querySelector("[data-auth-cancel]").addEventListener("click", () => dialog.close("cancel"));
+    dialog.querySelector("[data-auth-confirm]").addEventListener("click", () => dialog.close("confirm"));
+    dialog.addEventListener("close", () => {
+        const resolver = authConfirmResolver;
+        authConfirmResolver = null;
+        if (resolver) resolver(dialog.returnValue === "confirm");
+    });
+    document.body.append(dialog);
+    return dialog;
+}
+
+function confirmAuthentication(message = "此操作需要登录校园账号，是否前往登录？") {
+    const dialog = authenticationDialog();
+    dialog.querySelector("[data-auth-message]").textContent = message;
+    if (dialog.open) dialog.close("cancel");
+    return new Promise(resolve => {
+        authConfirmResolver = resolve;
+        dialog.showModal();
+    });
+}
+
+function redirectToLogin(returnTo) {
+    sessionStorage.setItem("postLoginTarget", safeReturnTarget(returnTo));
+    location.href = "profile.html";
+}
+
+async function requireAuthenticatedUser({ message, returnTo = location.pathname + location.search } = {}) {
+    const user = await session.current();
+    if (user && user.id) return user;
+    if (await confirmAuthentication(message)) redirectToLogin(returnTo);
+    return null;
+}
+
+function consumePostLoginTarget() {
+    const target = sessionStorage.getItem("postLoginTarget");
+    sessionStorage.removeItem("postLoginTarget");
+    return target ? safeReturnTarget(target) : null;
+}
+
 function applyRoleNavigation(user) {
     const isAdmin = user && user.role === "ADMIN";
     document.querySelectorAll("[data-admin-only]").forEach(link => {
@@ -151,5 +209,16 @@ window.installImageFallbacks = installImageFallbacks;
 window.uploadProductImage = uploadProductImage;
 window.validateProductImageFile = validateProductImageFile;
 window.hydrateRoleNavigation = hydrateRoleNavigation;
+window.confirmAuthentication = confirmAuthentication;
+window.requireAuthenticatedUser = requireAuthenticatedUser;
+window.consumePostLoginTarget = consumePostLoginTarget;
+
+document.addEventListener("click", event => {
+    const link = event.target.closest("a[data-requires-auth]");
+    if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
+    event.preventDefault();
+    requireAuthenticatedUser({ message: "登录后才能使用发布和订单功能，是否前往登录？", returnTo: link.getAttribute("href") })
+        .then(user => { if (user) location.href = link.href; });
+});
 
 hydrateRoleNavigation();

@@ -1,6 +1,8 @@
 package com.campus.secondhand.item;
 
 import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import com.campus.secondhand.user.UserRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -97,6 +99,8 @@ public class SellerInventoryService implements SellerInventory {
             throw new SellerInventoryRuleException("只能使用本人上传的商品图片");
         }
         item.setImageUrl(imageUrl);
+        item.setRegion(MarketplaceOptions.normalizeRegion(draft.region()));
+        item.setTags(new LinkedHashSet<>(MarketplaceOptions.normalizeTags(draft.tags())));
     }
 
     private String normalizeOptional(String value) {
@@ -118,7 +122,8 @@ public class SellerInventoryService implements SellerInventory {
             actions = List.of();
         }
         return new SellerItemView(item.getId(), item.getTitle(), item.getCategory(), item.getPrice(),
-            item.getDescription(), item.getImageUrl(), item.getSellerId(), item.getStatus(),
+            item.getDescription(), item.getImageUrl(), item.getRegion(), Set.copyOf(item.getTags()),
+            item.getSellerId(), item.getStatus(),
             item.getModerationStatus(), item.getCreatedAt(), editable(item), actions);
     }
 }

@@ -13,8 +13,11 @@ function showLoggedInUI(user) {
     document.querySelector("#viewNickname").textContent = user.nickname || "";
     document.querySelector("#viewPhone").textContent = user.phone || "";
     document.querySelector("#viewEmail").textContent = user.email || "";
+    document.querySelector("#viewRegion").textContent = user.campusRegion || "未设置";
+    document.querySelector("#viewCredit").textContent = user.creditScore ?? 100;
     profileForm.nickname.value = user.nickname || "";
     profileForm.phone.value = user.phone || "";
+    profileForm.campusRegion.value = user.campusRegion || "学院路校区";
 }
 
 function showLoggedOutUI() {
@@ -35,7 +38,11 @@ function showLoggedOutUI() {
 loginForm.addEventListener("submit", async event => {
     event.preventDefault();
     const result = await session.login(loginForm.email.value.trim(), loginForm.password.value);
-    if (result.success) showLoggedInUI(result.data);
+    if (result.success) {
+        const target = consumePostLoginTarget();
+        if (target) location.href = target;
+        else showLoggedInUI(result.data);
+    }
     else loginMessage.textContent = result.message || "登录失败";
 });
 

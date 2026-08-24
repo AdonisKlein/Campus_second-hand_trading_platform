@@ -2,6 +2,7 @@ package com.campus.secondhand.item;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 public interface SellerInventory {
 
@@ -18,7 +19,12 @@ public interface SellerInventory {
         String category,
         BigDecimal price,
         String description,
-        String imageUrl
+        String imageUrl,
+        String region,
+        Set<String> tags
     ) {
+        public ItemDraft(String title, String category, BigDecimal price, String description, String imageUrl) {
+            this(title, category, price, description, imageUrl, "学院路校区", Set.of());
+        }
     }
 }

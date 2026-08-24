@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,39 @@ class SecondhandApplicationTests {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data", hasSize(1)))
             .andExpect(jsonPath("$.data[0].title").value("Java 课程教材"));
+    }
+
+    @Test
+    void campusSearchSupportsMultipleTermsFiltersAndSafeUserResults() throws Exception {
+        User seller = saveUser("search-owner", "search-owner@example.com", "STUDENT");
+        seller.setNickname("林同学");
+        seller.setCampusRegion("沙河校区");
+        seller.setCreditScore(108);
+        users.save(seller);
+        sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "Java 学习平板", "电子产品", new java.math.BigDecimal("320.00"), "附第七版教材电子笔记", "",
+            "沙河校区", Set.of("支持验货", "可小刀")));
+        sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "Java 课程教材", "书籍", new java.math.BigDecimal("20.00"), "纸质书", "",
+            "学院路校区", Set.of("仅自提")));
+
+        mvc.perform(get("/search").param("scope", "ITEMS").param("q", "Java 第七版")
+                .param("minPrice", "300").param("maxPrice", "350").param("region", "沙河校区")
+                .param("tags", "支持验货"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.items", hasSize(1)))
+            .andExpect(jsonPath("$.data.items[0].title").value("Java 学习平板"))
+            .andExpect(jsonPath("$.data.items[0].sellerCreditScore").value(108));
+
+        mvc.perform(get("/search").param("scope", "USERS").param("q", "林同学"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.users", hasSize(1)))
+            .andExpect(jsonPath("$.data.users[0].nickname").value("林同学"))
+            .andExpect(jsonPath("$.data.users[0].email").doesNotExist())
+            .andExpect(jsonPath("$.data.users[0].phone").doesNotExist());
+
+        mvc.perform(get("/search").param("minPrice", "50").param("maxPrice", "20"))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

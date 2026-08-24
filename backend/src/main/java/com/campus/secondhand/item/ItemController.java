@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -81,10 +82,12 @@ public class ItemController {
         @Size(max = 1000) String description,
         @Size(max = 255)
         @Pattern(regexp = "^$|^/media/product-images/[1-9]\\d*/[0-9a-fA-F-]{36}\\.(jpg|png)$",
-            message = "必须使用平台上传的商品图片") String imageUrl
+            message = "必须使用平台上传的商品图片") String imageUrl,
+        @Pattern(regexp = "^(学院路校区|沙河校区|大运村|其他校内区域)$") String region,
+        @Size(max = 4) Set<String> tags
     ) {
         SellerInventory.ItemDraft toDraft() {
-            return new SellerInventory.ItemDraft(title, category, price, description, imageUrl);
+            return new SellerInventory.ItemDraft(title, category, price, description, imageUrl, region, tags);
         }
     }
 
