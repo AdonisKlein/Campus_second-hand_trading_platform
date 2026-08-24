@@ -20,21 +20,42 @@
         </nav>
     </header>
 
-    <main class="layout">
-        <a class="back-link" href="index.html">← 返回商品列表</a>
-        <div class="two-column detail-layout">
-        <section id="itemDetail" class="detail-panel" aria-live="polite"></section>
-        <aside class="message-panel">
-            <div class="panel-heading"><div><p class="section-kicker">QUESTIONS</p><h2>留言沟通</h2></div><span class="online-dot">公开留言</span></div>
-            <div id="messageList" class="message-list"></div>
-            <form id="messageForm" class="message-form">
-                <!-- senderId and receiverId are auto-filled by JS -->
-                <textarea name="content" rows="3" placeholder="输入留言内容" aria-label="留言内容" required></textarea>
-                <button type="submit">发送留言</button>
-            </form>
-        </aside>
-        </div>
+    <main class="layout product-detail-page">
+        <nav class="detail-breadcrumb" aria-label="面包屑">
+            <a href="index.html">校园集市</a><span aria-hidden="true">/</span><span>商品详情</span>
+        </nav>
+        <section id="itemDetail" aria-live="polite">
+            <div class="detail-loading" role="status">正在加载商品信息…</div>
+        </section>
+
+        <section class="detail-content-grid" aria-label="商品补充信息">
+            <article class="detail-section-card public-question-card">
+                <div class="panel-heading">
+                    <div><p class="section-kicker">PUBLIC Q&amp;A</p><h2>公开问答</h2><p>适合询问尺寸、配件等所有人都关心的问题；议价和见面地点请使用私聊。</p></div>
+                    <span class="online-dot">所有访客可见</span>
+                </div>
+                <div id="messageList" class="message-list"></div>
+                <form id="messageForm" class="message-form">
+                    <label class="sr-only" for="publicQuestion">公开问题</label>
+                    <textarea id="publicQuestion" name="content" rows="3" maxlength="500" placeholder="例如：原装充电器还在吗？" required></textarea>
+                    <button type="submit">发布问题</button>
+                </form>
+            </article>
+
+            <aside class="detail-safety-card">
+                <p class="section-kicker">SAFE TRADE</p>
+                <h2>校园当面交易提醒</h2>
+                <ol>
+                    <li><span>1</span>先私聊确认成色、瑕疵和最终价格</li>
+                    <li><span>2</span>约在人多、有监控的校内公共区域</li>
+                    <li><span>3</span>当面验货后再确认交易完成</li>
+                </ol>
+                <p>平台目前不代收货款，也不会要求你脱离平台发送验证码。</p>
+            </aside>
+        </section>
     </main>
+
+    <div id="mobileProductActions" class="mobile-product-actions" hidden aria-label="商品操作"></div>
 
     <script src="assets/js/api.js"></script>
     <script src="assets/js/detail.js"></script>

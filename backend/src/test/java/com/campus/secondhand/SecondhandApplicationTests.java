@@ -603,6 +603,80 @@ class SecondhandApplicationTests {
         org.junit.jupiter.api.Assertions.assertEquals(ItemStatus.ON_SALE, items.findById(choiceItemId).orElseThrow().getStatus());
     }
 
+    @Test
+    void productDetailProjectionKeepsPublicSellerDataAndViewerActionsTogether() throws Exception {
+        User seller = saveUser("detail-seller", "detail-seller@example.com", "STUDENT");
+        seller.setNickname("沙河数码同学");
+        seller.setCampusRegion("沙河校区");
+        seller.setCreditScore(98);
+        seller.setPhone("13800000000");
+        users.saveAndFlush(seller);
+        User buyer = saveUser("detail-buyer", "detail-buyer@example.com", "STUDENT");
+        var main = sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "九成新耳机", "数码电子", java.math.BigDecimal.valueOf(68), "功能正常，无拆修", "",
+            "沙河校区", Set.of("可小刀", "支持验货")));
+        sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "桌面支架", "数码电子", java.math.BigDecimal.valueOf(12), "配套支架", "",
+            "沙河校区", Set.of("仅自提")));
+
+        mvc.perform(get("/items/{id}", main.id()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.title").value("九成新耳机"))
+            .andExpect(jsonPath("$.data.seller.displayName").value("沙河数码同学"))
+            .andExpect(jsonPath("$.data.seller.region").value("沙河校区"))
+            .andExpect(jsonPath("$.data.seller.creditScore").value(98))
+            .andExpect(jsonPath("$.data.seller.onSaleCount").value(2))
+            .andExpect(jsonPath("$.data.seller.email").doesNotExist())
+            .andExpect(jsonPath("$.data.seller.phone").doesNotExist())
+            .andExpect(jsonPath("$.data.viewer.authenticated").value(false))
+            .andExpect(jsonPath("$.data.viewer.availableActions[0]").value("CHAT_SELLER"))
+            .andExpect(jsonPath("$.data.viewer.availableActions[1]").value("REQUEST_PURCHASE"))
+            .andExpect(jsonPath("$.data.sellerItems", hasSize(1)));
+
+        tradingService.requestPurchase(buyer.getId(), main.id());
+        MockCookie buyerSession = login(buyer.getEmail());
+        mvc.perform(get("/items/{id}", main.id()).cookie(buyerSession))
+            .andExpect(jsonPath("$.data.viewer.authenticated").value(true))
+            .andExpect(jsonPath("$.data.viewer.owner").value(false))
+            .andExpect(jsonPath("$.data.viewer.purchaseRequest.status").value("PURCHASE_REQUESTED"))
+            .andExpect(jsonPath("$.data.viewer.availableActions", org.hamcrest.Matchers.hasItem("VIEW_PURCHASE_REQUEST")))
+            .andExpect(jsonPath("$.data.viewer.availableActions", org.hamcrest.Matchers.not(org.hamcrest.Matchers.hasItem("REQUEST_PURCHASE"))));
+
+        MockCookie sellerSession = login(seller.getEmail());
+        mvc.perform(get("/items/{id}", main.id()).cookie(sellerSession))
+            .andExpect(jsonPath("$.data.viewer.owner").value(true))
+            .andExpect(jsonPath("$.data.viewer.availableActions[0]").value("MANAGE_LISTING"))
+            .andExpect(jsonPath("$.data.viewer.purchaseRequest").doesNotExist());
+    }
+
+    @Test
+    void withdrawnItemPublicQuestionsAreHiddenAndRejectNewWrites() throws Exception {
+        User seller = saveUser("question-seller", "question-seller@example.com", "STUDENT");
+        User buyer = saveUser("question-buyer", "question-buyer@example.com", "STUDENT");
+        var item = sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "问答测试商品", "其他", java.math.BigDecimal.TEN, "公开描述", ""));
+        var message = new com.campus.secondhand.message.Message();
+        message.setItemId(item.id());
+        message.setSenderId(buyer.getId());
+        message.setReceiverId(seller.getId());
+        message.setContent("原有公开问题");
+        messages.saveAndFlush(message);
+        MockCookie sellerSession = login(seller.getEmail());
+        MockCookie buyerSession = login(buyer.getEmail());
+
+        mvc.perform(get("/messages/item/{id}", item.id()))
+            .andExpect(jsonPath("$.success").value(true)).andExpect(jsonPath("$.data", hasSize(1)));
+        sellerInventory.act(seller.getId(), item.id(), SellerItemAction.WITHDRAW);
+        mvc.perform(get("/messages/item/{id}", item.id()))
+            .andExpect(jsonPath("$.success").value(false));
+        mvc.perform(get("/messages/item/{id}", item.id()).cookie(sellerSession))
+            .andExpect(jsonPath("$.success").value(true)).andExpect(jsonPath("$.data", hasSize(1)));
+        mvc.perform(post("/messages").cookie(buyerSession).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"itemId\":%d,\"content\":\"不应写入\"}".formatted(item.id())))
+            .andExpect(jsonPath("$.success").value(false));
+        org.junit.jupiter.api.Assertions.assertEquals(1, messages.count());
+    }
+
     private User saveUser(String username, String email, String role) {
         User user = new User();
         user.setUsername(username + UUID.randomUUID().toString().substring(0, 6));

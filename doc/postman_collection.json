@@ -61,6 +61,7 @@
       "name": "02 交易（需学生 Session）",
       "item": [
         { "name": "公开商品列表", "request": { "method": "GET", "url": "{{baseUrl}}/items" } },
+        { "name": "商品详情投影（卖家摘要/当前意向/可执行动作/同卖家商品）", "request": { "method": "GET", "url": "{{baseUrl}}/items/{{itemId}}" } },
         { "name": "校园搜索（多关键词/筛选/排序）", "request": { "method": "GET", "url": "{{baseUrl}}/search?scope=ITEMS&q=教材%20九成新&sort=RELEVANCE&minPrice=0&maxPrice=100&region=学院路校区&tags=可小刀" } },
         { "name": "搜索校园用户", "request": { "method": "GET", "url": "{{baseUrl}}/search?scope=USERS&q=小艾&sort=ACTIVE" } },
         {

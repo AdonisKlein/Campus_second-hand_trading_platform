@@ -27,11 +27,14 @@ public class ItemController {
 
     private final ItemRepository itemRepository;
     private final SellerInventory sellerInventory;
+    private final ProductDetail productDetail;
     private final CurrentActorService actors;
 
-    public ItemController(ItemRepository itemRepository, SellerInventory sellerInventory, CurrentActorService actors) {
+    public ItemController(ItemRepository itemRepository, SellerInventory sellerInventory,
+                          ProductDetail productDetail, CurrentActorService actors) {
         this.itemRepository = itemRepository;
         this.sellerInventory = sellerInventory;
+        this.productDetail = productDetail;
         this.actors = actors;
     }
 
@@ -45,9 +48,11 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Item> detail(@PathVariable Long id) {
-        return itemRepository.findById(id).filter(item -> item.getModerationStatus() == ItemModerationStatus.VISIBLE
-                && item.getStatus() != ItemStatus.WITHDRAWN)
+    public ApiResponse<ProductDetail.View> detail(@PathVariable Long id,
+                                                   org.springframework.security.core.Authentication authentication) {
+        Long viewerId = authentication == null || "anonymousUser".equals(authentication.getPrincipal())
+            ? null : actors.require().userId();
+        return productDetail.show(id, viewerId)
             .map(ApiResponse::ok)
             .orElseGet(() -> ApiResponse.fail("物品不存在"));
     }

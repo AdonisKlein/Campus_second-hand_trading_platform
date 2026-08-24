@@ -4,8 +4,8 @@ import com.campus.secondhand.common.ApiResponse;
 import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
 import com.campus.secondhand.security.CurrentActorService;
-import com.campus.secondhand.item.ItemRepository;
-import com.campus.secondhand.item.ItemModerationStatus;
+import com.campus.secondhand.item.ItemStatus;
+import com.campus.secondhand.item.ProductDetail;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,21 +27,24 @@ public class MessageController {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
+    private final ProductDetail productDetail;
     private final CurrentActorService actors;
 
     public MessageController(MessageRepository messageRepository, UserRepository userRepository,
-                             ItemRepository itemRepository, CurrentActorService actors) {
+                             ProductDetail productDetail, CurrentActorService actors) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
+        this.productDetail = productDetail;
         this.actors = actors;
     }
 
     @GetMapping("/item/{itemId}")
-    public ApiResponse<List<MessageView>> listByItem(@PathVariable Long itemId) {
-        var item = itemRepository.findById(itemId);
-        if (item.isEmpty() || item.get().getModerationStatus() != ItemModerationStatus.VISIBLE) {
+    public ApiResponse<List<MessageView>> listByItem(
+            @PathVariable Long itemId,
+            org.springframework.security.core.Authentication authentication) {
+        Long viewerId = authentication == null || "anonymousUser".equals(authentication.getPrincipal())
+            ? null : actors.require().userId();
+        if (productDetail.show(itemId, viewerId).isEmpty()) {
             return ApiResponse.fail("物品不存在");
         }
         List<MessageView> messages = messageRepository.findByItemIdOrderByCreatedAtAsc(itemId)
@@ -65,10 +68,11 @@ public class MessageController {
         Message message = new Message();
         message.setItemId(request.itemId());
         message.setSenderId(senderId);
-        var itemOptional = itemRepository.findById(request.itemId());
-        if (itemOptional.isEmpty()) return ApiResponse.fail("物品不存在");
-        var item = itemOptional.get();
-        message.setReceiverId(item.getSellerId());
+        var detail = productDetail.show(request.itemId(), null).orElse(null);
+        if (detail == null || detail.status() != ItemStatus.ON_SALE) {
+            return ApiResponse.fail("商品当前不能发布公开问题");
+        }
+        message.setReceiverId(detail.seller().id());
         message.setContent(request.content());
         return ApiResponse.created(messageRepository.save(message));
     }

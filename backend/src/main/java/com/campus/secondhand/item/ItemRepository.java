@@ -14,6 +14,12 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findBySellerIdOrderByCreatedAtDesc(Long sellerId);
 
+    long countBySellerIdAndStatusAndModerationStatus(Long sellerId, ItemStatus status,
+                                                     ItemModerationStatus moderationStatus);
+
+    List<Item> findTop4BySellerIdAndStatusAndModerationStatusAndIdNotOrderByCreatedAtDesc(
+        Long sellerId, ItemStatus status, ItemModerationStatus moderationStatus, Long excludedId);
+
     @Query("""
         select item from Item item
         where item.status = :status

@@ -44,8 +44,15 @@ if (!api.includes("confirmAuthentication")) failures.push("api.js: 缺少统一�
 if (!api.includes("openReportDialog")) failures.push("api.js: 缺少统一举报 dialog module");
 
 const detail = fs.readFileSync(path.join(frontend, "assets/js/detail.js"), "utf8");
+const detailHtml = fs.readFileSync(path.join(frontend, "detail.html"), "utf8");
 if (!detail.includes('openReportDialog("ITEM"') || !detail.includes('openReportDialog("MESSAGE"')) {
     failures.push("detail.js: 商品和留言举报入口必须同时接入统一 module");
+}
+for (const selector of ["product-detail-page", "detail-content-grid", "detail-safety-card", "mobileProductActions"]) {
+    if (!detailHtml.includes(selector)) failures.push(`detail.html: 第十二轮商品详情缺少 ${selector}`);
+}
+for (const contract of ["availableActions", "purchaseRequest", "sellerItems", "seller-profile-card", "product-gallery"]) {
+    if (!detail.includes(contract)) failures.push(`detail.js: 商品详情投影或布局缺少 ${contract}`);
 }
 const main = fs.readFileSync(path.join(frontend, "assets/js/main.js"), "utf8");
 if (!main.includes('openReportDialog("USER"')) failures.push("main.js: 用户搜索结果缺少举报用户入口");
