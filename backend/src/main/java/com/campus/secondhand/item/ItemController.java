@@ -37,15 +37,9 @@ public class ItemController {
     @GetMapping
     public ApiResponse<List<Item>> list(@RequestParam(required = false) String category,
                                         @RequestParam(required = false) String keyword) {
-        if (keyword != null && !keyword.isBlank()) {
-            return ApiResponse.ok(itemRepository.findByTitleContainingAndStatusAndModerationStatusOrderByCreatedAtDesc(
-                keyword, ItemStatus.ON_SALE, ItemModerationStatus.VISIBLE));
-        }
-        if (category != null && !category.isBlank()) {
-            return ApiResponse.ok(itemRepository.findByCategoryAndStatusAndModerationStatusOrderByCreatedAtDesc(
-                category, ItemStatus.ON_SALE, ItemModerationStatus.VISIBLE));
-        }
-        return ApiResponse.ok(itemRepository.findByStatusAndModerationStatusOrderByCreatedAtDesc(
+        String normalizedCategory = category == null || category.isBlank() ? null : category.trim();
+        String normalizedKeyword = keyword == null || keyword.isBlank() ? null : keyword.trim();
+        return ApiResponse.ok(itemRepository.searchPublic(normalizedCategory, normalizedKeyword,
             ItemStatus.ON_SALE, ItemModerationStatus.VISIBLE));
     }
 

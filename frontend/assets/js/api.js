@@ -3,6 +3,7 @@ const API_BASE = window.CAMPUS_API_BASE
 let csrfToken = null;
 let sessionUser = null;
 let sessionUserPromise = null;
+let sessionGeneration = 0;
 
 async function ensureCsrf() {
     if (csrfToken) return csrfToken;
@@ -13,6 +14,7 @@ async function ensureCsrf() {
 }
 
 async function request(path, options = {}) {
+    const requestGeneration = sessionGeneration;
     const method = (options.method || "GET").toUpperCase();
     const headers = { ...(options.headers || {}) };
     if (options.body && !(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
@@ -40,10 +42,7 @@ async function request(path, options = {}) {
         try { payload = JSON.parse(text); }
         catch (_) { payload = { success: false, message: `HTTP ${response.status}` }; }
     }
-    if (response.status === 401) {
-        sessionUser = null;
-        sessionUserPromise = null;
-    }
+    if (response.status === 401 && requestGeneration === sessionGeneration) invalidateSession();
     if (!response.ok && !(payload && typeof payload === "object")) {
         payload = { success: false, message: `HTTP ${response.status}` };
     }
@@ -55,7 +54,9 @@ const session = {
         if (refresh) sessionUserPromise = null;
         if (sessionUser) return sessionUser;
         if (!sessionUserPromise) {
+            const generation = sessionGeneration;
             sessionUserPromise = request("/users/me").then(result => {
+                if (generation !== sessionGeneration) return sessionUser;
                 sessionUser = result && result.success ? result.data : null;
                 return sessionUser;
             });
@@ -63,23 +64,53 @@ const session = {
         return sessionUserPromise;
     },
     async login(email, password) {
+        const generation = ++sessionGeneration;
+        sessionUser = null;
+        sessionUserPromise = null;
         const result = await request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+        if (generation !== sessionGeneration) return result;
         sessionUser = result && result.success ? result.data : null;
         sessionUserPromise = sessionUser ? Promise.resolve(sessionUser) : null;
+        applyRoleNavigation(sessionUser);
         return result;
     },
     async logout() {
-        const result = await request("/auth/logout", { method: "POST" });
+        ++sessionGeneration;
         sessionUser = null;
         sessionUserPromise = null;
+        applyRoleNavigation(null);
+        const result = await request("/auth/logout", { method: "POST" });
         csrfToken = null;
         return result;
     },
     set(user) {
         sessionUser = user;
         sessionUserPromise = Promise.resolve(user);
+        applyRoleNavigation(user);
     }
 };
+
+function invalidateSession() {
+    ++sessionGeneration;
+    sessionUser = null;
+    sessionUserPromise = null;
+    applyRoleNavigation(null);
+}
+
+function applyRoleNavigation(user) {
+    const isAdmin = user && user.role === "ADMIN";
+    document.querySelectorAll("[data-admin-only]").forEach(link => {
+        link.hidden = !isAdmin;
+    });
+    document.documentElement.dataset.sessionRole = user?.role || "GUEST";
+}
+
+async function hydrateRoleNavigation() {
+    applyRoleNavigation(null);
+    const user = await session.current();
+    applyRoleNavigation(user);
+    return user;
+}
 
 function formToJson(form) { return Object.fromEntries(new FormData(form).entries()); }
 
@@ -119,3 +150,6 @@ window.productImageUrl = productImageUrl;
 window.installImageFallbacks = installImageFallbacks;
 window.uploadProductImage = uploadProductImage;
 window.validateProductImageFile = validateProductImageFile;
+window.hydrateRoleNavigation = hydrateRoleNavigation;
+
+hydrateRoleNavigation();

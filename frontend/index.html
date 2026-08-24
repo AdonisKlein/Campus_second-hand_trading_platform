@@ -15,39 +15,71 @@
             <a href="publish.html" data-icon="＋">发布物品</a>
             <a href="orders.html" data-icon="▤">订单管理</a>
             <a href="profile.html" data-icon="○">个人中心</a>
-            <a href="admin.html" data-icon="◇">管理中心</a>
+            <a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
-    <main class="layout">
-        <section class="hero">
-            <div class="hero-copy">
-                <p class="eyebrow">BUAA CAMPUS MARKET</p>
-                <h1>校园闲置，<br><span>好物流转</span></h1>
-                <p>让每一件闲置重新找到需要它的人。校园身份、在线沟通、线下安心交易。</p>
-                <div class="hero-points" aria-label="平台特点">
-                    <span>校园用户</span><span>当面交易</span><span>轻松发布</span>
+    <main class="layout home-layout">
+        <section class="market-shell">
+            <aside class="category-sidebar" aria-label="商品分类">
+                <div class="category-sidebar-heading"><span>分类浏览</span><small>CATEGORIES</small></div>
+                <button type="button" class="active" data-category-filter=""><span aria-hidden="true">⌂</span>全部闲置</button>
+                <button type="button" data-category-filter="书籍"><span aria-hidden="true">▤</span>书籍资料</button>
+                <button type="button" data-category-filter="电子产品"><span aria-hidden="true">⌁</span>电子产品</button>
+                <button type="button" data-category-filter="生活用品"><span aria-hidden="true">◇</span>生活用品</button>
+                <button type="button" data-category-filter="其他"><span aria-hidden="true">＋</span>其他物品</button>
+                <div class="campus-trust-card">
+                    <strong>校内安心流转</strong>
+                    <p>校园用户发布，建议在校内公共区域当面验货交易。</p>
                 </div>
-            </div>
-            <form class="search-bar" id="searchForm">
-                <input id="keyword" type="search" placeholder="搜索物品关键词" aria-label="搜索物品关键词">
-                <select id="category" aria-label="选择物品分类">
-                    <option value="">全部分类</option>
-                    <option value="书籍">书籍</option>
-                    <option value="生活用品">生活用品</option>
-                    <option value="电子产品">电子产品</option>
-                    <option value="其他">其他</option>
-                </select>
-                <button type="submit">查询</button>
-            </form>
-        </section>
+            </aside>
 
-        <section class="home-section">
-            <div class="section-title">
-                <div><p class="section-kicker">FRESH ON CAMPUS</p><h2>最新物品</h2></div>
-                <span id="itemCount" role="status" aria-live="polite">加载中</span>
+            <div class="market-main">
+                <section class="hero home-welcome">
+                    <div class="hero-copy">
+                        <p class="eyebrow">BUAA CAMPUS MARKET</p>
+                        <h1>校园闲置，<span>好物流转</span></h1>
+                        <p>搜索同学发布的教材、数码和生活好物。</p>
+                    </div>
+                    <form class="search-bar" id="searchForm">
+                        <input id="keyword" type="search" placeholder="搜索物品关键词" aria-label="搜索物品关键词">
+                        <select id="category" aria-label="选择物品分类">
+                            <option value="">全部分类</option>
+                            <option value="书籍">书籍</option>
+                            <option value="生活用品">生活用品</option>
+                            <option value="电子产品">电子产品</option>
+                            <option value="其他">其他</option>
+                        </select>
+                        <button type="submit">搜索</button>
+                    </form>
+                </section>
+
+                <section class="campaign-banner">
+                    <div>
+                        <p class="section-kicker">CAMPUS CIRCULATION</p>
+                        <h2>毕业季循环计划</h2>
+                        <p>让闲置跨过宿舍楼，成为下一位同学的新装备。</p>
+                        <a class="button-link" href="publish.html">发布我的闲置</a>
+                    </div>
+                    <div class="campaign-mark" aria-hidden="true"><span>BUAA</span><strong>让好物<br>继续飞</strong></div>
+                </section>
+
+                <nav class="category-chips" aria-label="快捷分类">
+                    <button type="button" class="active" data-category-filter="">全部</button>
+                    <button type="button" data-category-filter="书籍">书籍资料</button>
+                    <button type="button" data-category-filter="电子产品">电子产品</button>
+                    <button type="button" data-category-filter="生活用品">生活用品</button>
+                    <button type="button" data-category-filter="其他">其他</button>
+                </nav>
+
+                <section class="home-section">
+                    <div class="section-title">
+                        <div><p class="section-kicker">FRESH ON CAMPUS</p><h2>最新物品</h2></div>
+                        <span id="itemCount" role="status" aria-live="polite">加载中</span>
+                    </div>
+                    <div class="item-grid" id="itemGrid"></div>
+                </section>
             </div>
-            <div class="item-grid" id="itemGrid"></div>
         </section>
     </main>
 

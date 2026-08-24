@@ -929,6 +929,391 @@ button.danger,
     }
 }
 
+/* Round 7: align the production shell with the approved marketplace preview. */
+[hidden] {
+    display: none !important;
+}
+
+.home-layout {
+    width: min(1460px, 96vw);
+}
+
+.market-shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--panel);
+    box-shadow: var(--shadow-lg);
+}
+
+.category-sidebar {
+    padding: 26px 18px;
+    border-right: 1px solid var(--border);
+    background: linear-gradient(180deg, #f7f9ff 0%, #eef3ff 100%);
+}
+
+.category-sidebar-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 8px 20px;
+    color: var(--ink);
+    font-weight: 800;
+}
+
+.category-sidebar-heading small {
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: .14em;
+}
+
+.category-sidebar button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    margin: 5px 0;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    background: transparent;
+    color: var(--muted-strong);
+    box-shadow: none;
+    text-align: left;
+}
+
+.category-sidebar button span {
+    width: 26px;
+    color: var(--primary);
+    font-size: 17px;
+}
+
+.category-sidebar button:hover,
+.category-sidebar button.active {
+    border-color: #cfdbff;
+    background: #fff;
+    color: var(--primary-strong);
+    box-shadow: 0 8px 20px rgba(26, 63, 150, .08);
+    transform: none;
+}
+
+.campus-trust-card {
+    margin-top: 28px;
+    padding: 18px;
+    border-radius: 16px;
+    background: var(--primary-strong);
+    color: #fff;
+}
+
+.campus-trust-card strong {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.campus-trust-card p {
+    margin: 0;
+    color: rgba(255, 255, 255, .76);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.market-main {
+    min-width: 0;
+    padding: 24px;
+}
+
+.home-welcome.hero {
+    display: grid;
+    grid-template-columns: minmax(260px, .75fr) minmax(420px, 1.25fr);
+    align-items: center;
+    min-height: 0;
+    margin-bottom: 18px;
+    padding: 24px 28px;
+    border: 1px solid #dce5ff;
+    border-radius: 18px;
+    background: #f7f9ff;
+    box-shadow: none;
+}
+
+.home-welcome .hero-copy {
+    max-width: none;
+}
+
+.home-welcome h1 {
+    margin: 2px 0 6px;
+    font-size: clamp(27px, 2.3vw, 38px);
+}
+
+.home-welcome .hero-copy > p:last-child {
+    margin: 0;
+    font-size: 14px;
+}
+
+.home-welcome .search-bar {
+    grid-template-columns: minmax(180px, 1fr) 145px auto;
+    margin: 0;
+    padding: 6px;
+    border: 1px solid #d7e0f7;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.campaign-banner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.3fr .7fr;
+    align-items: center;
+    min-height: 230px;
+    overflow: hidden;
+    padding: 30px 38px;
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at 30% 10%, rgba(255,255,255,.18), transparent 24%),
+        linear-gradient(120deg, #173b92 0 67%, #ffc928 67% 100%);
+    color: #fff;
+}
+
+.campaign-banner h2 {
+    margin: 4px 0 8px;
+    color: #fff;
+    font-size: clamp(27px, 3vw, 42px);
+}
+
+.campaign-banner p:not(.section-kicker) {
+    max-width: 540px;
+    margin: 0 0 18px;
+    color: rgba(255, 255, 255, .78);
+}
+
+.campaign-banner .section-kicker {
+    color: #ffd75d;
+}
+
+.campaign-banner .button-link {
+    width: fit-content;
+    background: #fff;
+    color: var(--primary-strong);
+}
+
+.campaign-mark {
+    position: relative;
+    z-index: 1;
+    justify-self: end;
+    color: var(--primary-strong);
+    text-align: right;
+    transform: rotate(-4deg);
+}
+
+.campaign-mark span {
+    display: block;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .3em;
+}
+
+.campaign-mark strong {
+    font-size: clamp(28px, 3.8vw, 52px);
+    line-height: .98;
+}
+
+.category-chips {
+    display: flex;
+    gap: 9px;
+    overflow-x: auto;
+    margin: 18px 0 6px;
+    padding: 2px 0 7px;
+    scrollbar-width: thin;
+}
+
+.category-chips button {
+    flex: none;
+    padding: 9px 17px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--muted-strong);
+    box-shadow: none;
+}
+
+.category-chips button:hover,
+.category-chips button.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+    transform: none;
+}
+
+.item-seller {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: auto;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.seller-avatar {
+    display: grid;
+    width: 23px;
+    height: 23px;
+    place-items: center;
+    border-radius: 50%;
+    background: #e4ebff;
+    color: var(--primary);
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.admin-dashboard {
+    margin-bottom: 20px;
+}
+
+.admin-console-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.admin-console-top h2 {
+    margin: 2px 0 0;
+}
+
+.admin-dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.admin-dashboard-stats article {
+    padding: 19px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(29, 51, 97, .06);
+}
+
+.admin-dashboard-stats span,
+.admin-dashboard-stats small {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.admin-dashboard-stats strong {
+    display: block;
+    margin: 7px 0 5px;
+    color: var(--primary-strong);
+    font-size: 30px;
+}
+
+@media (max-width: 1080px) {
+    .home-welcome.hero {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .admin-dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .home-layout {
+        width: min(100% - 28px, 900px);
+    }
+
+    .market-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .category-sidebar {
+        display: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .topbar nav {
+        grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    }
+
+    .home-layout {
+        width: 100%;
+        padding-top: 14px;
+    }
+
+    .market-shell {
+        border-right: 0;
+        border-left: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .market-main {
+        padding: 14px;
+    }
+
+    .home-welcome.hero {
+        gap: 13px;
+        padding: 18px;
+    }
+
+    .home-welcome h1 {
+        font-size: 28px;
+    }
+
+    .home-welcome .search-bar {
+        grid-template-columns: 1fr auto;
+    }
+
+    .home-welcome .search-bar select {
+        display: none;
+    }
+
+    .campaign-banner {
+        grid-template-columns: 1fr .45fr;
+        min-height: 190px;
+        padding: 24px 20px;
+        background: linear-gradient(120deg, #173b92 0 72%, #ffc928 72% 100%);
+    }
+
+    .campaign-banner h2 {
+        font-size: 27px;
+    }
+
+    .campaign-banner p:not(.section-kicker) {
+        font-size: 12px;
+    }
+
+    .campaign-mark strong {
+        font-size: 27px;
+    }
+
+    .category-chips {
+        margin-top: 14px;
+    }
+
+    .admin-dashboard-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 380px) {
+    .campaign-banner {
+        grid-template-columns: 1fr;
+    }
+
+    .campaign-mark {
+        display: none;
+    }
+
+    .admin-dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Seller inventory */
 .secondary-link {
     border-color: var(--line);
@@ -2425,5 +2810,44 @@ button.danger,
 
     .item-card-body {
         min-height: 150px;
+    }
+}
+
+/* Round 7 mobile polish must remain after legacy responsive overrides. */
+@media (max-width: 720px) {
+    .topbar nav {
+        grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    }
+
+    .home-welcome .search-bar {
+        grid-template-columns: minmax(0, 1fr) auto;
+        width: 100%;
+    }
+
+    .home-welcome .search-bar input {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .home-welcome .search-bar button {
+        width: auto;
+        min-width: 64px;
+    }
+
+    .campaign-banner {
+        grid-template-columns: 1fr;
+    }
+
+    .campaign-mark {
+        display: none;
+    }
+
+    .campaign-banner .button-link {
+        width: fit-content;
+        padding: 0 18px;
+        background: #fff;
+        color: #173b92;
+        font-size: 13px;
+        font-weight: 800;
     }
 }

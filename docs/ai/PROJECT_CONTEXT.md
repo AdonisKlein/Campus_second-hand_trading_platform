@@ -22,6 +22,7 @@ backend/src/main/resources/db/migration/  Flyway 全新数据库结构
 frontend/       HTML 页面
 frontend/assets/js/api.js                 Session/CSRF/请求唯一 seam
 frontend/assets/css/styles.css            全站桌面与移动视觉系统
+frontend/tests/                           无依赖的 UI 结构与会话竞态回归测试
 deploy/         MySQL + Spring Boot + Nginx Compose 部署
 ```
 
@@ -32,6 +33,14 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - Seam：后端 `/auth/login|logout|csrf`、`/users/me` 与前端 `api.js` 的 `session`/`request`。
 - Interface 不变量：Web 凭据仅在 HttpOnly Session Cookie；写请求带 CSRF；本地用户对象只用于渲染。
 - Adapter：Spring Session JDBC；未来可替换为 Redis，页面调用方不变。
+- 页面角色导航由 `api.js` 统一 hydration；所有 `data-admin-only` 入口必须在 HTML 默认 `hidden`，仅当前 Session 的 `/users/me` 返回 ADMIN 后显示。这个规则只改善体验，不替代后端授权。
+- 会话读取带 generation；登录、退出或 401 后，旧请求不得覆盖新会话的页面状态。
+
+### 公开商品目录 module（第七轮）
+
+- Seam：`ItemRepository.searchPublic(category, keyword, status, moderationStatus)`。
+- Interface：分类和关键词都是可选条件；两者同时存在时返回交集，只公开 `ON_SALE + VISIBLE` 商品并按发布时间倒序。
+- 首页桌面结构以 `market-shell` 为根，包含分类侧栏、活动横幅、快捷分类和商品网格；移动端隐藏侧栏，但查询语义保持一致。
 
 ### 交易 module
 
@@ -74,6 +83,5 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 
 - 未被商品引用的上传图片暂未自动回收；后续可增加临时上传记录与定时清理。
 - 文件系统 adapter 适合当前单机部署；多实例部署前应替换为 MinIO/S3 adapter。
-- 首页关键词与分类暂未真正组合查询。
 - Windows/移动原生客户端的短 access token + rotation refresh token 尚未实现。
 - 当前是模块化单体；只有出现明确独立伸缩/部署需求后才拆微服务。

@@ -81,6 +81,22 @@ class SecondhandApplicationTests {
     }
 
     @Test
+    void publicSearchCombinesKeywordAndCategory() throws Exception {
+        User seller = saveUser("search-seller", "search-seller@example.com", "STUDENT");
+        sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "Java 课程教材", "书籍", new java.math.BigDecimal("20.00"), "", ""));
+        sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "Java 学习平板", "电子产品", new java.math.BigDecimal("300.00"), "", ""));
+        sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "高等数学教材", "书籍", new java.math.BigDecimal("15.00"), "", ""));
+
+        mvc.perform(get("/items").param("keyword", "Java").param("category", "书籍"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data", hasSize(1)))
+            .andExpect(jsonPath("$.data[0].title").value("Java 课程教材"));
+    }
+
+    @Test
     void loginCreatesServerSessionAndLogoutInvalidatesIt() throws Exception {
         saveUser("student", "student@example.com", "STUDENT");
         MockCookie session = login("student@example.com");

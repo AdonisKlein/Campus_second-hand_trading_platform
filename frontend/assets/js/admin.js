@@ -7,6 +7,10 @@ const adminItemList = document.querySelector("#adminItemList");
 const userCount = document.querySelector("#userCount");
 const messageCount = document.querySelector("#messageCount");
 const adminItemCount = document.querySelector("#adminItemCount");
+const adminStatUsers = document.querySelector("#adminStatUsers");
+const adminStatItems = document.querySelector("#adminStatItems");
+const adminStatMessages = document.querySelector("#adminStatMessages");
+const adminStatRemoved = document.querySelector("#adminStatRemoved");
 
 let currentUser = null;
 
@@ -50,6 +54,7 @@ async function loadUsers() {
     const result = await adminRequest("/users");
     const users = result.data || [];
     userCount.textContent = `${users.length} 个用户`;
+    adminStatUsers.textContent = users.length;
     adminUserList.innerHTML = users.length ? users.map(user => {
         const disabled = user.status === "DISABLED";
         return `
@@ -74,6 +79,7 @@ async function loadMessages() {
     const result = await adminRequest("/messages");
     const messages = result.data || [];
     messageCount.textContent = `${messages.length} 条留言`;
+    adminStatMessages.textContent = messages.length;
     adminMessageList.innerHTML = messages.length ? messages.map(message => `
         <div class="table-row admin-row">
             <div>
@@ -93,6 +99,8 @@ async function loadItems() {
     const result = await adminRequest("/items");
     const items = result.data || [];
     adminItemCount.textContent = `${items.length} 件商品`;
+    adminStatItems.textContent = items.length;
+    adminStatRemoved.textContent = items.filter(item => item.moderationStatus === "REMOVED").length;
     adminItemList.innerHTML = items.length ? items.map(item => {
         const removed = item.moderationStatus === "REMOVED";
         return `

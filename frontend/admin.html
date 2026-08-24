@@ -15,7 +15,7 @@
             <a href="publish.html" data-icon="＋">发布物品</a>
             <a href="orders.html" data-icon="▤">订单管理</a>
             <a href="profile.html" data-icon="○">个人中心</a>
-            <a class="active" href="admin.html" aria-current="page" data-icon="◇">管理中心</a>
+            <a class="active" href="admin.html" aria-current="page" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
@@ -36,6 +36,19 @@
             </div>
             <p class="admin-sidebar-note">管理操作会立即生效，请确认目标信息后再执行。</p></aside>
             <div class="admin-workspace">
+
+            <section class="admin-dashboard" aria-labelledby="adminDashboardTitle">
+                <div class="admin-console-top">
+                    <div><p class="section-kicker">LIVE OVERVIEW</p><h2 id="adminDashboardTitle">平台运行概览</h2></div>
+                    <span class="tag">管理员视图</span>
+                </div>
+                <div class="admin-dashboard-stats">
+                    <article><span>学生用户</span><strong id="adminStatUsers">—</strong><small>已注册账号</small></article>
+                    <article><span>平台商品</span><strong id="adminStatItems">—</strong><small>全部商品记录</small></article>
+                    <article><span>公开留言</span><strong id="adminStatMessages">—</strong><small>商品交流内容</small></article>
+                    <article><span>已下架商品</span><strong id="adminStatRemoved">—</strong><small>等待处理或恢复</small></article>
+                </div>
+            </section>
 
             <section id="adminUsersPanel" class="admin-section" role="tabpanel" aria-labelledby="adminTabUsers" data-admin-section="users">
                 <div class="section-title">
