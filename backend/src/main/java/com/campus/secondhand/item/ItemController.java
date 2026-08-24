@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,7 +85,9 @@ public class ItemController {
         @NotBlank @Size(max = 40) String category,
         @NotNull @DecimalMin("0.00") @Digits(integer = 8, fraction = 2) BigDecimal price,
         @Size(max = 1000) String description,
-        @Size(max = 255) String imageUrl
+        @Size(max = 255)
+        @Pattern(regexp = "^$|^/media/product-images/[1-9]\\d*/[0-9a-fA-F-]{36}\\.(jpg|png)$",
+            message = "必须使用平台上传的商品图片") String imageUrl
     ) {
         SellerInventory.ItemDraft toDraft() {
             return new SellerInventory.ItemDraft(title, category, price, description, imageUrl);

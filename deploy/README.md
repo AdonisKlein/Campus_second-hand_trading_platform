@@ -34,4 +34,4 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.yml exec -T mysql
 
 网站启动健康检查只检查应用存活，不把 SMTP 当作启动门槛；邮件发送状态应单独监控。这样邮箱服务临时故障时，浏览和订单功能仍可使用。
 
-数据库数据位于 Docker volume `mysql-data`。删除容器不会删除数据；只有显式删除该 volume 才会清空数据库。
+数据库数据位于 Docker volume `mysql-data`，商品图片位于 `media-data`。删除容器不会删除这些数据；只有显式删除对应 volume 才会清空。

@@ -48,7 +48,12 @@
             <input type="hidden" name="itemId">
             <label>标题<input name="title" maxlength="120" required></label>
             <div class="form-grid"><label>分类<select name="category" required><option value="书籍">书籍</option><option value="生活用品">生活用品</option><option value="电子产品">电子产品</option><option value="其他">其他</option></select></label><label>价格（元）<input name="price" type="number" min="0" step="0.01" required></label></div>
-            <label>图片地址<input name="imageUrl" maxlength="255"></label>
+            <div class="image-upload-field">
+                <label for="editorImage">商品图片</label>
+                <input id="editorImage" name="imageFile" type="file" accept="image/jpeg,image/png">
+                <input name="imageUrl" type="hidden">
+                <div class="image-upload-preview"><img id="editorImagePreview" src="assets/images/placeholder.svg" alt="商品图片预览"><div><strong>替换商品图片</strong><small>选择新图片后保存；也可以移除当前图片。</small><button id="removeEditorImage" class="text-button" type="button">移除图片</button></div></div>
+            </div>
             <label>描述<textarea name="description" rows="5" maxlength="1000"></textarea></label>
             <p id="itemEditorMessage" class="form-message" role="status" aria-live="polite"></p>
             <div class="dialog-actions"><button type="button" class="secondary" data-close-editor>取消</button><button type="submit">保存修改</button></div>

@@ -4,6 +4,10 @@ const itemEditor = document.querySelector("#itemEditor");
 const itemEditorForm = document.querySelector("#itemEditorForm");
 const itemEditorMessage = document.querySelector("#itemEditorMessage");
 const inventoryMessage = document.querySelector("#inventoryMessage");
+const editorImage = document.querySelector("#editorImage");
+const editorImagePreview = document.querySelector("#editorImagePreview");
+let editorPreviewObjectUrl = null;
+installImageFallbacks(document);
 let ownedItems = [];
 
 function escapeHtml(value) {
@@ -29,7 +33,7 @@ function renderItem(item) {
     }).join("");
     return `
         <article class="inventory-card" data-item-id="${item.id}">
-            <img src="${escapeHtml(item.imageUrl || "assets/images/placeholder.svg")}" alt="${escapeHtml(item.title)}">
+            <img src="${escapeHtml(productImageUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}">
             <div class="inventory-card__content">
                 <div class="inventory-card__meta"><span class="tag">${escapeHtml(item.category)}</span><span class="status-badge ${status.className}">${escapeHtml(status.label)}</span></div>
                 <h3>${escapeHtml(item.title)}</h3>
@@ -78,6 +82,7 @@ async function loadInventory() {
     updateCounts(ownedItems);
     inventoryList.innerHTML = ownedItems.length ? ownedItems.map(renderItem).join("")
         : '<div class="empty-state"><strong>还没有发布商品</strong><p>整理一件闲置，让它在校园里重新发挥价值。</p><a class="button-link compact-link" href="publish.html">发布第一件商品</a></div>';
+    installImageFallbacks(inventoryList);
 }
 
 function openEditor(itemId) {
@@ -87,11 +92,31 @@ function openEditor(itemId) {
     itemEditorForm.title.value = item.title || "";
     itemEditorForm.category.value = item.category || "其他";
     itemEditorForm.price.value = item.price;
-    itemEditorForm.imageUrl.value = item.imageUrl || "";
+    itemEditorForm.imageUrl.value = /^\/media\/product-images\//.test(item.imageUrl || "") ? item.imageUrl : "";
+    editorImage.value = "";
+    editorImagePreview.src = productImageUrl(item.imageUrl);
     itemEditorForm.description.value = item.description || "";
     itemEditorMessage.textContent = "";
     itemEditor.showModal();
 }
+
+editorImage.addEventListener("change", () => {
+    if (editorPreviewObjectUrl) URL.revokeObjectURL(editorPreviewObjectUrl);
+    const file = editorImage.files[0];
+    const error = validateProductImageFile(file);
+    if (error) {
+        itemEditorMessage.textContent = error;
+        editorImage.value = "";
+    }
+    editorPreviewObjectUrl = file && !error ? URL.createObjectURL(file) : null;
+    editorImagePreview.src = editorPreviewObjectUrl || productImageUrl(itemEditorForm.imageUrl.value);
+});
+
+document.querySelector("#removeEditorImage").addEventListener("click", () => {
+    editorImage.value = "";
+    itemEditorForm.imageUrl.value = "";
+    editorImagePreview.src = "assets/images/placeholder.svg";
+});
 
 inventoryList.addEventListener("click", async event => {
     const editButton = event.target.closest("button[data-edit-item]");
@@ -126,12 +151,34 @@ itemEditorForm.addEventListener("submit", async event => {
     const submitButton = itemEditorForm.querySelector('button[type="submit"]');
     const editorButtons = [...itemEditorForm.querySelectorAll("button")];
     editorButtons.forEach(button => button.disabled = true);
+    itemEditorForm.setAttribute("aria-busy", "true");
     const data = formToJson(itemEditorForm);
     const itemId = data.itemId;
     delete data.itemId;
+    delete data.imageFile;
     data.price = Number(data.price);
+    const imageFile = editorImage.files[0];
+    const imageError = validateProductImageFile(imageFile);
+    if (imageError) {
+        editorButtons.forEach(button => button.disabled = false);
+        itemEditorForm.removeAttribute("aria-busy");
+        itemEditorMessage.textContent = imageError;
+        return;
+    }
+    if (imageFile) {
+        itemEditorMessage.textContent = "正在安全处理图片…";
+        const upload = await uploadProductImage(imageFile);
+        if (!upload.success) {
+            editorButtons.forEach(button => button.disabled = false);
+            itemEditorForm.removeAttribute("aria-busy");
+            itemEditorMessage.textContent = upload.message || "图片上传失败";
+            return;
+        }
+        data.imageUrl = upload.data.url;
+    }
     const result = await request(`/items/${itemId}`, { method: "PUT", body: JSON.stringify(data) });
     editorButtons.forEach(button => button.disabled = false);
+    itemEditorForm.removeAttribute("aria-busy");
     if (!result.success) {
         itemEditorMessage.textContent = result.message || "保存失败";
         return;

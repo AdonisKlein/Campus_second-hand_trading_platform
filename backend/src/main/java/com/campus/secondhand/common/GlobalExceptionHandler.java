@@ -16,6 +16,8 @@ import com.campus.secondhand.user.VerificationRateLimitException;
 import org.springframework.security.access.AccessDeniedException;
 import com.campus.secondhand.order.TradingRuleException;
 import com.campus.secondhand.item.SellerInventoryRuleException;
+import com.campus.secondhand.media.ProductImageException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -74,6 +76,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleSellerInventoryRule(SellerInventoryRuleException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProductImageException.class)
+    public ResponseEntity<ApiResponse<Object>> handleProductImage(ProductImageException ex) {
+        return ResponseEntity.status(ex.status())
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail("图片不能超过 5MB"));
     }
 }
 

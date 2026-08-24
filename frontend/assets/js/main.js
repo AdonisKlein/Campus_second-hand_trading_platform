@@ -17,10 +17,11 @@ async function loadItems(params = {}) {
     grid.innerHTML = items.length
         ? items.map(renderItem).join("")
         : '<p class="empty-state">暂时没有符合条件的商品，换个关键词试试吧。</p>';
+    installImageFallbacks(grid);
 }
 
 function renderItem(item) {
-    const image = item.imageUrl || "assets/images/placeholder.svg";
+    const image = productImageUrl(item.imageUrl);
     return `
         <a class="item-card" href="detail.html?id=${encodeURIComponent(item.id)}">
             <div class="item-media"><img src="${escapeHtml(image)}" alt="${escapeHtml(item.title)}"><span class="tag">${escapeHtml(item.category)}</span></div>

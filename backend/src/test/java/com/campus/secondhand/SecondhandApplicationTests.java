@@ -17,6 +17,8 @@ import com.campus.secondhand.user.UserRepository;
 import com.campus.secondhand.user.EmailVerification;
 import com.campus.secondhand.user.VerificationPurpose;
 import com.campus.secondhand.user.VerificationService;
+import com.campus.secondhand.media.ProductImages;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.List;
@@ -33,6 +35,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.mock.web.MockCookie;
+import org.springframework.mock.web.MockMultipartFile;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -53,6 +56,8 @@ class SecondhandApplicationTests {
     @Autowired VerificationService verificationService;
     @Autowired TradingService tradingService;
     @Autowired SellerInventory sellerInventory;
+    @Autowired ProductImages productImages;
+    @Autowired ObjectMapper objectMapper;
     @MockitoBean JavaMailSender mailSender;
 
     @BeforeEach
@@ -111,6 +116,65 @@ class SecondhandApplicationTests {
     }
 
     @Test
+    void productImageInterfaceRejectsUnsafeFilesAndServesNormalizedUpload() throws Exception {
+        User seller = saveUser("seller", "seller@example.com", "STUDENT");
+        User stranger = saveUser("stranger", "stranger@example.com", "STUDENT");
+        User admin = saveUser("admin", "admin@example.com", "ADMIN");
+        MockCookie sellerSession = login(seller.getEmail());
+        MockCookie strangerSession = login(stranger.getEmail());
+        MockCookie adminSession = login(admin.getEmail());
+
+        java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(20, 16,
+            java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.io.ByteArrayOutputStream imageBytes = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(image, "png", imageBytes);
+        byte[] png = imageBytes.toByteArray();
+
+        mvc.perform(multipart("/media/product-images")
+                .file(new MockMultipartFile("file", "photo.png", "image/png", png)).with(csrf()))
+            .andExpect(status().isUnauthorized());
+        mvc.perform(multipart("/media/product-images")
+                .file(new MockMultipartFile("file", "photo.png", "image/png", png)).cookie(adminSession).with(csrf()))
+            .andExpect(status().isForbidden());
+        mvc.perform(multipart("/media/product-images")
+                .file(new MockMultipartFile("file", "photo.jpg", "image/jpeg", "not an image".getBytes())).cookie(sellerSession).with(csrf()))
+            .andExpect(status().isBadRequest());
+
+        MvcResult uploaded = mvc.perform(multipart("/media/product-images")
+                .file(new MockMultipartFile("file", "photo.png", "image/png", png)).cookie(sellerSession).with(csrf()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.contentType").value("image/png"))
+            .andExpect(jsonPath("$.data.width").value(20))
+            .andReturn();
+        String imageUrl = objectMapper.readTree(uploaded.getResponse().getContentAsString())
+            .path("data").path("url").asText();
+
+        mvc.perform(get(imageUrl))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Content-Type", "image/png"))
+            .andExpect(header().string("Cache-Control", org.hamcrest.Matchers.containsString("immutable")));
+        mvc.perform(post("/items").cookie(strangerSession).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"盗用图片\",\"category\":\"其他\",\"price\":1,\"imageUrl\":\"%s\"}".formatted(imageUrl)))
+            .andExpect(status().isConflict());
+        mvc.perform(post("/items").cookie(sellerSession).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"安全图片\",\"category\":\"其他\",\"price\":1,\"imageUrl\":\"%s\"}".formatted(imageUrl)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.imageUrl").value(imageUrl));
+        mvc.perform(post("/items").cookie(sellerSession).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"外链图片\",\"category\":\"其他\",\"price\":1,\"imageUrl\":\"https://tracker.example/a.jpg\"}"))
+            .andExpect(status().isBadRequest());
+
+        var tooLarge = new ProductImages.ImageUpload(new byte[5 * 1024 * 1024 + 1], "large.png", "image/png");
+        com.campus.secondhand.media.ProductImageException exception = org.junit.jupiter.api.Assertions.assertThrows(
+            com.campus.secondhand.media.ProductImageException.class,
+            () -> productImages.store(seller.getId(), tooLarge));
+        org.junit.jupiter.api.Assertions.assertEquals(org.springframework.http.HttpStatus.PAYLOAD_TOO_LARGE,
+            exception.status());
+        org.junit.jupiter.api.Assertions.assertThrows(com.campus.secondhand.media.ProductImageException.class,
+            () -> productImages.store(0L, new ProductImages.ImageUpload(png, "photo.png", "image/png")));
+    }
+
+    @Test
     void sellerInventoryInterfaceOwnsLifecycleRules() {
         User seller = saveUser("seller", "seller@example.com", "STUDENT");
         User buyer = saveUser("buyer", "buyer@example.com", "STUDENT");
@@ -120,6 +184,8 @@ class SecondhandApplicationTests {
         disabled.setStatus("DISABLED");
         users.saveAndFlush(disabled);
         var draft = new SellerInventory.ItemDraft(" 教材 ", "书籍", java.math.BigDecimal.valueOf(20), " 八成新 ", " ");
+        var malformedImage = new SellerInventory.ItemDraft("教材", "书籍", java.math.BigDecimal.valueOf(20),
+            null, "/media/product-images/" + seller.getId() + "/not-a-uuid.jpg");
 
         org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
             () -> sellerInventory.publish(Long.MAX_VALUE, draft));
@@ -127,6 +193,8 @@ class SecondhandApplicationTests {
             () -> sellerInventory.publish(disabled.getId(), draft));
         org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
             () -> sellerInventory.publish(admin.getId(), draft));
+        org.junit.jupiter.api.Assertions.assertThrows(SellerInventoryRuleException.class,
+            () -> sellerInventory.publish(seller.getId(), malformedImage));
 
         var published = sellerInventory.publish(seller.getId(), draft);
         org.junit.jupiter.api.Assertions.assertEquals("教材", published.title());

@@ -1003,6 +1003,68 @@ button.danger,
 
 .inventory-message.error { color: var(--danger); }
 
+.image-upload-field {
+    display: grid;
+    gap: 9px;
+}
+
+.image-upload-field > label {
+    font-weight: 700;
+}
+
+.image-upload-field input[type="file"] {
+    padding: 10px;
+    border: 1px dashed #aab8cb;
+    border-radius: 12px;
+    background: #f8fbff;
+}
+
+.image-upload-field input[type="file"]::file-selector-button {
+    margin-right: 10px;
+    padding: 9px 13px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--primary);
+    color: #fff;
+    cursor: pointer;
+}
+
+.image-upload-preview {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel-soft);
+}
+
+.image-upload-preview img {
+    width: 104px;
+    height: 78px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.image-upload-preview div {
+    display: grid;
+    gap: 5px;
+}
+
+.image-upload-preview small { color: var(--muted); }
+
+.text-button {
+    width: fit-content;
+    min-height: 0;
+    padding: 3px 0;
+    border: 0;
+    background: transparent;
+    color: var(--danger);
+    text-align: left;
+}
+
 .inventory-title {
     margin-bottom: 18px;
 }
@@ -1175,6 +1237,15 @@ button.danger,
     .dialog-actions button {
         min-width: 0;
         flex: 1;
+    }
+
+    .image-upload-preview {
+        grid-template-columns: 84px minmax(0, 1fr);
+    }
+
+    .image-upload-preview img {
+        width: 84px;
+        height: 72px;
     }
 }
 

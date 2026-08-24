@@ -30,6 +30,9 @@ services:
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - media-data:/app/uploads
     depends_on:
       mysql:
         condition: service_healthy
@@ -50,3 +53,4 @@ services:
 
 volumes:
   mysql-data:
+  media-data:

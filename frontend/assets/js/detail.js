@@ -54,7 +54,7 @@ async function loadDetail() {
     currentItem = item;
     itemDetail.innerHTML = `
         <div class="detail-product">
-            <div class="detail-media"><img class="detail-image" src="${escapeHtml(item.imageUrl || "assets/images/placeholder.svg")}" alt="${escapeHtml(item.title)}"><span class="detail-photo-note">商品实拍 / 示意图</span></div>
+            <div class="detail-media"><img class="detail-image" src="${escapeHtml(productImageUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}"><span class="detail-photo-note">商品实拍 / 示意图</span></div>
             <div class="detail-summary">
                 <div class="detail-badges"><span class="tag">${escapeHtml(item.category)}</span><span class="status-badge ${item.status === "ON_SALE" ? "completed" : "cancelled"}">${item.status === "ON_SALE" ? "正在出售" : "已被预留或售出"}</span></div>
                 <h1>${escapeHtml(item.title)}</h1>
@@ -66,6 +66,7 @@ async function loadDetail() {
             </div>
         </div>
     `;
+    installImageFallbacks(itemDetail);
 
     document.querySelector("#createOrder")?.addEventListener("click", async event => {
         const submitButton = event.currentTarget;

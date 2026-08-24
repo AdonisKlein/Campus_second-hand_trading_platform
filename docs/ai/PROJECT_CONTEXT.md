@@ -1,6 +1,6 @@
 # AI 项目上下文
 
-更新日期：2026-08-23
+更新日期：2026-08-24
 
 ## 产品边界
 
@@ -13,6 +13,7 @@ backend/src/main/java/com/campus/secondhand/
   security/     Session 当前身份、Security 配置、Client IP
   user/         邮箱注册登录、验证码、个人资料
   item/         商品发布、公开查询、卖家商品管理
+  media/        商品图片验证、标准化、持久存储与公开读取
   message/      商品公开留言及本人维护
   order/        预留、订单状态机、超时释放
   admin/        管理员用户/商品/留言操作
@@ -45,6 +46,15 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - 不变量：只有发布者能操作；`RESERVED`/`SOLD` 不可编辑或卖家下架；卖家重新上架不能绕过管理员 `REMOVED`；修改状态使用商品行锁。
 - 商品交易状态与内容审核状态相互独立：`ItemStatus` 表示交易可用性，`ItemModerationStatus` 表示管理员是否允许公开展示。
 
+### 商品图片 module（第六轮）
+
+- Seam：`ProductImages.store/load`。
+- Interface：学生上传图片后得到平台内部图片路径；公开读取只接受系统生成的 ownerId + UUID 文件名。
+- 不变量：只接受真实内容为 JPG/PNG 的文件；输入和标准化输出均不超过 5MB；最多 1200 万像素、单边不超过 8000px；重新编码会清除 EXIF；每个学生本地配额 100MB。
+- 单实例内同一 owner 的配额核算串行化，图片解码全局最多并发 2 个；多实例阶段由对象存储 adapter 承担原子配额和处理队列。
+- 当前 adapter：Docker `media-data` 持久卷中的文件系统。未来替换为 MinIO/S3 adapter 时，商品只继续保存同一种受控路径，不接触存储细节。
+- 商品写入还会验证图片路径属于当前卖家，页面不会加载任意外部图片 URL。
+
 ## 数据与状态
 
 - 用户：`ACTIVE`/`DISABLED`，安全状态变化递增 `authVersion`，旧 Session 不会复活。
@@ -55,14 +65,15 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 
 ## 当前部署事实
 
-- Docker 服务：`mysql`、`backend`、`web`，只向宿主机暴露 Web 80 端口。
+- Docker 服务：`mysql`、`backend`、`web`，只向宿主机暴露 Web 80 端口；`media-data` 保存商品图片。
 - Nginx 同源代理 `/api/`；生产 TLS 需把 Session Cookie Secure 设为 true。
 - Flyway 从空 MySQL 建库；本项目没有历史生产库升级负担。
 - `database/seed.sql` 仅允许全新空业务库执行一次，禁止生产导入。
 
 ## 已知非阻断债务
 
-- 商品图片仍使用外部 URL；后续应改为自有对象存储上传/图片代理并收紧 CSP。
+- 未被商品引用的上传图片暂未自动回收；后续可增加临时上传记录与定时清理。
+- 文件系统 adapter 适合当前单机部署；多实例部署前应替换为 MinIO/S3 adapter。
 - 首页关键词与分类暂未真正组合查询。
 - Windows/移动原生客户端的短 access token + rotation refresh token 尚未实现。
 - 当前是模块化单体；只有出现明确独立伸缩/部署需求后才拆微服务。

@@ -8,7 +8,9 @@ FROM eclipse-temurin:25-jre-jammy
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
-RUN useradd --system --uid 10001 campus
+RUN useradd --system --uid 10001 campus \
+    && mkdir -p /app/uploads \
+    && chown -R campus:campus /app/uploads
 COPY --from=build /workspace/target/secondhand-0.0.1-SNAPSHOT.jar app.jar
 USER campus
 EXPOSE 8080

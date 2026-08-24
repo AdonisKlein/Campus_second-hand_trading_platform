@@ -13,6 +13,10 @@ server:
 spring:
     application:
         name: campus-secondhand
+    servlet:
+        multipart:
+            max-file-size: 5MB
+            max-request-size: 6MB
     datasource:
         url: ${DB_URL:jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
         username: ${DB_USERNAME:root}

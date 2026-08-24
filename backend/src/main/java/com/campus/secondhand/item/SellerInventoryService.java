@@ -90,7 +90,13 @@ public class SellerInventoryService implements SellerInventory {
         item.setCategory(draft.category().trim());
         item.setPrice(draft.price());
         item.setDescription(normalizeOptional(draft.description()));
-        item.setImageUrl(normalizeOptional(draft.imageUrl()));
+        String imageUrl = normalizeOptional(draft.imageUrl());
+        String ownedImagePattern = "^/media/product-images/" + item.getSellerId()
+            + "/[0-9a-fA-F-]{36}\\.(jpg|png)$";
+        if (imageUrl != null && !imageUrl.matches(ownedImagePattern)) {
+            throw new SellerInventoryRuleException("只能使用本人上传的商品图片");
+        }
+        item.setImageUrl(imageUrl);
     }
 
     private String normalizeOptional(String value) {

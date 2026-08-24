@@ -15,6 +15,7 @@ spring:
         jdbc:
             initialize-schema: never
 app:
+    upload-dir: target/test-uploads
     verification:
         pepper: test-only-verification-pepper-at-least-32-bytes
 management:

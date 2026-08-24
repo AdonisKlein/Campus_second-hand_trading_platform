@@ -7,6 +7,7 @@
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8080/api" },
     { "key": "csrfToken", "value": "" },
+    { "key": "imageUrl", "value": "" },
     { "key": "itemId", "value": "1" },
     { "key": "orderId", "value": "1" }
   ],
@@ -65,17 +66,31 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
-            "body": { "mode": "raw", "raw": "{\n  \"title\": \"二手教材\",\n  \"category\": \"书籍\",\n  \"price\": 20,\n  \"description\": \"八成新\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"二手教材\",\n  \"category\": \"书籍\",\n  \"price\": 20,\n  \"description\": \"八成新\",\n  \"imageUrl\": \"{{imageUrl}}\"\n}" },
             "url": "{{baseUrl}}/items"
           }
         },
+        {
+          "name": "上传商品图片（JPG/PNG，最大 5MB）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] },
+            "url": "{{baseUrl}}/media/product-images"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const body = pm.response.json();",
+            "if (body.success) pm.collectionVariables.set('imageUrl', body.data.url);"
+          ] } }]
+        },
+        { "name": "读取上传图片", "request": { "method": "GET", "url": "{{baseUrl}}{{imageUrl}}" } },
         { "name": "我的发布（不传 sellerId）", "request": { "method": "GET", "url": "{{baseUrl}}/items/mine" } },
         {
           "name": "编辑自己的商品",
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
-            "body": { "mode": "raw", "raw": "{\n  \"title\": \"修改后的教材\",\n  \"category\": \"书籍\",\n  \"price\": 18,\n  \"description\": \"八成新，无缺页\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"修改后的教材\",\n  \"category\": \"书籍\",\n  \"price\": 18,\n  \"description\": \"八成新，无缺页\",\n  \"imageUrl\": \"{{imageUrl}}\"\n}" },
             "url": "{{baseUrl}}/items/{{itemId}}"
           }
         },
