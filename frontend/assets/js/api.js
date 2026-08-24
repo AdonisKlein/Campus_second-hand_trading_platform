@@ -218,7 +218,16 @@ async function hydrateRoleNavigation() {
     applyRoleNavigation(null);
     const user = await session.current();
     applyRoleNavigation(user);
+    if (user && user.role === "STUDENT") refreshChatUnread();
     return user;
+}
+
+async function refreshChatUnread() {
+    const badges = document.querySelectorAll("[data-chat-unread]");
+    if (!badges.length || !sessionUser || sessionUser.role !== "STUDENT") return;
+    const result = await request("/chat/unread-count");
+    const count = result?.success ? Number(result.data?.count || 0) : 0;
+    badges.forEach(badge => { badge.hidden = count < 1; badge.textContent = count > 99 ? "99+" : String(count); });
 }
 
 function formToJson(form) { return Object.fromEntries(new FormData(form).entries()); }
@@ -264,6 +273,7 @@ window.confirmAuthentication = confirmAuthentication;
 window.requireAuthenticatedUser = requireAuthenticatedUser;
 window.consumePostLoginTarget = consumePostLoginTarget;
 window.openReportDialog = openReportDialog;
+window.refreshChatUnread = refreshChatUnread;
 
 document.addEventListener("click", event => {
     const link = event.target.closest("a[data-requires-auth]");

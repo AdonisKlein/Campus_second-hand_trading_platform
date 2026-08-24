@@ -20,6 +20,9 @@ import com.campus.secondhand.user.VerificationService;
 import com.campus.secondhand.media.ProductImages;
 import com.campus.secondhand.report.ContentReportRepository;
 import com.campus.secondhand.report.ReportActionRepository;
+import com.campus.secondhand.chat.ChatConversationRepository;
+import com.campus.secondhand.chat.ChatMessageRepository;
+import com.campus.secondhand.chat.ChatBlockRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -62,11 +65,17 @@ class SecondhandApplicationTests {
     @Autowired ProductImages productImages;
     @Autowired ContentReportRepository contentReports;
     @Autowired ReportActionRepository reportActions;
+    @Autowired ChatConversationRepository chatConversations;
+    @Autowired ChatMessageRepository chatMessages;
+    @Autowired ChatBlockRepository chatBlocks;
     @Autowired ObjectMapper objectMapper;
     @MockitoBean JavaMailSender mailSender;
 
     @BeforeEach
     void clean() {
+        chatMessages.deleteAll();
+        chatBlocks.deleteAll();
+        chatConversations.deleteAll();
         reportActions.deleteAll();
         contentReports.deleteAll();
         orders.deleteAll();
@@ -74,6 +83,57 @@ class SecondhandApplicationTests {
         items.deleteAll();
         verifications.deleteAll();
         users.deleteAll();
+    }
+
+    @Test
+    void directChatIsPrivateUnreadAndBlockable() throws Exception {
+        User seller = saveUser("chat-seller", "chat-seller@example.com", "STUDENT");
+        User buyer = saveUser("chat-buyer", "chat-buyer@example.com", "STUDENT");
+        User stranger = saveUser("chat-stranger", "chat-stranger@example.com", "STUDENT");
+        User admin = saveUser("chat-admin", "chat-admin@example.com", "ADMIN");
+        var item = sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "私聊测试教材", "书籍", java.math.BigDecimal.valueOf(18), "仅公开商品信息", ""));
+        MockCookie buyerSession = login(buyer.getEmail());
+        MockCookie sellerSession = login(seller.getEmail());
+        MockCookie strangerSession = login(stranger.getEmail());
+        MockCookie adminSession = login(admin.getEmail());
+
+        MvcResult opened = mvc.perform(post("/chat/conversations").cookie(buyerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"itemId\":%d,\"buyerId\":%d,\"sellerId\":%d}".formatted(item.id(), stranger.getId(), stranger.getId())))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.otherUserId").value(seller.getId())).andReturn();
+        String conversationId = objectMapper.readTree(opened.getResponse().getContentAsString()).at("/data/id").asText();
+        org.junit.jupiter.api.Assertions.assertTrue(conversationId.matches("[0-9a-f-]{36}"));
+        mvc.perform(post("/chat/conversations").cookie(buyerSession).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"itemId\":%d}".formatted(item.id())))
+            .andExpect(jsonPath("$.data.id").value(conversationId));
+
+        mvc.perform(get("/chat/conversations/{id}/messages", conversationId).cookie(strangerSession))
+            .andExpect(status().isForbidden());
+        mvc.perform(get("/chat/conversations").cookie(adminSession)).andExpect(status().isForbidden());
+        mvc.perform(post("/chat/conversations/{id}/messages", conversationId).cookie(buyerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"body\":\"这条只应由买卖双方看到\",\"senderId\":%d}".formatted(stranger.getId())))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.senderId").value(buyer.getId()))
+            .andExpect(jsonPath("$.data.sequence").value(1));
+        mvc.perform(get("/chat/conversations").cookie(sellerSession))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.totalUnread").value(1))
+            .andExpect(jsonPath("$.data.conversations[0].unreadCount").value(1));
+        mvc.perform(post("/chat/conversations/{id}/read", conversationId).cookie(sellerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"throughSequence\":1}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.unreadCount").value(0));
+        mvc.perform(put("/chat/blocks/{id}", buyer.getId()).cookie(sellerSession).with(csrf()))
+            .andExpect(status().isOk());
+        mvc.perform(post("/chat/conversations/{id}/messages", conversationId).cookie(buyerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"body\":\"屏蔽后不能发送\"}"))
+            .andExpect(status().isConflict());
+        mvc.perform(delete("/chat/blocks/{id}", buyer.getId()).cookie(sellerSession).with(csrf()))
+            .andExpect(status().isOk());
+        mvc.perform(post("/chat/conversations/{id}/messages", conversationId).cookie(sellerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"body\":\"解除后可以回复\"}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.sequence").value(2));
+        mvc.perform(get("/messages/item/{id}", item.id()))
+            .andExpect(status().isOk()).andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("这条只应由买卖双方看到"))));
     }
 
     @Test

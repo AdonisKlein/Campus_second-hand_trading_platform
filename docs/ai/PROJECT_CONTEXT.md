@@ -17,6 +17,7 @@ backend/src/main/java/com/campus/secondhand/
   report/       学生举报、管理员治理决策与追加式处理审计
   media/        商品图片验证、标准化、持久存储与公开读取
   message/      商品公开留言及本人维护
+  chat/         仅买卖双方可见的商品私聊、未读游标与屏蔽
   order/        预留、订单状态机、超时释放
   admin/        管理员用户/商品/留言操作
   common/       统一响应和异常映射
@@ -62,6 +63,16 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - 每次最终处理追加一条 `report_actions` 审计，记录真实管理员、结果、措施、说明和时间；同一举报以行锁保证只能最终处理一次。
 - 学生每 24 小时最多提交 20 条举报；数据库唯一约束继续防止并发重复提交。
 
+### 私聊 module（第十轮）
+
+- Seam：`DirectChat.open/conversations/history/send/markRead/block/unblock`；HTTP 入口统一在 `/chat`，页面入口为商品详情与 `messages.html`。
+- 一个在售商品、一个买家和该商品卖家最多形成一个会话；对外只暴露随机 UUID 会话号，内部数值主键不用于客户端定位。
+- 会话和消息只能由真实买卖双方读取；发送者完全从 Session 推导，管理员没有查看学生私聊正文的特殊权限。
+- 每个会话使用单调递增 sequence；买卖双方各自保存最后已读 sequence，由此计算未读数。消息历史按 sequence 游标向前分页，不使用不稳定的 offset。
+- 新会话只允许为 `ON_SALE + VISIBLE` 商品创建；商品售出或下架后保留既有历史。任一方屏蔽后双方均不能继续发送，但仍可查看已有记录和解除自己的屏蔽。
+- 当前 Web adapter 每 8 秒轮询，interface 不依赖轮询方式；未来换 SSE/WebSocket 时无需改变领域规则和数据库消息顺序。
+- 本轮只实现文本私聊；结构化议价、图片消息和订单成交价联动属于下一轮，不用自由文本伪装为报价状态。
+
 ### 交易 module
 
 - Seam：`TradingService.placeOrder/listOrders/perform`。
@@ -92,6 +103,7 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - 订单：`PENDING_SELLER_CONFIRMATION` → `WAITING_HANDOVER` → `COMPLETED`；也可进入 `CANCELLED`/`EXPIRED`。
 - 订单保存下单时的标题、价格、双方昵称快照。
 - 举报：`OPEN` → `RESOLVED` 或 `DISMISSED`；处理历史只追加，不由学生修改或删除。
+- 私聊：会话由商品、买家、卖家唯一确定；消息 sequence 只增不改，已读游标只前进不后退。
 
 ## 当前部署事实
 

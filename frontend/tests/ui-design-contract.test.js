@@ -29,7 +29,7 @@ if (!home.includes("data-search-scope")) failures.push("index.html: 搜索后必
 
 for (const file of htmlFiles) {
     const html = fs.readFileSync(path.join(frontend, file), "utf8");
-    const protectedLinks = html.match(/<a[^>]+href="(?:publish|orders|my-items|reports)\.html[^>]*>/g) || [];
+    const protectedLinks = html.match(/<a[^>]+href="(?:publish|orders|my-items|reports|messages)\.html[^>]*>/g) || [];
     for (const link of protectedLinks) {
         if (!link.includes("data-requires-auth")) failures.push(`${file}: 登录后操作入口缺少 data-requires-auth`);
     }
@@ -50,6 +50,19 @@ if (!detail.includes('openReportDialog("ITEM"') || !detail.includes('openReportD
 const main = fs.readFileSync(path.join(frontend, "assets/js/main.js"), "utf8");
 if (!main.includes('openReportDialog("USER"')) failures.push("main.js: 用户搜索结果缺少举报用户入口");
 if (!admin.includes("adminReportsPanel")) failures.push("admin.html: 缺少管理员举报队列");
+
+const chat = fs.readFileSync(path.join(frontend, "messages.html"), "utf8");
+const chatJs = fs.readFileSync(path.join(frontend, "assets/js/chat.js"), "utf8");
+for (const selector of ["chat-shell", "conversationList", "chatMessages", "chatForm"]) {
+    if (!chat.includes(selector)) failures.push(`messages.html: 缺少私聊结构 ${selector}`);
+}
+if (!chatJs.includes("/chat/conversations") || !chatJs.includes("preserveReadingPosition")) {
+    failures.push("chat.js: 缺少私聊 API 或轮询阅读位置保护");
+}
+for (const file of htmlFiles.filter(name => !["messages.html"].includes(name))) {
+    const html = fs.readFileSync(path.join(frontend, file), "utf8");
+    if (!html.includes('href="messages.html"')) failures.push(`${file}: 学生端公共导航缺少私聊入口`);
+}
 
 if (failures.length) {
     console.error(failures.join("\n"));

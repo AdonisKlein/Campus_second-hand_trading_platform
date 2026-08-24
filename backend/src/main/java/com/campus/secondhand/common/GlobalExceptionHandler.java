@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import com.campus.secondhand.search.SearchQueryException;
 import com.campus.secondhand.report.GovernanceRuleException;
 import org.springframework.dao.DataIntegrityViolationException;
+import com.campus.secondhand.chat.ChatRuleException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -106,6 +107,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleDataConflict(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.fail("数据冲突，请刷新后重试"));
+    }
+
+    @ExceptionHandler(ChatRuleException.class)
+    public ResponseEntity<ApiResponse<Void>> handleChatRule(ChatRuleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.fail(ex.getMessage()));
     }
 }
 

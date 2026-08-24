@@ -149,6 +149,39 @@
         {
           "name": "我的举报（不传 reporterId）",
           "request": { "method": "GET", "url": "{{baseUrl}}/reports/mine" }
+        },
+        {
+          "name": "发起或打开商品私聊（不传买卖身份）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"itemId\": {{itemId}}\n}" },
+            "url": "{{baseUrl}}/chat/conversations"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const body = pm.response.json();",
+            "if (body.success) pm.collectionVariables.set('conversationId', body.data.id);"
+          ] } }]
+        },
+        { "name": "我的私聊会话与未读", "request": { "method": "GET", "url": "{{baseUrl}}/chat/conversations?size=30" } },
+        { "name": "私聊历史（sequence 游标）", "request": { "method": "GET", "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/messages?size=50" } },
+        {
+          "name": "发送私聊（senderId 来自 Session）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"body\": \"你好，请问什么时候方便在校内验货？\"\n}" },
+            "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/messages"
+          }
+        },
+        {
+          "name": "标记私聊已读",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"throughSequence\": 1\n}" },
+            "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/read"
+          }
         }
       ]
     },
