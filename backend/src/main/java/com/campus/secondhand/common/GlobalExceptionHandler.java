@@ -58,6 +58,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(body);
     }
 
+    @ExceptionHandler(MailDeliveryException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMailDelivery(MailDeliveryException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(ApiResponse.fail("邮件服务暂时不可用，请稍后重试"));
+    }
+
     @ExceptionHandler(VerificationRateLimitException.class)
     public ResponseEntity<ApiResponse<Object>> handleRateLimit(VerificationRateLimitException ex) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)

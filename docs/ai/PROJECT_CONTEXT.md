@@ -38,6 +38,14 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 
 ## 关键 module 与 interface
 
+### 验证邮件 module
+
+- Seam：`EmailService.sendVerificationCode(to, code)`；验证码 module 只知道“发送验证码”，不理解阿里云主机、端口或 TLS 模式。
+- Production adapter：Spring `JavaMailSender` 连接阿里云邮件推送；test adapter：Mockito `JavaMailSender`，测试同一个发送 interface 的发件人、失败和禁用行为。
+- `MAIL_ENABLED=false` 时应用可以启动，但验证码发送稳定返回 503；设为 true 时启动阶段要求合法 `MAIL_FROM` 以及非空 SMTP 用户名和密码，每封邮件都显式使用该地址。
+- 阿里云推荐配置为 `smtpdm.aliyun.com:465` 隐式 TLS；受限网络可显式切换为端口 80 + STARTTLS。用户名、发件人必须使用控制台创建的发信地址，SMTP 密码只能保存在部署 Secret。
+- SMTP 失败后当前验证码 challenge 会立即作废，客户端不会收到一个数据库仍可消费但实际从未送达的验证码。
+
 ### Web 会话 module
 
 - Seam：后端 `/auth/login|logout|csrf`、`/users/me` 与前端 `api.js` 的 `session`/`request`。

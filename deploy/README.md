@@ -3,7 +3,7 @@
 这套方案会启动 MySQL、后端和 Web/Nginx。MySQL 只创建空数据库，后端启动时由 Flyway 自动创建并校验全部表。
 
 1. 安装并启动 Docker Desktop，执行 `docker version`，确认 Client 和 Server 都可用。
-2. 复制 `deploy/.env.example` 为 `deploy/.env`，填写密码和 `VERIFICATION_PEPPER`。这些关键值留空时 Compose 会直接拒绝启动，避免误用公开示例密钥。可用 PowerShell 生成随机值：
+2. 复制 `deploy/.env.example` 为 `deploy/.env`，填写数据库密码和 `VERIFICATION_PEPPER`。这些关键值留空时 Compose 会直接拒绝启动，避免误用公开示例密钥。可用 PowerShell 生成随机值：
 
 ```powershell
 [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
@@ -28,6 +28,39 @@ Invoke-RestMethod http://localhost/api/actuator/health/liveness
 ```
 
 返回 `status = UP` 即表示后端可用。修改代码后应重新执行 `up -d --build`；只执行 `restart` 不会把源码更新进镜像。
+
+## 阿里云邮件推送
+
+未配置邮件时保持 `MAIL_ENABLED=false`，网站仍可浏览和使用演示账号，但注册与找回密码的验证码接口会返回 503。生产启用步骤：
+
+1. 在阿里云邮件推送的华东 1 区域创建专用发信子域名，例如 `notify.example.com`。
+2. 按控制台给出的值，在实际 DNS 托管商添加所有权、SPF、DKIM、DMARC 和 MX 记录，等待全部验证通过。
+3. 创建发信地址，例如 `no-reply@notify.example.com`，并为它设置独立 SMTP 密码。
+4. 在 `deploy/.env` 填写：
+
+```dotenv
+MAIL_ENABLED=true
+MAIL_HOST=smtpdm.aliyun.com
+MAIL_PORT=465
+MAIL_USERNAME=no-reply@notify.example.com
+MAIL_PASSWORD=阿里云控制台设置的SMTP密码
+MAIL_FROM=no-reply@notify.example.com
+MAIL_SMTP_AUTH=true
+MAIL_SSL_ENABLED=true
+MAIL_STARTTLS_ENABLED=false
+MAIL_STARTTLS_REQUIRED=false
+```
+
+`MAIL_USERNAME`、`MAIL_FROM` 必须使用阿里云控制台已创建的同一个发信地址。不要填写阿里云登录密码或 AccessKey。更新后执行：
+
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build --force-recreate backend
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml logs --tail 100 backend
+```
+
+如果所在网络无法使用 465，可根据阿里云控制台与官方文档改用端口 80 + STARTTLS：关闭 `MAIL_SSL_ENABLED`，同时开启 `MAIL_STARTTLS_ENABLED` 和 `MAIL_STARTTLS_REQUIRED`。不要使用被云服务器默认限制的 25 端口。
+
+官方配置依据：[阿里云发信域名](https://help.aliyun.com/zh/direct-mail/user-guide/how-to-configure-sending-domain-names)、[SMTP 地址和端口](https://www.alibabacloud.com/help/zh/direct-mail/smtp-endpoints)、[设置 SMTP 密码](https://www.alibabacloud.com/help/zh/direct-mail/sender-address-faqs)。
 
 如需演示账号和商品，可在**全新的空业务库**中从项目根目录导入一次种子数据。脚本检测到已有用户或商品会直接停止，禁止在生产环境执行：
 

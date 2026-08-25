@@ -88,6 +88,23 @@ class SecondhandApplicationTests {
     }
 
     @Test
+    void smtpFailureReturnsServiceUnavailableAndInvalidatesChallenge() throws Exception {
+        org.mockito.Mockito.doThrow(new org.springframework.mail.MailAuthenticationException("provider detail"))
+            .when(mailSender).send(org.mockito.ArgumentMatchers.any(org.springframework.mail.SimpleMailMessage.class));
+
+        mvc.perform(post("/auth/verification/register").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"smtp-failure@example.com\"}"))
+            .andExpect(status().isServiceUnavailable())
+            .andExpect(jsonPath("$.message").value("邮件服务暂时不可用，请稍后重试"));
+
+        EmailVerification challenge = verifications.findAll().stream()
+            .filter(candidate -> candidate.getEmail().equals("smtp-failure@example.com"))
+            .findFirst().orElseThrow();
+        org.junit.jupiter.api.Assertions.assertTrue(challenge.isUsed());
+    }
+
+    @Test
     void directChatIsPrivateUnreadAndBlockable() throws Exception {
         User seller = saveUser("chat-seller", "chat-seller@example.com", "STUDENT");
         User buyer = saveUser("chat-buyer", "chat-buyer@example.com", "STUDENT");
