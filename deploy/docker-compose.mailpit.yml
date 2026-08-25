@@ -1,0 +1,31 @@
+# 仅用于本地开发。与 docker-compose.yml 叠加运行，绝不能用于生产环境。
+services:
+  mailpit:
+    image: axllent/mailpit:v1.30.6
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_WEB_PORT:-8025}:8025"
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: 500
+    volumes:
+      - mailpit-data:/data
+
+  backend:
+    environment:
+      MAIL_ENABLED: "true"
+      MAIL_HOST: mailpit
+      MAIL_PORT: "1025"
+      MAIL_USERNAME: local-mailpit
+      MAIL_PASSWORD: local-mailpit
+      MAIL_FROM: no-reply@local.campus.test
+      MAIL_SMTP_AUTH: "false"
+      MAIL_SSL_ENABLED: "false"
+      MAIL_STARTTLS_ENABLED: "false"
+      MAIL_STARTTLS_REQUIRED: "false"
+    depends_on:
+      mailpit:
+        condition: service_started
+
+volumes:
+  mailpit-data:

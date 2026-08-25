@@ -8,6 +8,14 @@
 
 ## 已完成轮次
 
+### Mailpit 本地验证码闭环（2026-08-25）
+
+- 新增仅开发使用的 `docker-compose.mailpit.yml`：Mailpit SMTP 只在 Compose 私有网络开放，Web 收件箱只绑定本机 `127.0.0.1:8025`。
+- 本地注册和生产注册共用验证码与邮件 interface；开发 adapter 截获邮件，生产 adapter 继续使用阿里云，不增加任何验证码后门或日志明文。
+- README 和部署文档补齐启动、注册、查看验证码、停止和切回阿里云配置步骤。
+- 验证：官方 `axllent/mailpit:v1.30.6`、MySQL、backend、web 全部运行，Mailpit 和后端均 healthy；真实调用注册验证码接口成功，收件人、主题匹配且正文存在 6 位验证码，Mailpit UI 返回 200。
+- 提交：本条记录所在的功能提交（使用 `git log -1` 查看）。
+
 ### 阿里云邮件推送生产接入（2026-08-25）
 
 - 邮件 module 显式设置 `MAIL_FROM`，增加 `MAIL_ENABLED` 启停和启动校验；未启用或 SMTP 失败时返回固定 503，不泄露服务商异常。

@@ -29,6 +29,47 @@ Invoke-RestMethod http://localhost/api/actuator/health/liveness
 
 返回 `status = UP` 即表示后端可用。修改代码后应重新执行 `up -d --build`；只执行 `restart` 不会把源码更新进镜像。
 
+## 本地邮箱验证码：Mailpit
+
+本地开发不需要真实发送公网邮件。项目提供 `docker-compose.mailpit.yml` 作为本地 SMTP adapter：后端仍完整执行生成验证码、SMTP 发送、摘要存储和注册校验，邮件被 Mailpit 截获并显示在本机收件箱。
+
+启动或切换到 Mailpit 模式：
+
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml up -d --build
+```
+
+访问：
+
+```text
+平台：http://localhost
+Mailpit 收件箱：http://localhost:8025
+```
+
+在平台注册页填写任意格式正确且尚未注册的测试邮箱，例如 `student1@example.com`，点击“发送验证码”，再到 Mailpit 打开最新邮件复制 6 位验证码。Mailpit 不会把邮件投递到真实邮箱。
+
+Mailpit Web 端口只绑定 `127.0.0.1`，SMTP 1025 端口只在 Compose 私有网络中使用，没有暴露给宿主机或局域网。邮件最多保留 500 封，并持久化在 `mailpit-data` 本地 volume。
+
+查看开发服务状态：
+
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml ps
+```
+
+停止 Mailpit 模式且保留数据库、图片和测试邮件：
+
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml down
+```
+
+切回阿里云/普通 Compose 配置时，使用基础文件重建后端：
+
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build --force-recreate backend
+```
+
+Mailpit 仅用于本地开发，不能加入生产 Compose 命令，也不要把 8025 暴露到公网。官方默认端口说明见 [Mailpit Docker 文档](https://mailpit.axllent.org/docs/install/docker/)。
+
 ## 阿里云邮件推送
 
 未配置邮件时保持 `MAIL_ENABLED=false`，网站仍可浏览和使用演示账号，但注册与找回密码的验证码接口会返回 503。生产启用步骤：

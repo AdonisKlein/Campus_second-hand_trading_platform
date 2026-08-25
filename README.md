@@ -92,6 +92,14 @@ Copy-Item deploy/.env.example deploy/.env
 docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build
 ```
 
+本地测试邮箱验证码可叠加 Mailpit：
+
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml up -d --build
+```
+
+随后在 `http://localhost:8025` 查看测试验证码邮件；Mailpit 不会向公网发送邮件。
+
 ## 测试
 
 ```powershell
