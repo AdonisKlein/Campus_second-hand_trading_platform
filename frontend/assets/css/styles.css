@@ -3480,3 +3480,21 @@ html:not([data-session-role="STUDENT"]) a[href="messages.html"] { display:none; 
     .topbar nav { grid-template-columns:repeat(5,minmax(0,1fr)); }
     .order-stage-tabs button { width:auto; min-width:max-content; }
 }
+
+/* Business pages stay task-focused; promotional compositions belong in design previews only. */
+.sr-only { position:absolute !important; width:1px !important; height:1px !important; padding:0 !important; margin:-1px !important; overflow:hidden !important; clip:rect(0,0,0,0) !important; white-space:nowrap !important; border:0 !important; }
+.simple-page-header { display:flex; align-items:center; justify-content:space-between; gap:18px; margin:6px 0 22px; }
+.simple-page-header h1 { margin:0; font-size:clamp(27px,3vw,36px); }
+.editor-shell--form-only { grid-template-columns:minmax(0,900px); justify-content:center; }
+.auth-layout--compact { display:block; width:min(100% - 36px,720px); min-height:0; padding-top:34px; }
+.auth-layout--compact .auth-content { padding:clamp(26px,5vw,52px); border:1px solid var(--line); border-radius:24px; }
+.product-information--single,.detail-content-grid--single { grid-template-columns:minmax(0,1fr); }
+.order-workspace > .order-desk { margin-top:0; }
+
+@media (max-width:720px) {
+    .simple-page-header { align-items:flex-start; margin-top:0; }
+    .simple-page-header .compact-link { width:auto; }
+    .auth-layout--compact { width:min(100% - 28px,720px); padding-top:18px; }
+    .auth-layout--compact .auth-content { padding:24px 18px; border:1px solid var(--line); border-radius:20px; }
+    .editor-shell--form-only { display:block; }
+}

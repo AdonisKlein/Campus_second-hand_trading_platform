@@ -21,14 +21,9 @@
     </header>
 
     <main class="layout order-workspace">
-        <section class="order-page-intro">
-            <div><p class="eyebrow">TRADE WORKSPACE</p><h1>把每一次校园交易，稳稳推进到见面</h1><p>购买意向不会立即锁定商品。卖家选定买家后，双方再私聊约定校内公共地点，当面验货完成交易。</p></div>
-            <div class="order-user-card"><span>当前账号</span><strong id="currentUserInfo">正在确认登录状态…</strong><a href="index.html">继续逛逛 →</a></div>
-        </section>
-
         <section class="order-desk" aria-labelledby="orderDeskTitle">
             <div class="order-desk-head">
-                <div><p class="section-kicker">MY TRADES</p><h2 id="orderDeskTitle">我的交易</h2></div>
+                <div><h1 id="orderDeskTitle">订单管理</h1><span id="currentUserInfo" class="sr-only"></span></div>
                 <div class="order-perspective-tabs" role="tablist" aria-label="交易身份">
                     <button type="button" role="tab" aria-selected="true" data-perspective="BUYING">我买到的</button>
                     <button type="button" role="tab" aria-selected="false" data-perspective="SELLING">我卖出的</button>
@@ -55,7 +50,7 @@
 
     <dialog id="orderActionDialog" class="order-action-dialog" aria-labelledby="orderActionTitle">
         <form method="dialog" class="order-action-sheet">
-            <p class="section-kicker">CONFIRM ACTION</p><h2 id="orderActionTitle">确认操作</h2><p id="orderActionMessage"></p>
+            <h2 id="orderActionTitle">确认操作</h2><p id="orderActionMessage"></p>
             <div class="order-dialog-actions"><button type="button" class="secondary" data-cancel-action>返回</button><button type="submit" data-confirm-action>确认</button></div>
         </form>
     </dialog>

@@ -108,16 +108,12 @@ function renderDetail(item) {
                 <div class="detail-quiet-actions">${report}</div>
             </div>
         </article>
-        <section class="product-information">
-            <article class="product-description-card"><p class="section-kicker">ITEM DETAILS</p><h2>商品详情与成色</h2>
+        <section class="product-information product-information--single">
+            <article class="product-description-card"><h2>商品详情与成色</h2>
                 <p>${escapeHtml(item.description || "卖家暂未填写详细描述，建议私聊确认成色、配件和瑕疵后再提交购买意向。")}</p>
-                <div class="condition-reminder"><strong>验货重点</strong><span>外观成色</span><span>功能状态</span><span>配件是否齐全</span><span>维修或拆机情况</span></div>
             </article>
-            <aside class="trade-process-card"><p class="section-kicker">HOW IT WORKS</p><h2>本平台的交易流程</h2>
-                <ol><li><span>1</span>私聊确认细节</li><li><span>2</span>提交购买意向</li><li><span>3</span>卖家选定买家</li><li><span>4</span>当面验货交接</li></ol>
-            </aside>
         </section>
-        <section class="seller-more-section"><div class="section-heading"><div><p class="section-kicker">MORE FROM SELLER</p><h2>这位卖家的其他在售</h2></div><span>${escapeHtml(item.seller?.displayName || "校园卖家")}</span></div>${relatedItems(item.sellerItems)}</section>`;
+        <section class="seller-more-section"><div class="section-heading"><h2>这位卖家的其他在售</h2><span>${escapeHtml(item.seller?.displayName || "校园卖家")}</span></div>${relatedItems(item.sellerItems)}</section>`;
     installImageFallbacks(itemDetail);
     mobileProductActions.innerHTML = `<span><small>${escapeHtml(availability.label)}</small><strong>${escapeHtml(formatPrice(item.price))}</strong></span>${actionButtons(item, true)}`;
     mobileProductActions.hidden = false;

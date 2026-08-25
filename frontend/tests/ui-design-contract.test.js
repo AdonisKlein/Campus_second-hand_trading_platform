@@ -16,16 +16,20 @@ for (const file of htmlFiles) {
 }
 
 const home = fs.readFileSync(path.join(frontend, "index.html"), "utf8");
-for (const selector of ["student-market-header", "market-search", "campaign-banner", "discovery-chips", "search-filter-panel"]) {
+for (const selector of ["student-market-header", "market-search", "discovery-chips", "search-filter-panel"]) {
     if (!home.includes(`class=\"${selector}`) && !home.includes(` ${selector}`)) {
         failures.push(`index.html: 缺少设计预览结构 .${selector}`);
     }
 }
 if (home.includes("category-sidebar")) failures.push("index.html: 学生端不应使用商品分类侧边栏");
-if (/<section class="campaign-banner">[\s\S]*?<a class="button-link"/.test(home)) {
-    failures.push("index.html: 活动横幅不应复用全宽 button-link");
-}
 if (!home.includes("data-search-scope")) failures.push("index.html: 搜索后必须能切换商品/用户");
+
+const applicationMarkup = htmlFiles.map(file => fs.readFileSync(path.join(frontend, file), "utf8")).join("\n")
+    + fs.readdirSync(path.join(frontend, "assets/js")).filter(file => file.endsWith(".js"))
+        .map(file => fs.readFileSync(path.join(frontend, "assets/js", file), "utf8")).join("\n");
+for (const promotionalBlock of ["campaign-banner", "auth-intro", "editor-guide", "order-page-intro", "trade-process-card", "section-kicker", "eyebrow"]) {
+    if (applicationMarkup.includes(promotionalBlock)) failures.push(`实际业务页面不得包含宣传或流程介绍块 ${promotionalBlock}`);
+}
 
 for (const file of htmlFiles) {
     const html = fs.readFileSync(path.join(frontend, file), "utf8");
@@ -48,7 +52,7 @@ const detailHtml = fs.readFileSync(path.join(frontend, "detail.html"), "utf8");
 if (!detail.includes('openReportDialog("ITEM"') || !detail.includes('openReportDialog("MESSAGE"')) {
     failures.push("detail.js: 商品和留言举报入口必须同时接入统一 module");
 }
-for (const selector of ["product-detail-page", "detail-content-grid", "detail-safety-card", "mobileProductActions"]) {
+for (const selector of ["product-detail-page", "detail-content-grid", "mobileProductActions"]) {
     if (!detailHtml.includes(selector)) failures.push(`detail.html: 第十二轮商品详情缺少 ${selector}`);
 }
 for (const contract of ["availableActions", "purchaseRequest", "sellerItems", "seller-profile-card", "product-gallery"]) {

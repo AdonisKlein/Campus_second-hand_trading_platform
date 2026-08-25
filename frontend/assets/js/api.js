@@ -111,7 +111,6 @@ function authenticationDialog() {
     dialog.className = "auth-confirm-dialog";
     dialog.innerHTML = `
         <div class="auth-confirm-content">
-            <p class="section-kicker">SIGN IN REQUIRED</p>
             <h2>登录后继续操作</h2>
             <p data-auth-message>发布、留言和交易功能需要登录校园账号。</p>
             <div class="auth-confirm-actions"><button type="button" class="secondary" data-auth-cancel>暂不登录</button><button type="button" data-auth-confirm>前往登录</button></div>
@@ -163,7 +162,7 @@ function reportDialog() {
     dialog.className = "report-dialog";
     dialog.innerHTML = `
         <form method="dialog" class="report-dialog-form">
-            <p class="section-kicker">CONTENT REPORT</p><h2 id="contentReportTitle">提交举报</h2>
+            <h2 id="contentReportTitle">提交举报</h2>
             <p data-report-summary></p>
             <label>举报原因<select name="reasonCode" required><option value="FRAUD">疑似诈骗或虚假信息</option><option value="PROHIBITED_CONTENT">违规内容</option><option value="HARASSMENT">骚扰或不友善行为</option><option value="SPAM">垃圾广告</option><option value="OTHER">其他问题</option></select></label>
             <label>具体说明<textarea name="description" minlength="10" maxlength="1000" rows="5" required placeholder="请用至少 10 个字说明问题，便于管理员核查"></textarea></label>

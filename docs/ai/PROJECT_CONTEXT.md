@@ -29,6 +29,13 @@ frontend/tests/                           无依赖的 UI 结构与会话竞态�
 deploy/         MySQL + Spring Boot + Nginx Compose 部署
 ```
 
+## 业务页面信息架构规则
+
+- `doc/ui-style-preview.html` 是视觉方向与组件预览，不是实际页面模板。
+- 实际 Web 页面必须直接进入搜索、数据、表单或管理任务；不放品牌口号横幅、欢迎介绍、功能宣传、发布技巧侧栏或整块交易流程教学。
+- 可以保留页面标题、字段帮助、真实状态说明，以及会直接影响隐私、安全或操作结果的短提示；不要用大卡片重复解释平台功能。
+- `frontend/tests/ui-design-contract.test.js` 会拒绝 `campaign-banner`、`auth-intro`、`editor-guide`、`order-page-intro`、`trade-process-card`、装饰性 kicker 等重新进入业务 HTML/JS。
+
 ## 关键 module 与 interface
 
 ### Web 会话 module

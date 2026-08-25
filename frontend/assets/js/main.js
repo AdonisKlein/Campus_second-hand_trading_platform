@@ -50,7 +50,6 @@ async function runSearch({ append = false, revealFilters = false } = {}) {
         renderItems(accumulatedItems);
     }
     loadMoreButton.hidden = !page.hasNext;
-    document.querySelector("#resultKicker").textContent = state.q || state.sellerId ? "SEARCH RESULTS" : "FRESH ON CAMPUS";
 }
 
 function renderItems(items) {

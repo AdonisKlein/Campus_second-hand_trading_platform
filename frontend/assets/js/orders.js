@@ -103,7 +103,7 @@ function updateCountdowns() {
 }
 function showDetails(entry) {
     const [label, statusClass] = statusCopy[entry.status] || ["处理中", "closed"];
-    document.querySelector("#orderDetailContent").innerHTML = `<p class="section-kicker">TRADE DETAIL</p><h2 id="orderDetailTitle">${h(entry.itemTitle)}</h2>
+    document.querySelector("#orderDetailContent").innerHTML = `<h2 id="orderDetailTitle">${h(entry.itemTitle)}</h2>
         <div class="order-detail-price"><span>交易价格快照</span><strong>${h(money(entry.itemPrice))}</strong></div>
         <div class="order-detail-parties"><div><small>买家</small><strong>${h(entry.buyerNickname)}</strong></div><span>⇄</span><div><small>卖家</small><strong>${h(entry.sellerNickname)}</strong></div></div>
         <div class="order-detail-state"><span class="order-status ${statusClass}">${h(label)}</span><p>${h(entry.closureReason || "交易仍在进行，请按当前步骤操作。")}</p></div>
