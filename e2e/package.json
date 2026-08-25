@@ -1,0 +1,14 @@
+{
+  "name": "campus-secondhand-e2e",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Playwright end-to-end tests for the campus second-hand trading platform",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "report:e2e": "playwright show-report test-results/playwright-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://campus-market.local/schemas/test-report.schema.json",
+  "title": "Campus market test report",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "commit", "branch", "environment", "runtime", "summary", "failures"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "commit": { "type": "string", "minLength": 1 },
+    "branch": { "type": "string", "minLength": 1 },
+    "environment": { "type": "string", "minLength": 1 },
+    "runtime": {
+      "type": "object",
+      "required": ["os", "architecture", "node", "java", "database", "docker", "kubernetes"]
+    },
+    "summary": {
+      "type": "object",
+      "required": ["unit", "integration", "e2e", "total", "failed", "errors"]
+    },
+    "failures": { "type": "array" }
+  },
+  "additionalProperties": true
+}
