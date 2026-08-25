@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#f8fafc"/>
+  <text x="600" y="42" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="700" fill="#1f2937">概念类图</text>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#475569"/></marker></defs>
+  <g font-family="Microsoft YaHei, Arial, sans-serif" font-size="14">
+    <g fill="#ffffff" stroke-width="2">
+      <rect x="70" y="110" width="230" height="170" rx="8" stroke="#2563eb"/><rect x="70" y="110" width="230" height="38" rx="8" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="485" y="100" width="230" height="180" rx="8" stroke="#16a34a"/><rect x="485" y="100" width="230" height="38" rx="8" fill="#dcfce7" stroke="#16a34a"/>
+      <rect x="900" y="115" width="230" height="150" rx="8" stroke="#ea580c"/><rect x="900" y="115" width="230" height="38" rx="8" fill="#ffedd5" stroke="#ea580c"/>
+      <rect x="485" y="430" width="230" height="150" rx="8" stroke="#7c3aed"/><rect x="485" y="430" width="230" height="38" rx="8" fill="#ede9fe" stroke="#7c3aed"/>
+      <rect x="70" y="430" width="230" height="140" rx="8" stroke="#0891b2"/><rect x="70" y="430" width="230" height="38" rx="8" fill="#cffafe" stroke="#0891b2"/>
+    </g>
+    <g text-anchor="middle" font-size="18" font-weight="700">
+      <text x="185" y="135" fill="#1d4ed8">用户 User</text><text x="600" y="125" fill="#15803d">商品 Item</text><text x="1015" y="140" fill="#c2410c">留言 Message</text><text x="600" y="455" fill="#6d28d9">订单 TradeOrder</text><text x="185" y="455" fill="#0e7490">邮箱验证码</text>
+    </g>
+    <g fill="#334155">
+      <text x="90" y="172">用户名、密码散列</text><text x="90" y="198">昵称、手机号、邮箱</text><text x="90" y="224">角色、状态</text><text x="90" y="250">登录失败次数、锁定时间</text>
+      <text x="505" y="162">标题、分类、价格</text><text x="505" y="188">描述、图片地址</text><text x="505" y="214">卖家、状态</text><text x="505" y="240">创建时间</text>
+      <text x="920" y="177">商品、发送者、接收者</text><text x="920" y="203">留言内容</text><text x="920" y="229">创建时间</text>
+      <text x="505" y="492">商品、买家、卖家</text><text x="505" y="518">订单状态</text><text x="505" y="544">创建时间</text>
+      <text x="90" y="492">邮箱、验证码</text><text x="90" y="518">过期时间、尝试次数</text><text x="90" y="544">是否已使用</text>
+    </g>
+    <g stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)">
+      <line x1="300" y1="190" x2="485" y2="190"/><line x1="715" y1="190" x2="900" y2="190"/><line x1="600" y1="280" x2="600" y2="430"/><path d="M300 230 C380 360 455 480 485 500"/><line x1="185" y1="280" x2="185" y2="430"/>
+    </g>
+    <g fill="#475569" font-size="13">
+      <text x="372" y="176">1 发布 N</text><text x="780" y="176">1 拥有 N</text><text x="615" y="355">1 对应订单</text><text x="350" y="390">买家/卖家</text><text x="200" y="355">邮箱校验</text>
+    </g>
+  </g>
+</svg>

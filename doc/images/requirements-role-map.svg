@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="620" viewBox="0 0 1180 620">
+  <rect width="1180" height="620" fill="#f8fafc"/>
+  <text x="590" y="48" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="700" fill="#1f2937">需求角色与功能关系图</text>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <g font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">
+    <rect x="60" y="130" width="180" height="100" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="150" y="170" text-anchor="middle" font-size="22" font-weight="700" fill="#1d4ed8">游客</text>
+    <text x="150" y="200" text-anchor="middle" fill="#1e3a8a">浏览、搜索、注册</text>
+    <rect x="60" y="300" width="180" height="100" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="150" y="340" text-anchor="middle" font-size="22" font-weight="700" fill="#15803d">普通用户</text>
+    <text x="150" y="370" text-anchor="middle" fill="#166534">发布、留言、下单</text>
+    <rect x="60" y="470" width="180" height="100" rx="12" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+    <text x="150" y="510" text-anchor="middle" font-size="22" font-weight="700" fill="#b91c1c">管理员</text>
+    <text x="150" y="540" text-anchor="middle" fill="#7f1d1d">用户、留言、商品管理</text>
+    <rect x="420" y="95" width="700" height="470" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="770" y="135" text-anchor="middle" font-size="22" font-weight="700" fill="#334155">校园二手交易平台</text>
+    <g>
+      <rect x="470" y="175" width="170" height="70" rx="10" fill="#eff6ff" stroke="#60a5fa"/>
+      <text x="555" y="205" text-anchor="middle" font-weight="700" fill="#1d4ed8">商品浏览搜索</text>
+      <text x="555" y="228" text-anchor="middle" fill="#475569">列表、分类、详情</text>
+      <rect x="690" y="175" width="170" height="70" rx="10" fill="#f0fdf4" stroke="#4ade80"/>
+      <text x="775" y="205" text-anchor="middle" font-weight="700" fill="#15803d">账号与资料</text>
+      <text x="775" y="228" text-anchor="middle" fill="#475569">注册、登录、找回</text>
+      <rect x="910" y="175" width="170" height="70" rx="10" fill="#fff7ed" stroke="#fb923c"/>
+      <text x="995" y="205" text-anchor="middle" font-weight="700" fill="#c2410c">商品发布</text>
+      <text x="995" y="228" text-anchor="middle" fill="#475569">标题、分类、价格</text>
+      <rect x="470" y="310" width="170" height="70" rx="10" fill="#f5f3ff" stroke="#a78bfa"/>
+      <text x="555" y="340" text-anchor="middle" font-weight="700" fill="#6d28d9">留言沟通</text>
+      <text x="555" y="363" text-anchor="middle" fill="#475569">咨询、修改、删除</text>
+      <rect x="690" y="310" width="170" height="70" rx="10" fill="#ecfeff" stroke="#22d3ee"/>
+      <text x="775" y="340" text-anchor="middle" font-weight="700" fill="#0e7490">订单管理</text>
+      <text x="775" y="363" text-anchor="middle" fill="#475569">创建、确认、完成</text>
+      <rect x="910" y="310" width="170" height="70" rx="10" fill="#fef2f2" stroke="#f87171"/>
+      <text x="995" y="340" text-anchor="middle" font-weight="700" fill="#b91c1c">管理员维护</text>
+      <text x="995" y="363" text-anchor="middle" fill="#475569">禁用、删除、下架</text>
+      <rect x="580" y="445" width="380" height="70" rx="10" fill="#f1f5f9" stroke="#94a3b8"/>
+      <text x="770" y="475" text-anchor="middle" font-weight="700" fill="#334155">非功能需求</text>
+      <text x="770" y="498" text-anchor="middle" fill="#475569">安全、可维护、易部署、小规模演示性能</text>
+    </g>
+    <line x1="240" y1="180" x2="420" y2="210" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="240" y1="350" x2="420" y2="345" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="240" y1="520" x2="420" y2="345" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  </g>
+</svg>

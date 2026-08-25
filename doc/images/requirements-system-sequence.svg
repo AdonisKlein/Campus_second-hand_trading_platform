@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#f8fafc"/>
+  <text x="600" y="42" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="700" fill="#1f2937">系统顺序图：创建订单</text>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"/></marker></defs>
+  <g font-family="Microsoft YaHei, Arial, sans-serif" font-size="15">
+    <g fill="#ffffff" stroke="#2563eb" stroke-width="2">
+      <rect x="70" y="90" width="160" height="54" rx="8"/><rect x="300" y="90" width="170" height="54" rx="8"/><rect x="540" y="90" width="180" height="54" rx="8"/><rect x="790" y="90" width="170" height="54" rx="8"/><rect x="1020" y="90" width="140" height="54" rx="8"/>
+    </g>
+    <g text-anchor="middle" font-weight="700" fill="#1d4ed8">
+      <text x="150" y="123">买家</text><text x="385" y="123">前端详情页</text><text x="630" y="123">订单接口</text><text x="875" y="123">商品/用户数据</text><text x="1090" y="123">订单表</text>
+    </g>
+    <g stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 6"><line x1="150" y1="144" x2="150" y2="660"/><line x1="385" y1="144" x2="385" y2="660"/><line x1="630" y1="144" x2="630" y2="660"/><line x1="875" y1="144" x2="875" y2="660"/><line x1="1090" y1="144" x2="1090" y2="660"/></g>
+    <g stroke="#334155" stroke-width="2" marker-end="url(#arrow)" fill="none">
+      <line x1="150" y1="190" x2="385" y2="190"/><line x1="385" y1="245" x2="630" y2="245"/><line x1="630" y1="300" x2="875" y2="300"/><line x1="630" y1="355" x2="875" y2="355"/><line x1="630" y1="410" x2="1090" y2="410"/><line x1="630" y1="465" x2="875" y2="465"/><line x1="630" y1="520" x2="385" y2="520"/><line x1="385" y1="575" x2="150" y2="575"/>
+    </g>
+    <g fill="#334155">
+      <text x="175" y="180">点击创建订单</text><text x="410" y="235">POST /api/orders</text><text x="655" y="290">查询买家/卖家状态</text><text x="655" y="345">查询商品状态和卖家</text><text x="690" y="400">保存订单 CREATED</text><text x="655" y="455">更新商品 SOLD</text><text x="430" y="510">返回创建成功/失败原因</text><text x="205" y="565">刷新页面提示</text>
+    </g>
+    <rect x="420" y="610" width="360" height="42" rx="8" fill="#fee2e2" stroke="#dc2626"/>
+    <text x="600" y="636" text-anchor="middle" fill="#b91c1c" font-weight="700">若商品非在售、重复下单或买家=卖家，则返回失败</text>
+  </g>
+</svg>

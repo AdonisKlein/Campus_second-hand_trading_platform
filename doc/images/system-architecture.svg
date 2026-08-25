@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="600" viewBox="0 0 1180 600">
+  <rect width="1180" height="600" fill="#f8fafc"/>
+  <text x="590" y="48" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="700" fill="#1f2937">系统总体架构图</text>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <g font-family="Microsoft YaHei, Arial, sans-serif">
+    <rect x="70" y="210" width="190" height="120" rx="14" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="165" y="250" text-anchor="middle" font-size="22" font-weight="700" fill="#1d4ed8">浏览器</text>
+    <text x="165" y="282" text-anchor="middle" font-size="15" fill="#1e3a8a">Chrome / Edge</text>
+    <text x="165" y="306" text-anchor="middle" font-size="15" fill="#1e3a8a">用户页面操作</text>
+    <rect x="350" y="190" width="220" height="160" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="460" y="232" text-anchor="middle" font-size="22" font-weight="700" fill="#15803d">frontend</text>
+    <text x="460" y="264" text-anchor="middle" font-size="15" fill="#166534">HTML / CSS / JS</text>
+    <text x="460" y="288" text-anchor="middle" font-size="15" fill="#166534">页面渲染与交互</text>
+    <text x="460" y="312" text-anchor="middle" font-size="15" fill="#166534">API_BASE 配置</text>
+    <rect x="660" y="170" width="240" height="200" rx="14" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+    <text x="780" y="212" text-anchor="middle" font-size="22" font-weight="700" fill="#c2410c">Spring Boot API</text>
+    <text x="780" y="244" text-anchor="middle" font-size="15" fill="#7c2d12">/api/users</text>
+    <text x="780" y="268" text-anchor="middle" font-size="15" fill="#7c2d12">/api/items</text>
+    <text x="780" y="292" text-anchor="middle" font-size="15" fill="#7c2d12">/api/messages</text>
+    <text x="780" y="316" text-anchor="middle" font-size="15" fill="#7c2d12">/api/orders / admin</text>
+    <rect x="990" y="210" width="150" height="120" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+    <text x="1065" y="250" text-anchor="middle" font-size="22" font-weight="700" fill="#6d28d9">MySQL</text>
+    <text x="1065" y="282" text-anchor="middle" font-size="15" fill="#4c1d95">业务数据</text>
+    <text x="1065" y="306" text-anchor="middle" font-size="15" fill="#4c1d95">外键与索引</text>
+    <rect x="660" y="430" width="240" height="90" rx="14" fill="#ecfeff" stroke="#0891b2" stroke-width="2"/>
+    <text x="780" y="466" text-anchor="middle" font-size="20" font-weight="700" fill="#0e7490">SMTP 邮件服务</text>
+    <text x="780" y="496" text-anchor="middle" font-size="15" fill="#155e75">发送邮箱验证码</text>
+    <line x1="260" y1="270" x2="350" y2="270" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <line x1="570" y1="270" x2="660" y2="270" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <line x1="900" y1="270" x2="990" y2="270" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <line x1="780" y1="370" x2="780" y2="430" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="305" y="250" text-anchor="middle" font-size="14" fill="#475569">静态页面</text>
+    <text x="615" y="250" text-anchor="middle" font-size="14" fill="#475569">HTTP JSON</text>
+    <text x="945" y="250" text-anchor="middle" font-size="14" fill="#475569">JPA/JDBC</text>
+  </g>
+</svg>
