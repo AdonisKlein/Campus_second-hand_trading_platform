@@ -925,10 +925,6 @@ button.danger,
 
 /* Round 13: role-aware order workspace */
 .order-workspace { max-width:1240px; }
-.order-page-intro { display:grid; grid-template-columns:minmax(0,1fr) 250px; gap:24px; align-items:end; padding:34px 38px; border-radius:26px; background:linear-gradient(120deg,#155eef 0%,#1b69ef 62%,#ffca38 62.2%,#ffdc72 100%); color:#fff; box-shadow:0 18px 46px rgba(21,94,239,.18); }
-.order-page-intro h1 { max-width:760px; margin:6px 0 12px; font-size:clamp(30px,4vw,48px); line-height:1.12; letter-spacing:-.035em; }
-.order-page-intro > div:first-child > p:last-child { max-width:720px; margin:0; color:#dbe8ff; line-height:1.75; }
-.order-page-intro .eyebrow { color:#bed3ff; }
 .order-user-card { display:grid; align-self:stretch; align-content:center; gap:7px; padding:20px; border-radius:18px; background:rgba(255,255,255,.94); color:var(--text); box-shadow:0 12px 30px rgba(50,40,0,.12); }
 .order-user-card span { color:var(--muted); font-size:11px; }.order-user-card strong { overflow:hidden; text-overflow:ellipsis; }.order-user-card a { color:var(--primary); font-size:12px; font-weight:750; text-decoration:none; }
 .order-desk { margin-top:22px; padding:30px; border:1px solid var(--border); border-radius:26px; background:#fff; box-shadow:0 16px 44px rgba(15,34,61,.06); }
@@ -968,7 +964,7 @@ button.danger,
 
 @media (max-width: 720px) {
     .order-workspace { padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
-    .order-page-intro { grid-template-columns:1fr; margin:0 -14px; padding:28px 18px; border-radius:0; background:linear-gradient(145deg,#155eef 0%,#1767ee 78%,#ffca38 78.2%); }.order-page-intro h1 { font-size:31px; }.order-user-card { display:none; }
+    .order-user-card { display:none; }
     .order-desk { margin:12px -14px 0; padding:20px 14px 28px; border-right:0; border-left:0; border-radius:0; box-shadow:none; }.order-desk-head { display:grid; }.order-perspective-tabs { width:100%; }.order-perspective-tabs button { min-width:0; }
     .order-summary { grid-template-columns:repeat(2,1fr); gap:8px; }.order-summary > div { padding:14px; }.order-summary span { font-size:23px; }
     .order-stage-tabs { margin-right:-14px; padding-right:14px; }.order-content-head { align-items:start; }.order-content-head > span { flex:0 0 auto; }
