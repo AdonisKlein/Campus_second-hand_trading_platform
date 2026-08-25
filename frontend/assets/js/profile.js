@@ -26,9 +26,11 @@ function showLoggedOutUI() {
 }
 
 (async function init() {
-    const registrationMessage = sessionStorage.getItem("registrationMessage");
-    if (registrationMessage) {
-        loginMessage.textContent = registrationMessage;
+    const successMessage = sessionStorage.getItem("authSuccessMessage")
+        || sessionStorage.getItem("registrationMessage");
+    if (successMessage) {
+        loginMessage.textContent = successMessage;
+        sessionStorage.removeItem("authSuccessMessage");
         sessionStorage.removeItem("registrationMessage");
     }
     const user = await session.current();
@@ -134,5 +136,9 @@ forgotPasswordForm?.addEventListener("submit", async event => {
         return;
     }
     const result = await request("/auth/password/reset", { method: "POST", body: JSON.stringify(data) });
-    fpMessage.textContent = result.success ? "密码重置成功，请返回登录" : result.message;
+    if (result.success) {
+        redirectToLoginWithMessage("密码重置成功，请使用新密码登录");
+        return;
+    }
+    fpMessage.textContent = result.message || "密码重置失败，请稍后重试";
 });

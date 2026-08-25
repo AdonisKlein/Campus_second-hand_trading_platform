@@ -141,6 +141,12 @@ function redirectToLogin(returnTo) {
     location.href = "profile.html";
 }
 
+function redirectToLoginWithMessage(message) {
+    sessionStorage.setItem("authSuccessMessage", message);
+    sessionStorage.removeItem("postLoginTarget");
+    location.href = "profile.html";
+}
+
 async function requireAuthenticatedUser({ message, returnTo = location.pathname + location.search } = {}) {
     const user = await session.current();
     if (user && user.id) return user;
@@ -271,6 +277,7 @@ window.hydrateRoleNavigation = hydrateRoleNavigation;
 window.confirmAuthentication = confirmAuthentication;
 window.requireAuthenticatedUser = requireAuthenticatedUser;
 window.consumePostLoginTarget = consumePostLoginTarget;
+window.redirectToLoginWithMessage = redirectToLoginWithMessage;
 window.openReportDialog = openReportDialog;
 window.refreshChatUnread = refreshChatUnread;
 

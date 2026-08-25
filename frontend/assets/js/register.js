@@ -94,8 +94,7 @@ registerForm.addEventListener('submit', async (e) => {
             body: JSON.stringify(data)
         });
         if (res && res.success && res.data) {
-            sessionStorage.setItem('registrationMessage', '注册成功，请使用邮箱和密码登录');
-            location.href = 'profile.html';
+            redirectToLoginWithMessage('注册成功，请使用邮箱和密码登录');
             return;
         }
         registerMessage.textContent = res && res.message ? res.message : '注册失败，请检查输入';
