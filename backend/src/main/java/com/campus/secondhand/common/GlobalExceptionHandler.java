@@ -12,6 +12,16 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.util.stream.Collectors;
+import com.campus.secondhand.user.VerificationRateLimitException;
+import org.springframework.security.access.AccessDeniedException;
+import com.campus.secondhand.order.TradingRuleException;
+import com.campus.secondhand.item.SellerInventoryRuleException;
+import com.campus.secondhand.media.ProductImageException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import com.campus.secondhand.search.SearchQueryException;
+import com.campus.secondhand.report.GovernanceRuleException;
+import org.springframework.dao.DataIntegrityViolationException;
+import com.campus.secondhand.chat.ChatRuleException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -44,8 +54,71 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleOther(Exception ex) {
-        ApiResponse<Object> body = ApiResponse.fail("服务器内部错误: " + ex.getMessage());
+        ApiResponse<Object> body = ApiResponse.fail("服务器内部错误");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(body);
+    }
+
+    @ExceptionHandler(MailDeliveryException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMailDelivery(MailDeliveryException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(ApiResponse.fail("邮件服务暂时不可用，请稍后重试"));
+    }
+
+    @ExceptionHandler(VerificationRateLimitException.class)
+    public ResponseEntity<ApiResponse<Object>> handleRateLimit(VerificationRateLimitException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail("无权执行此操作"));
+    }
+
+    @ExceptionHandler(TradingRuleException.class)
+    public ResponseEntity<ApiResponse<Object>> handleTradingRule(TradingRuleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(SellerInventoryRuleException.class)
+    public ResponseEntity<ApiResponse<Object>> handleSellerInventoryRule(SellerInventoryRuleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProductImageException.class)
+    public ResponseEntity<ApiResponse<Object>> handleProductImage(ProductImageException ex) {
+        return ResponseEntity.status(ex.status())
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail("图片不能超过 5MB"));
+    }
+
+    @ExceptionHandler(SearchQueryException.class)
+    public ResponseEntity<ApiResponse<Object>> handleSearchQuery(SearchQueryException ex) {
+        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(GovernanceRuleException.class)
+    public ResponseEntity<ApiResponse<Void>> handleGovernanceRule(GovernanceRuleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDataConflict(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.fail("数据冲突，请刷新后重试"));
+    }
+
+    @ExceptionHandler(ChatRuleException.class)
+    public ResponseEntity<ApiResponse<Void>> handleChatRule(ChatRuleException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.fail(ex.getMessage()));
     }
 }
 

@@ -4,43 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <header class="topbar">
-        <a class="brand" href="index.html">校园二手交易</a>
-        <nav>
-            <a href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a href="profile.html">个人中心</a>
-            <a href="admin.html">管理中心</a>
+    <header class="topbar student-market-header">
+        <a class="brand" href="index.html">航集 Campus Market</a>
+        <form class="market-search" id="searchForm" role="search">
+            <span aria-hidden="true">⌕</span>
+            <input id="keyword" type="search" maxlength="160" placeholder="输入多个关键词，例如：高数 教材 第七版" aria-label="搜索商品或用户">
+            <button type="submit">搜索</button>
+        </form>
+        <nav aria-label="主导航">
+            <a href="messages.html" data-icon="✉" data-requires-auth>消息 <span class="chat-nav-badge" data-chat-unread hidden></span></a>
+            <a href="orders.html" data-icon="▤" data-requires-auth>订单</a>
+            <a href="publish.html" data-icon="＋" data-requires-auth>＋ 发布闲置</a>
+            <a href="profile.html" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
-    <main class="layout">
-        <section class="hero">
-            <h1>校园闲置，好物流转</h1>
-            <p>浏览教材、生活用品、电子产品等二手物品，快速留言沟通并创建订单。</p>
-            <form class="search-bar" id="searchForm">
-                <input id="keyword" type="search" placeholder="搜索物品关键词">
-                <select id="category">
-                    <option value="">全部分类</option>
-                    <option value="书籍">书籍</option>
-                    <option value="生活用品">生活用品</option>
-                    <option value="电子产品">电子产品</option>
-                    <option value="其他">其他</option>
-                </select>
-                <button type="submit">查询</button>
-            </form>
-        </section>
+    <main class="layout home-layout">
+        <div class="market-main">
+            <nav class="discovery-chips" aria-label="商品标签推荐">
+                <span>为你推荐</span>
+                <button type="button" data-discovery-tag="可小刀">可小刀</button><button type="button" data-discovery-tag="仅自提">仅自提</button><button type="button" data-discovery-tag="支持验货">支持验货</button><button type="button" data-discovery-tag="九成新">九成新</button><button type="button" data-discovery-tag="急出">急出</button><button type="button" data-discovery-tag="免费赠送">免费赠送</button>
+            </nav>
 
-        <section>
-            <div class="section-title">
-                <h2>最新物品</h2>
-                <span id="itemCount">加载中</span>
-            </div>
-            <div class="item-grid" id="itemGrid"></div>
-        </section>
+            <section class="search-filter-panel" id="searchFilters" hidden aria-label="搜索筛选与排序">
+                <div class="search-scope-tabs" role="tablist" aria-label="搜索范围">
+                    <button type="button" class="active" role="tab" aria-selected="true" data-search-scope="ITEMS">商品</button>
+                    <button type="button" role="tab" aria-selected="false" data-search-scope="USERS">用户</button>
+                </div>
+                <form id="filterForm" class="search-filter-form">
+                    <label>排序<select id="searchSort"><option value="RELEVANCE">综合相关</option><option value="NEWEST">最新发布</option><option value="ACTIVE">最近活跃</option><option value="NEAREST">离我最近</option><option value="CREDIT">信用优先</option><option value="PRICE_ASC">价格从低到高</option><option value="PRICE_DESC">价格从高到低</option></select></label>
+                    <div class="price-filter" data-item-filter><label>最低价<input id="minPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="不限"></label><span>—</span><label>最高价<input id="maxPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="不限"></label></div>
+                    <label>区域<select id="searchRegion"><option value="">全部区域</option><option>学院路校区</option><option>沙河校区</option><option>大运村</option><option>其他校内区域</option></select></label>
+                    <button type="submit">应用筛选</button><button type="button" class="secondary" id="clearFilters">清除</button>
+                </form>
+                <div class="tag-filter" data-item-filter aria-label="商品标签筛选"><span>商品标签</span><button type="button" aria-pressed="false" data-tag-filter="可小刀">可小刀</button><button type="button" aria-pressed="false" data-tag-filter="仅自提">仅自提</button><button type="button" aria-pressed="false" data-tag-filter="支持验货">支持验货</button><button type="button" aria-pressed="false" data-tag-filter="九成新">九成新</button><button type="button" aria-pressed="false" data-tag-filter="急出">急出</button><button type="button" aria-pressed="false" data-tag-filter="免费赠送">免费赠送</button></div>
+            </section>
+
+            <section class="home-section">
+                <div class="section-title"><h2 id="resultTitle">最新物品</h2><span id="itemCount" role="status" aria-live="polite">加载中</span></div>
+                <div class="item-grid" id="itemGrid"></div>
+                <div class="user-result-grid" id="userGrid" hidden></div>
+                <button type="button" class="secondary load-more" id="loadMore" hidden>加载更多</button>
+            </section>
+        </div>
     </main>
 
     <script src="assets/js/api.js"></script>

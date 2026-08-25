@@ -1,16 +1,21 @@
 package com.campus.secondhand.item;
 
 import com.campus.secondhand.common.ApiResponse;
-import com.campus.secondhand.user.User;
-import com.campus.secondhand.user.UserRepository;
+import com.campus.secondhand.security.CurrentActorService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,63 +26,76 @@ import org.springframework.web.bind.annotation.RestController;
 public class ItemController {
 
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final SellerInventory sellerInventory;
+    private final ProductDetail productDetail;
+    private final CurrentActorService actors;
 
-    public ItemController(ItemRepository itemRepository, UserRepository userRepository) {
+    public ItemController(ItemRepository itemRepository, SellerInventory sellerInventory,
+                          ProductDetail productDetail, CurrentActorService actors) {
         this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
+        this.sellerInventory = sellerInventory;
+        this.productDetail = productDetail;
+        this.actors = actors;
     }
 
     @GetMapping
     public ApiResponse<List<Item>> list(@RequestParam(required = false) String category,
                                         @RequestParam(required = false) String keyword) {
-        if (keyword != null && !keyword.isBlank()) {
-            return ApiResponse.ok(itemRepository.findByTitleContainingAndStatusOrderByCreatedAtDesc(keyword, "ON_SALE"));
-        }
-        if (category != null && !category.isBlank()) {
-            return ApiResponse.ok(itemRepository.findByCategoryAndStatusOrderByCreatedAtDesc(category, "ON_SALE"));
-        }
-        return ApiResponse.ok(itemRepository.findByStatusOrderByCreatedAtDesc("ON_SALE"));
+        String normalizedCategory = category == null || category.isBlank() ? null : category.trim();
+        String normalizedKeyword = keyword == null || keyword.isBlank() ? null : keyword.trim();
+        return ApiResponse.ok(itemRepository.searchPublic(normalizedCategory, normalizedKeyword,
+            ItemStatus.ON_SALE, ItemModerationStatus.VISIBLE));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Item> detail(@PathVariable Long id) {
-        return itemRepository.findById(id)
+    public ApiResponse<ProductDetail.View> detail(@PathVariable Long id,
+                                                   org.springframework.security.core.Authentication authentication) {
+        Long viewerId = authentication == null || "anonymousUser".equals(authentication.getPrincipal())
+            ? null : actors.require().userId();
+        return productDetail.show(id, viewerId)
             .map(ApiResponse::ok)
             .orElseGet(() -> ApiResponse.fail("物品不存在"));
     }
 
+    @GetMapping("/mine")
+    public ApiResponse<List<SellerItemView>> mine() {
+        return ApiResponse.ok(sellerInventory.list(actors.require().userId()));
+    }
+
     @PostMapping
-    public ApiResponse<Item> publish(@Valid @RequestBody PublishItemRequest request) {
-        var sellerOptional = userRepository.findById(request.sellerId());
-        if (sellerOptional.isEmpty()) {
-            return ApiResponse.fail("卖家不存在");
-        }
-        if (isDisabled(sellerOptional.get())) {
-            return ApiResponse.fail("账号已被管理员禁用");
-        }
-
-        Item item = new Item();
-        item.setTitle(request.title());
-        item.setCategory(request.category());
-        item.setPrice(request.price());
-        item.setDescription(request.description());
-        item.setImageUrl(request.imageUrl());
-        item.setSellerId(request.sellerId());
-        return ApiResponse.created(itemRepository.save(item));
+    public ApiResponse<SellerItemView> publish(@Valid @RequestBody ItemWriteRequest request) {
+        Long sellerId = actors.require().userId();
+        return ApiResponse.created(sellerInventory.publish(sellerId, request.toDraft()));
     }
 
-    public record PublishItemRequest(
-        @NotBlank String title,
-        @NotBlank String category,
-        @NotNull BigDecimal price,
-        String description,
-        String imageUrl,
-        @NotNull Long sellerId
+    @PutMapping("/{id}")
+    public ApiResponse<SellerItemView> revise(@PathVariable Long id,
+                                               @Valid @RequestBody ItemWriteRequest request) {
+        return ApiResponse.ok(sellerInventory.revise(actors.require().userId(), id, request.toDraft()));
+    }
+
+    @PostMapping("/{id}/seller-actions")
+    public ApiResponse<SellerItemView> act(@PathVariable Long id,
+                                            @Valid @RequestBody SellerActionRequest request) {
+        return ApiResponse.ok(sellerInventory.act(actors.require().userId(), id, request.action()));
+    }
+
+    public record ItemWriteRequest(
+        @NotBlank @Size(max = 120) String title,
+        @NotBlank @Size(max = 40) String category,
+        @NotNull @DecimalMin("0.00") @Digits(integer = 8, fraction = 2) BigDecimal price,
+        @Size(max = 1000) String description,
+        @Size(max = 255)
+        @Pattern(regexp = "^$|^/media/product-images/[1-9]\\d*/[0-9a-fA-F-]{36}\\.(jpg|png)$",
+            message = "必须使用平台上传的商品图片") String imageUrl,
+        @Pattern(regexp = "^(学院路校区|沙河校区|大运村|其他校内区域)$") String region,
+        @Size(max = 4) Set<String> tags
     ) {
+        SellerInventory.ItemDraft toDraft() {
+            return new SellerInventory.ItemDraft(title, category, price, description, imageUrl, region, tags);
+        }
     }
 
-    private boolean isDisabled(User user) {
-        return "DISABLED".equals(user.getStatus());
+    public record SellerActionRequest(@NotNull SellerItemAction action) {
     }
 }

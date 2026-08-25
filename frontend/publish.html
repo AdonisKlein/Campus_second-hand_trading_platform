@@ -4,38 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>发布物品 - 校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="index.html">校园二手交易</a>
-        <nav>
-            <a href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a href="profile.html">个人中心</a>
-            <a href="admin.html">管理中心</a>
+        <a class="brand" href="index.html">航集 Campus Market</a>
+        <nav aria-label="主导航">
+            <a href="index.html" data-icon="⌂">首页</a>
+            <a href="messages.html" data-icon="✉" data-requires-auth>消息 <span class="chat-nav-badge" data-chat-unread hidden></span></a>
+            <a class="active" href="publish.html" aria-current="page" data-icon="＋" data-requires-auth>发布物品</a>
+            <a href="orders.html" data-icon="▤" data-requires-auth>订单管理</a>
+            <a href="profile.html" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
-    <main class="layout narrow">
-        <h1>发布二手物品</h1>
-        <form class="form-panel" id="publishForm">
+    <main class="layout">
+        <section class="simple-page-header">
+            <h1>发布二手物品</h1>
+            <span class="page-step">01 · 填写商品信息</span>
+        </section>
+        <div class="editor-shell editor-shell--form-only">
+        <form class="form-panel editor-form" id="publishForm">
+            <div class="form-heading"><span>商品资料</span><small>带 * 为必填项</small></div>
             <label>标题<input name="title" required maxlength="120"></label>
-            <label>分类
+            <div class="form-grid"><label>分类
                 <select name="category" required>
                     <option value="书籍">书籍</option>
                     <option value="生活用品">生活用品</option>
                     <option value="电子产品">电子产品</option>
                     <option value="其他">其他</option>
                 </select>
-            </label>
-            <label>价格<input name="price" type="number" min="0" step="0.01" required></label>
-            <label>图片地址<input name="imageUrl" placeholder="assets/images/book.svg"></label>
+            </label><label>价格（元）<input name="price" type="number" min="0" step="0.01" required></label></div>
+            <div class="listing-options">
+                <label>方便交易的区域<select name="region" required><option>学院路校区</option><option>沙河校区</option><option>大运村</option><option>其他校内区域</option></select></label>
+                <fieldset><legend>给商品选择标签（最多 4 个）</legend><div class="listing-tag-options"><label><input type="checkbox" name="tags" value="可小刀">可小刀</label><label><input type="checkbox" name="tags" value="仅自提">仅自提</label><label><input type="checkbox" name="tags" value="支持验货">支持验货</label><label><input type="checkbox" name="tags" value="九成新">九成新</label><label><input type="checkbox" name="tags" value="急出">急出</label><label><input type="checkbox" name="tags" value="免费赠送">免费赠送</label></div></fieldset>
+            </div>
+            <div class="image-upload-field">
+                <label for="publishImage">商品图片</label>
+                <input id="publishImage" name="imageFile" type="file" accept="image/jpeg,image/png">
+                <input name="imageUrl" type="hidden">
+                <div class="image-upload-preview"><img id="publishImagePreview" src="assets/images/placeholder.svg" alt="商品图片预览"><div><strong>上传 JPG 或 PNG</strong><small>不超过 5MB，平台会自动移除照片定位等元数据。</small></div></div>
+            </div>
             <!-- sellerId will be filled automatically from current logged-in user -->
-            <label>描述<textarea name="description" rows="5"></textarea></label>
-            <button type="submit">提交发布</button>
-            <p class="form-message" id="publishMessage"></p>
+            <label>描述<textarea name="description" rows="5" maxlength="1000"></textarea></label>
+            <div class="form-submit"><p class="form-message" id="publishMessage" role="status" aria-live="polite"></p><button type="submit">立即发布</button></div>
         </form>
+        </div>
     </main>
 
     <script src="assets/js/api.js"></script>

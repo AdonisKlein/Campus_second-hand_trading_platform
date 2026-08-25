@@ -17,3 +17,11 @@ Thumbs.db
 # Runtime uploads
 backend/uploads/
 
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+

@@ -1,0 +1,227 @@
+{
+  "info": {
+    "name": "校园二手平台 - Session API",
+    "description": "Session 安全契约：Postman Cookie Jar 保存 SESSION，写请求使用 csrfToken。按顺序先执行“获取 CSRF”和登录。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api" },
+    { "key": "csrfToken", "value": "" },
+    { "key": "imageUrl", "value": "" },
+    { "key": "itemId", "value": "1" },
+    { "key": "orderId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "01 认证",
+      "item": [
+        {
+          "name": "获取 CSRF",
+          "request": { "method": "GET", "url": "{{baseUrl}}/auth/csrf" },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const body = pm.response.json();",
+            "pm.collectionVariables.set('csrfToken', body.data);"
+          ] } }]
+        },
+        {
+          "name": "发送注册验证码",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"student@example.com\"\n}" },
+            "url": "{{baseUrl}}/auth/verification/register"
+          }
+        },
+        {
+          "name": "邮箱密码登录",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"abc123\"\n}" },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "验证码注册",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"student\",\n  \"nickname\": \"学生\",\n  \"email\": \"student@example.com\",\n  \"password\": \"abc123\",\n  \"code\": \"123456\"\n}" },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        { "name": "当前用户", "request": { "method": "GET", "url": "{{baseUrl}}/users/me" } },
+        {
+          "name": "退出登录",
+          "request": { "method": "POST", "header": [{ "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }], "url": "{{baseUrl}}/auth/logout" }
+        }
+      ]
+    },
+    {
+      "name": "02 交易（需学生 Session）",
+      "item": [
+        { "name": "公开商品列表", "request": { "method": "GET", "url": "{{baseUrl}}/items" } },
+        { "name": "商品详情投影（卖家摘要/当前意向/可执行动作/同卖家商品）", "request": { "method": "GET", "url": "{{baseUrl}}/items/{{itemId}}" } },
+        { "name": "校园搜索（多关键词/筛选/排序）", "request": { "method": "GET", "url": "{{baseUrl}}/search?scope=ITEMS&q=教材%20九成新&sort=RELEVANCE&minPrice=0&maxPrice=100&region=学院路校区&tags=可小刀" } },
+        { "name": "搜索校园用户", "request": { "method": "GET", "url": "{{baseUrl}}/search?scope=USERS&q=小艾&sort=ACTIVE" } },
+        {
+          "name": "发布商品（不传 sellerId）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"二手教材\",\n  \"category\": \"书籍\",\n  \"price\": 20,\n  \"description\": \"八成新\",\n  \"imageUrl\": \"{{imageUrl}}\",\n  \"region\": \"学院路校区\",\n  \"tags\": [\"可小刀\", \"支持验货\"]\n}" },
+            "url": "{{baseUrl}}/items"
+          }
+        },
+        {
+          "name": "上传商品图片（JPG/PNG，最大 5MB）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] },
+            "url": "{{baseUrl}}/media/product-images"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const body = pm.response.json();",
+            "if (body.success) pm.collectionVariables.set('imageUrl', body.data.url);"
+          ] } }]
+        },
+        { "name": "读取上传图片", "request": { "method": "GET", "url": "{{baseUrl}}{{imageUrl}}" } },
+        { "name": "我的发布（不传 sellerId）", "request": { "method": "GET", "url": "{{baseUrl}}/items/mine" } },
+        {
+          "name": "编辑自己的商品",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"修改后的教材\",\n  \"category\": \"书籍\",\n  \"price\": 18,\n  \"description\": \"八成新，无缺页\",\n  \"imageUrl\": \"{{imageUrl}}\"\n}" },
+            "url": "{{baseUrl}}/items/{{itemId}}"
+          }
+        },
+        {
+          "name": "卖家下架",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"WITHDRAW\"\n}" },
+            "url": "{{baseUrl}}/items/{{itemId}}/seller-actions"
+          }
+        },
+        {
+          "name": "卖家重新上架",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"RELIST\"\n}" },
+            "url": "{{baseUrl}}/items/{{itemId}}/seller-actions"
+          }
+        },
+        {
+          "name": "提交购买意向（商品继续在售，不传 buyerId/sellerId）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"itemId\": {{itemId}}\n}" },
+            "url": "{{baseUrl}}/orders"
+          }
+        },
+        { "name": "我的订单（兼容平铺视图）", "request": { "method": "GET", "url": "{{baseUrl}}/orders" } },
+        { "name": "订单工作台（买卖视角与阶段）", "request": { "method": "GET", "url": "{{baseUrl}}/orders/desk?perspective=BUYING&stage=ALL" } },
+        {
+          "name": "卖家选定买家（也可 DECLINE/COMPLETE/CANCEL）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"ACCEPT\"\n}" },
+            "url": "{{baseUrl}}/orders/{{orderId}}/actions"
+          }
+        },
+        {
+          "name": "举报商品（身份来自 Session）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"targetType\": \"ITEM\",\n  \"targetId\": {{itemId}},\n  \"reasonCode\": \"FRAUD\",\n  \"description\": \"商品信息与实际情况明显不一致，请管理员核查\"\n}" },
+            "url": "{{baseUrl}}/reports"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const body = pm.response.json();",
+            "if (body.success) pm.collectionVariables.set('reportId', body.data.id);"
+          ] } }]
+        },
+        {
+          "name": "我的举报（不传 reporterId）",
+          "request": { "method": "GET", "url": "{{baseUrl}}/reports/mine" }
+        },
+        {
+          "name": "发起或打开商品私聊（不传买卖身份）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"itemId\": {{itemId}}\n}" },
+            "url": "{{baseUrl}}/chat/conversations"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const body = pm.response.json();",
+            "if (body.success) pm.collectionVariables.set('conversationId', body.data.id);"
+          ] } }]
+        },
+        {
+          "name": "从订单打开参与者私聊",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"orderId\": {{orderId}}\n}" },
+            "url": "{{baseUrl}}/chat/order-conversations"
+          }
+        },
+        { "name": "我的私聊会话与未读", "request": { "method": "GET", "url": "{{baseUrl}}/chat/conversations?size=30" } },
+        { "name": "私聊历史（sequence 游标）", "request": { "method": "GET", "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/messages?size=50" } },
+        {
+          "name": "发送私聊（senderId 来自 Session）",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"body\": \"你好，请问什么时候方便在校内验货？\"\n}" },
+            "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/messages"
+          }
+        },
+        {
+          "name": "标记私聊已读",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"throughSequence\": 1\n}" },
+            "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/read"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 管理后台（需 ADMIN Session）",
+      "item": [
+        { "name": "用户列表（不传 adminId）", "request": { "method": "GET", "url": "{{baseUrl}}/admin/users" } },
+        { "name": "留言列表", "request": { "method": "GET", "url": "{{baseUrl}}/admin/messages" } },
+        { "name": "商品列表", "request": { "method": "GET", "url": "{{baseUrl}}/admin/items" } },
+        {
+          "name": "管理员下架或恢复商品",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"REMOVED\"\n}" },
+            "url": "{{baseUrl}}/admin/items/{{itemId}}/status"
+          }
+        },
+        { "name": "待处理举报队列", "request": { "method": "GET", "url": "{{baseUrl}}/admin/reports?status=OPEN" } },
+        {
+          "name": "处理举报（管理员身份来自 Session）",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"RESOLVED\",\n  \"action\": \"REMOVE_ITEM\",\n  \"note\": \"核查成立，商品已下架\"\n}" },
+            "url": "{{baseUrl}}/admin/reports/{{reportId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

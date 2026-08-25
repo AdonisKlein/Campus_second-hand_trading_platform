@@ -4,26 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>订单管理 - 校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="index.html">校园二手交易</a>
-        <nav>
-            <a href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a href="profile.html">个人中心</a>
-            <a href="admin.html">管理中心</a>
+        <a class="brand" href="index.html">航集 Campus Market</a>
+        <nav aria-label="主导航">
+            <a href="index.html" data-icon="⌂">首页</a>
+            <a href="messages.html" data-icon="✉" data-requires-auth>消息 <span class="chat-nav-badge" data-chat-unread hidden></span></a>
+            <a href="publish.html" data-icon="＋" data-requires-auth>发布物品</a>
+            <a class="active" href="orders.html" aria-current="page" data-icon="▤" data-requires-auth>订单管理</a>
+            <a href="profile.html" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
-    <main class="layout">
-        <div class="section-title">
-            <h1>订单管理</h1>
-            <span id="currentUserInfo"></span>
-        </div>
-        <div id="orderList" class="table-list"></div>
+    <main class="layout order-workspace">
+        <section class="order-desk" aria-labelledby="orderDeskTitle">
+            <div class="order-desk-head">
+                <div><h1 id="orderDeskTitle">订单管理</h1><span id="currentUserInfo" class="sr-only"></span></div>
+                <div class="order-perspective-tabs" role="tablist" aria-label="交易身份">
+                    <button type="button" role="tab" aria-selected="true" data-perspective="BUYING">我买到的</button>
+                    <button type="button" role="tab" aria-selected="false" data-perspective="SELLING">我卖出的</button>
+                </div>
+            </div>
+
+            <div id="orderSummary" class="order-summary" aria-label="交易数量统计"></div>
+            <div class="order-stage-tabs" role="tablist" aria-label="交易进度">
+                <button type="button" role="tab" aria-selected="true" data-stage="ALL">全部</button>
+                <button type="button" role="tab" aria-selected="false" data-stage="REQUESTS">待回应 <span data-stage-count="requests">0</span></button>
+                <button type="button" role="tab" aria-selected="false" data-stage="HANDOVER">待当面交易 <span data-stage-count="handovers">0</span></button>
+                <button type="button" role="tab" aria-selected="false" data-stage="CLOSED">已结束 <span data-stage-count="closed">0</span></button>
+            </div>
+
+            <div class="order-content-head"><div><h3 id="orderListTitle">全部交易</h3><p id="orderListHint">需要你处理的记录会优先显示。</p></div><span id="orderResultCount"></span></div>
+            <div id="orderGroups" class="order-groups" aria-live="polite" aria-busy="true"></div>
+            <p id="orderFeedback" class="form-message" role="status" aria-live="polite"></p>
+        </section>
     </main>
+
+    <dialog id="orderDetailDialog" class="order-detail-dialog" aria-labelledby="orderDetailTitle">
+        <div class="order-detail-sheet"><button type="button" class="order-dialog-close" data-close-detail aria-label="关闭订单详情">×</button><div id="orderDetailContent"></div></div>
+    </dialog>
+
+    <dialog id="orderActionDialog" class="order-action-dialog" aria-labelledby="orderActionTitle">
+        <form method="dialog" class="order-action-sheet">
+            <h2 id="orderActionTitle">确认操作</h2><p id="orderActionMessage"></p>
+            <div class="order-dialog-actions"><button type="button" class="secondary" data-cancel-action>返回</button><button type="submit" data-confirm-action>确认</button></div>
+        </form>
+    </dialog>
 
     <script src="assets/js/api.js"></script>
     <script src="assets/js/orders.js"></script>

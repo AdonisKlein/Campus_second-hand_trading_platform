@@ -1,257 +1,127 @@
 # 校园二手交易平台
 
-校园二手交易平台是一个面向校园学生的课程项目，用于完成二手物品发布、浏览搜索、留言沟通、下单、订单管理、个人资料维护和管理员管理等基础交易流程。
+面向在校学生的二手商品发布、沟通和当面交易平台。目前处于企业化重构阶段。
 
-项目采用简易前后端分离架构：
+## 当前能力
 
-- 前端：静态 HTML/CSS/JavaScript 页面。
-- 后端：Spring Boot REST API。
-- 数据库：MySQL。
-- 测试：JUnit 5、MockMvc、H2。
+- 游客浏览、使用多关键词搜索商品或用户，并在搜索后按活跃、同区域、信用、价格、校园区域和商品标签筛选排序。
+- 邮箱验证码注册、邮箱密码登录、找回密码。
+- 支持阿里云邮件推送 SMTP：显式发件地址、465 隐式 TLS 或 80 STARTTLS、连接超时和未启用时的安全失败。
+- 服务端 Session 登录，支持 CSRF、精确 CORS 和管理员权限复核。
+- 学生发布带校园区域和交易标签的商品、管理自己的发布、留言、下单和查看自己的订单。
+- 买家可从商品详情发起仅买卖双方可见的私聊；支持未读消息、历史分页、屏蔽与举报，公开留言和私聊严格分开。
+- 商品图片由平台受控上传，限制格式、体积和尺寸，并清除照片元数据。
+- 买家先提交非独占购买意向，商品继续在售；卖家选定一位买家后才预留，其他意向关闭；当面交接后由买家确认完成。
+- 商品详情一次展示安全卖家摘要、当前用户的购买意向、可执行动作、同卖家在售商品、公开问答与校园交易提醒；桌面和移动使用各自适配布局。
+- 订单工作台按“我买到的 / 我卖出的”和交易阶段组织记录；卖家按商品比较买家公开信用，买家查看时间线、关闭原因并可从订单继续私聊。
+- 订单保存下单时的商品标题、价格和双方昵称，不受后续资料修改影响。
+- 学生可举报商品、留言或用户并查看处理结果；管理员通过举报队列执行下架、移除、禁用或驳回并保留审计记录。
+- 管理员管理用户、商品和留言。
+- Flyway 从空数据库建立并校验表结构。
+- Spring Session JDBC 让多个 Web 后端实例共享登录状态。
 
-## 功能概览
+## 登录方案
 
-当前项目已实现：
+Web 端使用 HttpOnly Cookie + 服务端 Session，浏览器 JavaScript 不能读取登录凭据，并且服务器可以立即注销、封禁或撤销全部旧会话。
 
-- 用户注册、用户名登录、邮箱登录。
-- 邮箱验证码注册、修改邮箱和忘记密码重置。
-- 连续 3 次登录失败后账号临时锁定 10 分钟。
-- 个人资料查看和修改。
-- 商品浏览、关键词搜索、分类筛选和详情查看。
-- 登录用户发布商品。
-- 商品详情页留言、修改自己的留言、删除自己的留言。
-- 创建订单、查看相关订单、更新订单状态。
-- 创建订单后商品状态变为 `SOLD`。
-- 管理员禁用/恢复普通用户、删除留言、下架/恢复商品。
-
-当前实现边界：
-
-- 商品图片使用图片地址或静态资源路径，不支持本地文件上传。
-- 前端使用 `localStorage` 保存当前用户基本信息，未引入 Token 或 Session 鉴权。
-- 管理员接口根据请求中的 `adminId` 校验管理员角色，适合课程项目演示。
-- 邮箱验证码需要配置可用 SMTP 服务后才能真实发送邮件。
+Windows 和移动端后续会增加短期访问令牌与可撤销刷新令牌，不把长期 JWT 存入 Web 的 localStorage。两种客户端共享用户、角色和会话撤销规则。
 
 ## 技术栈
 
-| 层次 | 技术 |
-|---|---|
-| 前端 | HTML、CSS、JavaScript |
-| 后端 | Java 24、Spring Boot 3.5.14、Spring Web、Spring Data JPA |
-| 数据库 | MySQL 8.x |
-| 安全相关 | Spring Security Crypto BCrypt |
-| 邮件 | Spring Boot Mail |
-| 测试 | JUnit 5、Spring Boot Test、MockMvc、H2 |
-| 构建 | Maven |
+- 前端：HTML、CSS、JavaScript，Nginx 同源代理 `/api`
+- 后端：Java 25、Spring Boot 3.5、Spring Security、Spring Data JPA
+- 数据库：MySQL 8.4、Flyway
+- 会话：Spring Session JDBC；高并发阶段可替换为 Redis adapter
+- 测试：JUnit 5、MockMvc、H2、Testcontainers MySQL 8.4，测试时也真实执行 Flyway
 
-## 目录结构
+## 本地开发
 
-```text
-Campus_second-hand_trading_platform/
-├── backend/                 Spring Boot 后端
-├── database/                数据库脚本
-│   ├── schema.sql
-│   └── seed.sql
-├── doc/                     项目文档
-├── frontend/                静态前端页面
-│   ├── index.html
-│   ├── register.html
-│   ├── detail.html
-│   ├── publish.html
-│   ├── orders.html
-│   ├── profile.html
-│   ├── admin.html
-│   └── assets/
-└── README.md
+先安装 JDK 25。Windows 可在管理员 PowerShell 中运行：
+
+```powershell
+winget install --id EclipseAdoptium.Temurin.25.JDK --exact
 ```
 
-## 环境要求
+安装后重新打开终端，用 `java -version` 和 `mvn -version` 确认二者都指向 Java 25。若只使用下面的 Docker 部署，则不需要在宿主机单独安装 JDK。
 
-- JDK 24.0.2。
-- Maven 3.8 或以上。
-- MySQL 8.x。
-- Chrome、Edge 或 Firefox。
-- Python 3.x，可选，用于启动前端静态服务器。
+环境变量参考 [backend/.env.example](backend/.env.example)。至少需要：
 
-## 数据库初始化
+```text
+DB_URL=jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+DB_USERNAME=root
+DB_PASSWORD=你的数据库密码
+VERIFICATION_PEPPER=至少32位随机字符串
+```
 
-登录 MySQL：
+创建空数据库（PowerShell 推荐进入 MySQL 后使用 `source`）：
 
-```bash
+```powershell
 mysql -u root -p
 ```
 
-在 MySQL 控制台执行：
-
 ```sql
-source database/schema.sql;
-source database/seed.sql;
+source D:/你的项目路径/Campus_second-hand_trading_platform/database/schema.sql;
 ```
 
-Windows 上建议使用绝对路径，并使用 `/` 分隔路径：
+在启动后端的同一个 PowerShell 设置 `DB_*`、`VERIFICATION_PEPPER` 和 CORS 环境变量；Spring Boot 不会自动加载 `.env.example`。完整命令见 [本地部署与运行文档](doc/软件部署文档.md)。
 
-```sql
-source D:/Code/Software/bigwork/Campus_second-hand_trading_platform/database/schema.sql;
-source D:/Code/Software/bigwork/Campus_second-hand_trading_platform/database/seed.sql;
-```
+启动后端，Flyway 会自动创建全部表：
 
-默认数据库名：
-
-```text
-campus_secondhand
-```
-
-演示管理员账号：
-
-```text
-用户名：admin
-密码：abc123
-```
-
-## 后端配置与启动
-
-后端配置文件：
-
-```text
-backend/src/main/resources/application.yml
-```
-
-重点检查数据库账号密码：
-
-```yaml
-spring:
-    datasource:
-        url: jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-        username: root
-        password: "你的MySQL密码"
-```
-
-后端默认端口和接口前缀：
-
-```yaml
-server:
-    port: 8080
-    servlet:
-        context-path: /api
-```
-
-启动后端：
-
-```bash
+```powershell
 cd backend
 mvn spring-boot:run
 ```
 
-后端接口地址：
+启动前端：
 
-```text
-http://localhost:8080/api
-```
-
-健康检查：
-
-```text
-http://localhost:8080/api/actuator/health
-```
-
-## 前端访问
-
-前端接口地址配置：
-
-```text
-frontend/assets/js/api.js
-```
-
-默认配置：
-
-```javascript
-const API_BASE = "http://localhost:8080/api";
-```
-
-可直接打开：
-
-```text
-frontend/index.html
-```
-
-也可以在 `frontend/` 目录启动静态服务器：
-
-```bash
+```powershell
 cd frontend
 python -m http.server 5500
 ```
 
-然后访问：
+访问 `http://localhost:5500`。接口默认是 `http://localhost:8080/api`。
 
-```text
-http://localhost:5500/index.html
+不要直接用 `file://` 双击打开 HTML；Cookie、CSRF 和跨域行为需要 HTTP 静态服务器。
+
+## 一键部署
+
+完整的全新数据库 Docker 部署说明见 [deploy/README.md](deploy/README.md)，本机开发、测试和排障见 [软件部署文档](doc/软件部署文档.md)：
+
+```powershell
+Copy-Item deploy/.env.example deploy/.env
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build
 ```
 
-## 主要页面
+本地测试邮箱验证码可叠加 Mailpit：
 
-| 页面 | 文件 | 功能 |
-|---|---|---|
-| 首页 | `frontend/index.html` | 商品列表、关键词搜索、分类筛选。 |
-| 注册页 | `frontend/register.html` | 用户注册和邮箱验证码发送。 |
-| 详情页 | `frontend/detail.html` | 商品详情、留言列表、发送留言、创建订单。 |
-| 发布页 | `frontend/publish.html` | 发布商品，图片字段为图片地址。 |
-| 订单页 | `frontend/orders.html` | 查看相关订单并更新订单状态。 |
-| 个人中心 | `frontend/profile.html` | 登录、忘记密码、资料查看、资料修改、退出登录。 |
-| 管理中心 | `frontend/admin.html` | 普通用户管理、留言管理、商品管理。 |
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml up -d --build
+```
 
-## 运行测试
+随后在 `http://localhost:8025` 查看测试验证码邮件；Mailpit 不会向公网发送邮件。
 
-后端自动化测试使用 `test` profile 和 H2 内存数据库，不依赖本地 MySQL。
+## 测试
 
-执行：
-
-```bash
+```powershell
 cd backend
 mvn test
 ```
 
-当前自动化测试覆盖：
+快速测试使用 H2；Docker 可用时还会启动真正的 MySQL 8.4，验证空库迁移、Hibernate 映射和 JDBC Session 表。Hibernate 只负责 `validate`，不会用自动建表掩盖迁移错误。
 
-- Spring Boot 上下文加载。
-- 用户注册、用户名/邮箱登录和错误密码处理。
-- 登录失败锁定。
-- 忘记密码验证码重置。
-- 商品发布和搜索。
-- 留言发送、查询、修改和删除。
-- 管理员禁用用户、删除留言、下架商品。
-- 创建订单、重复下单拦截、订单状态校验和商品售出联动。
-
-## 项目文档
-
-| 文档 | 说明 |
-|---|---|
-| `doc/软件开发计划书.md` | 开发计划、资源安排、风险管理和质量保证。 |
-| `doc/软件需求规格说明书.md` | 产品描述、功能需求、接口需求、系统属性和实现边界。 |
-| `doc/软件概要设计说明书.md` | 设计目标、总体架构、模块划分、接口概要和数据设计。 |
-| `doc/软件详细设计说明书.md` | 关键类、接口、流程、前端脚本和数据库字段的详细设计。 |
-| `doc/软件实现说明书.md` | 技术选型、实现思路、映射方法和重点实现。 |
-| `doc/软件部署文档.md` | 环境准备、数据库初始化、前后端启动、部署验证和常见问题。 |
-| `doc/软件用户手册.md` | 访客、普通用户和管理员的页面操作说明。 |
-| `doc/软件测试文档.md` | 自动化测试、手工测试、数据库测试、缺陷处理和测试结论。 |
-| `doc/需求追溯矩阵.md` | 统计子系统、模块、用例、系统操作，并建立需求到设计、实现和测试的 RTM。 |
-
-## 常见问题
-
-### 数据库连接失败
-
-检查 MySQL 是否启动、`campus_secondhand` 是否已创建，以及 `application.yml` 中用户名和密码是否正确。
-
-### 表结构校验失败
-
-后端配置为 `spring.jpa.hibernate.ddl-auto: validate`，不会自动创建或修改表结构。请先执行 `database/schema.sql`，旧库结构不一致时建议备份后重建数据库。
-
-### 前端请求失败
-
-检查后端是否已启动，浏览器 Network 面板中的请求地址是否为：
+## 主要目录
 
 ```text
-http://localhost:8080/api
+backend/                              Spring Boot 后端与 Dockerfile
+backend/src/main/resources/db/migration/  Flyway 数据库基线
+frontend/                             Web 页面、Nginx 配置与 Dockerfile
+database/schema.sql                   仅创建空数据库
+database/seed.sql                     可选本地演示数据
+deploy/                               Docker Compose 全新部署方案
+doc/                                  产品、设计和测试文档
+CONTEXT.md                            已确认的业务词汇
+AGENTS.md                             AI/自动化开发者入口与完成定义
+docs/ai/                              AI 项目上下文和持续工作日志
 ```
 
-### 邮箱验证码发送失败
-
-检查 `application.yml` 中的 `spring.mail` 是否配置为真实可用的 SMTP 服务。
+AI 或新协作者请从 [AGENTS.md](AGENTS.md) 开始阅读。

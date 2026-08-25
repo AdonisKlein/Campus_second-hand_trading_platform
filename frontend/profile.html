@@ -4,35 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人中心 - 校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="index.html">校园二手交易</a>
-        <nav>
-            <a href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a href="profile.html">个人中心</a>
-            <a href="admin.html">管理中心</a>
+        <a class="brand" href="index.html">航集 Campus Market</a>
+        <nav aria-label="主导航">
+            <a href="index.html" data-icon="⌂">首页</a>
+            <a href="messages.html" data-icon="✉" data-requires-auth>消息 <span class="chat-nav-badge" data-chat-unread hidden></span></a>
+            <a href="publish.html" data-icon="＋" data-requires-auth>发布物品</a>
+            <a href="orders.html" data-icon="▤" data-requires-auth>订单管理</a>
+            <a class="active" href="profile.html" aria-current="page" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
-    <main class="layout narrow">
-        <h1>个人中心</h1>
+    <main class="layout auth-layout auth-layout--compact">
+        <div class="auth-content">
 
         <!-- Login form -->
         <form class="form-panel" id="loginForm">
-            <h2>登录</h2>
-            <div class="login-tabs" role="group" aria-label="登录方式">
-                <button type="button" class="active" data-login-type="username">用户名登录</button>
-                <button type="button" class="secondary" data-login-type="email">邮箱登录</button>
-            </div>
-            <input type="hidden" name="loginType" value="username">
-            <label id="usernameLoginField">用户名<input name="username" required></label>
-            <label id="emailLoginField" style="display:none;">邮箱<input name="email" type="email"></label>
+            <div class="form-heading"><span>账号登录</span><small>EMAIL SIGN IN</small></div>
+            <p class="small">使用校园邮箱账号登录，继续发布、沟通和交易。</p>
+            <label>邮箱<input name="email" type="email" required></label>
             <label>密码<input name="password" type="password" required></label>
             <button type="submit">登录</button>
-            <p class="form-message" id="loginMessage"></p>
+            <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
             <p class="small">
                 如无账号，点击 <a href="register.html">前往注册</a>
                 &ensp;|&ensp;
@@ -42,7 +40,7 @@
 
         <!-- Forgot password form -->
         <form class="form-panel" id="forgotPasswordForm" style="display:none;">
-            <h2>忘记密码</h2>
+            <div class="form-heading"><span>重置密码</span><small>RESET PASSWORD</small></div>
 
             <!-- Step 1: send code -->
             <div id="fpStep1">
@@ -69,23 +67,21 @@
 
         <!-- Profile view / edit (shown when logged in) -->
         <section id="profileSection" class="form-panel" style="display:none;">
-            <h2>我的资料</h2>
-            <div id="profileView">
-                <p>用户名：<span id="viewUsername"></span></p>
-                <p>昵称：<span id="viewNickname"></span></p>
-                <p>联系方式（手机号）：<span id="viewPhone"></span></p>
-                <p>邮箱：<span id="viewEmail"></span></p>
+            <div class="profile-identity"><span class="profile-avatar" aria-hidden="true">航</span><h2>我的资料</h2></div>
+            <div id="profileView" class="profile-facts">
+                <p><small>用户名</small><span id="viewUsername"></span></p>
+                <p><small>昵称</small><span id="viewNickname"></span></p>
+                <p><small>联系方式</small><span id="viewPhone"></span></p>
+                <p><small>登录邮箱</small><span id="viewEmail"></span></p>
+                <p><small>常用区域</small><span id="viewRegion"></span></p>
+                <p><small>信用分</small><span id="viewCredit"></span></p>
             </div>
 
             <form id="profileForm" style="display:none;">
-                <label>昵称<input name="nickname"></label>
-                <label>联系方式（手机号）<input name="phone"></label>
-                <label>邮箱<input name="email" type="email"></label>
-                <div class="inline-field">
-                    <label>邮箱验证码<input name="emailCode" maxlength="6" placeholder="6位数字"></label>
-                    <button type="button" id="sendEmailCodeBtn">发送验证码</button>
-                    <span id="emailCountdown" class="small"></span>
-                </div>
+                <label>昵称<input name="nickname" maxlength="80"></label>
+                <label>联系方式（手机号）<input name="phone" maxlength="30"></label>
+                <label>常用校园区域<select name="campusRegion"><option>学院路校区</option><option>沙河校区</option><option>大运村</option><option>其他校内区域</option></select></label>
+                <p class="small">邮箱是登录账号，修改邮箱功能将在下一轮加入。</p>
 
                 <div class="actions">
                     <button type="submit" id="saveBtn">保存资料</button>
@@ -94,10 +90,13 @@
             </form>
 
             <div class="profile-controls">
+                <a class="button-link secondary-link" href="my-items.html" data-requires-auth>管理我的发布</a>
+                <a class="button-link secondary-link" href="reports.html" data-requires-auth>我的举报</a>
                 <button type="button" id="editProfileBtn">修改资料</button>
                 <button type="button" id="logoutBtn" class="secondary">退出登录</button>
             </div>
         </section>
+        </div>
     </main>
 
     <!-- Toast / confirm container -->

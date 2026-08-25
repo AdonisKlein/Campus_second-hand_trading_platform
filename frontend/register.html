@@ -4,34 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注册 - 校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="index.html">校园二手交易</a>
-        <nav>
-            <a href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a href="profile.html">个人中心</a>
+        <a class="brand" href="index.html">航集 Campus Market</a>
+        <nav aria-label="主导航">
+            <a href="index.html" data-icon="⌂">首页</a>
+            <a href="messages.html" data-icon="✉" data-requires-auth>消息 <span class="chat-nav-badge" data-chat-unread hidden></span></a>
+            <a href="publish.html" data-icon="＋" data-requires-auth>发布物品</a>
+            <a href="orders.html" data-icon="▤" data-requires-auth>订单管理</a>
+            <a href="profile.html" data-icon="○">个人中心</a>
+            <a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
-    <main class="layout narrow">
-        <h1>注册</h1>
-        <form class="form-panel" id="registerForm">
-            <label>用户名<input name="username" required></label>
-            <label>密码<input name="password" type="password" placeholder="6-12位字母和数字" required></label>
-            <label>昵称<input name="nickname"></label>
+    <main class="layout auth-layout auth-layout--compact register-layout">
+        <div class="auth-content"><form class="form-panel" id="registerForm">
+            <div class="form-heading"><span>创建账号</span><small>已有账号？<a href="profile.html">去登录</a></small></div>
+            <label>用户名<input name="username" maxlength="50" required></label>
+            <div class="form-grid"><label>密码<input name="password" type="password" placeholder="6-12位字母和数字" required></label><label>昵称<input name="nickname" maxlength="80" placeholder="同学怎么称呼你"></label></div>
             <label>邮箱<input name="email" type="email" required></label>
             <div class="inline-field">
                 <label>验证码<input name="code" maxlength="6" placeholder="6位数字" required></label>
                 <button type="button" id="sendCodeBtn">发送验证码</button>
                 <span id="countdown" class="small"></span>
             </div>
-            <button type="submit">注册并登录</button>
-            <p class="form-message" id="registerMessage"></p>
-            <p class="small">已有账号？<a href="profile.html">前往登录</a></p>
-        </form>
+            <button type="submit">注册</button>
+            <p class="form-message" id="registerMessage" role="status" aria-live="polite"></p>
+        </form></div>
     </main>
 
     <script src="assets/js/api.js"></script>

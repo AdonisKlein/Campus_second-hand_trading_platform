@@ -3,6 +3,8 @@ package com.campus.secondhand.admin;
 import com.campus.secondhand.common.ApiResponse;
 import com.campus.secondhand.item.Item;
 import com.campus.secondhand.item.ItemRepository;
+import com.campus.secondhand.item.ItemStatus;
+import com.campus.secondhand.item.ItemModerationStatus;
 import com.campus.secondhand.message.Message;
 import com.campus.secondhand.message.MessageRepository;
 import com.campus.secondhand.user.User;
@@ -20,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import com.campus.secondhand.security.CurrentActorService;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/admin")
@@ -28,22 +34,24 @@ public class AdminController {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final ItemRepository itemRepository;
+    private final CurrentActorService actors;
 
     public AdminController(UserRepository userRepository,
                            MessageRepository messageRepository,
-                           ItemRepository itemRepository) {
+                           ItemRepository itemRepository, CurrentActorService actors) {
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
         this.itemRepository = itemRepository;
+        this.actors = actors;
+    }
+
+    @ModelAttribute
+    public void requireCurrentAdmin() {
+        if (!actors.require().isAdmin()) throw new AccessDeniedException("无管理员权限");
     }
 
     @GetMapping("/users")
-    public ApiResponse<List<UserView>> listUsers(@RequestParam Long adminId) {
-        ApiResponse<User> auth = requireAdmin(adminId);
-        if (!auth.success()) {
-            return ApiResponse.fail(auth.message());
-        }
-
+    public ApiResponse<List<UserView>> listUsers() {
         List<UserView> users = userRepository.findAll()
             .stream()
             .filter(user -> !"ADMIN".equals(user.getRole()))
@@ -55,11 +63,6 @@ public class AdminController {
     @PutMapping("/users/{id}/status")
     public ApiResponse<UserView> updateUserStatus(@PathVariable Long id,
                                                   @Valid @RequestBody UpdateUserStatusRequest request) {
-        ApiResponse<User> auth = requireAdmin(request.adminId());
-        if (!auth.success()) {
-            return ApiResponse.fail(auth.message());
-        }
-
         if (!"ACTIVE".equals(request.status()) && !"DISABLED".equals(request.status())) {
             return ApiResponse.fail("用户状态不合法");
         }
@@ -70,18 +73,14 @@ public class AdminController {
                     return ApiResponse.<UserView>fail("不能修改管理员账号");
                 }
                 user.setStatus(request.status());
+                user.setAuthVersion(user.getAuthVersion() + 1);
                 return ApiResponse.ok(UserView.from(userRepository.save(user)));
             })
             .orElseGet(() -> ApiResponse.fail("用户不存在"));
     }
 
     @GetMapping("/messages")
-    public ApiResponse<List<AdminMessageView>> listMessages(@RequestParam Long adminId) {
-        ApiResponse<User> auth = requireAdmin(adminId);
-        if (!auth.success()) {
-            return ApiResponse.fail(auth.message());
-        }
-
+    public ApiResponse<List<AdminMessageView>> listMessages() {
         List<AdminMessageView> messages = messageRepository.findAllByOrderByCreatedAtDesc()
             .stream()
             .map(this::toMessageView)
@@ -91,12 +90,7 @@ public class AdminController {
 
     @DeleteMapping("/messages/{id}")
     public ApiResponse<String> deleteMessage(@PathVariable Long id,
-                                             @Valid @RequestBody AdminActionRequest request) {
-        ApiResponse<User> auth = requireAdmin(request.adminId());
-        if (!auth.success()) {
-            return ApiResponse.fail(auth.message());
-        }
-
+                                             @RequestBody(required = false) AdminActionRequest request) {
         return messageRepository.findById(id)
             .map(message -> {
                 messageRepository.delete(message);
@@ -106,46 +100,24 @@ public class AdminController {
     }
 
     @GetMapping("/items")
-    public ApiResponse<List<Item>> listItems(@RequestParam Long adminId) {
-        ApiResponse<User> auth = requireAdmin(adminId);
-        if (!auth.success()) {
-            return ApiResponse.fail(auth.message());
-        }
+    public ApiResponse<List<Item>> listItems() {
         return ApiResponse.ok(itemRepository.findAllByOrderByCreatedAtDesc());
     }
 
     @PutMapping("/items/{id}/status")
+    @Transactional
     public ApiResponse<Item> updateItemStatus(@PathVariable Long id,
                                               @Valid @RequestBody UpdateItemStatusRequest request) {
-        ApiResponse<User> auth = requireAdmin(request.adminId());
-        if (!auth.success()) {
-            return ApiResponse.fail(auth.message());
-        }
-
-        if (!"ON_SALE".equals(request.status()) && !"REMOVED".equals(request.status())) {
+        if (!"VISIBLE".equals(request.status()) && !"REMOVED".equals(request.status())) {
             return ApiResponse.fail("商品状态不合法");
         }
 
-        return itemRepository.findById(id)
+        return itemRepository.findLockedById(id)
             .map(item -> {
-                item.setStatus(request.status());
+                item.setModerationStatus(ItemModerationStatus.valueOf(request.status()));
                 return ApiResponse.ok(itemRepository.save(item));
             })
             .orElseGet(() -> ApiResponse.fail("物品不存在"));
-    }
-
-    private ApiResponse<User> requireAdmin(Long adminId) {
-        return userRepository.findById(adminId)
-            .map(user -> {
-                if (!"ADMIN".equals(user.getRole())) {
-                    return ApiResponse.<User>fail("无管理员权限");
-                }
-                if ("DISABLED".equals(user.getStatus())) {
-                    return ApiResponse.<User>fail("管理员账号已被禁用");
-                }
-                return ApiResponse.ok(user);
-            })
-            .orElseGet(() -> ApiResponse.fail("管理员不存在"));
     }
 
     private AdminMessageView toMessageView(Message message) {
@@ -171,13 +143,13 @@ public class AdminController {
         return user.getUsername();
     }
 
-    public record UpdateUserStatusRequest(@NotNull Long adminId, @NotNull String status) {
+    public record UpdateUserStatusRequest(@NotNull String status) {
     }
 
-    public record UpdateItemStatusRequest(@NotNull Long adminId, @NotNull String status) {
+    public record UpdateItemStatusRequest(@NotNull String status) {
     }
 
-    public record AdminActionRequest(@NotNull Long adminId) {
+    public record AdminActionRequest() {
     }
 
     public record AdminMessageView(

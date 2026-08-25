@@ -4,38 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理中心 - 校园二手交易平台</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="index.html">校园二手交易</a>
-        <nav>
-            <a href="publish.html">发布物品</a>
-            <a href="orders.html">订单管理</a>
-            <a href="profile.html">个人中心</a>
-            <a href="admin.html">管理中心</a>
+        <a class="brand" href="index.html">航集 Campus Market</a>
+        <nav aria-label="主导航">
+            <a href="index.html" data-icon="⌂">首页</a>
+            <a href="messages.html" data-icon="✉" data-requires-auth>消息 <span class="chat-nav-badge" data-chat-unread hidden></span></a>
+            <a href="publish.html" data-icon="＋" data-requires-auth>发布物品</a>
+            <a href="orders.html" data-icon="▤" data-requires-auth>订单管理</a>
+            <a href="profile.html" data-icon="○">个人中心</a>
+            <a class="active" href="admin.html" aria-current="page" data-icon="◇" data-admin-only hidden>管理中心</a>
         </nav>
     </header>
 
     <main class="layout">
-        <div class="section-title">
-            <h1>管理中心</h1>
-            <span id="adminUserInfo"></span>
-        </div>
+        <section class="simple-page-header admin-heading"><h1>管理中心</h1><span id="adminUserInfo" class="user-chip"></span></section>
 
         <section id="adminGate" class="form-panel" style="display:none;">
             <p>请使用管理员账号登录后访问管理中心。</p>
             <a class="button-link" href="profile.html">前往登录</a>
         </section>
 
-        <section id="adminPanel" class="admin-panel" style="display:none;">
-            <div class="admin-tabs">
-                <button type="button" class="active" data-admin-tab="users">用户管理</button>
-                <button type="button" class="secondary" data-admin-tab="messages">留言管理</button>
-                <button type="button" class="secondary" data-admin-tab="items">商品管理</button>
+        <section id="adminPanel" class="admin-panel admin-shell" style="display:none;">
+            <aside class="admin-sidebar"><div class="admin-sidebar-title"><span class="profile-avatar" aria-hidden="true">管</span><div><strong>平台管理员</strong><small>Campus Console</small></div></div>
+            <div class="admin-tabs" role="tablist" aria-label="管理功能">
+                <button id="adminTabUsers" type="button" class="active" role="tab" aria-selected="true" aria-controls="adminUsersPanel" tabindex="0" data-admin-tab="users"><span>用户管理</span><small>账号状态与权限</small></button>
+                <button id="adminTabMessages" type="button" class="secondary" role="tab" aria-selected="false" aria-controls="adminMessagesPanel" tabindex="-1" data-admin-tab="messages"><span>留言管理</span><small>公开内容维护</small></button>
+                <button id="adminTabItems" type="button" class="secondary" role="tab" aria-selected="false" aria-controls="adminItemsPanel" tabindex="-1" data-admin-tab="items"><span>商品管理</span><small>商品上下架处理</small></button>
+                <button id="adminTabReports" type="button" class="secondary" role="tab" aria-selected="false" aria-controls="adminReportsPanel" tabindex="-1" data-admin-tab="reports"><span>举报管理</span><small>核查与治理记录</small></button>
             </div>
+            <p class="admin-sidebar-note">管理操作会立即生效，请确认目标信息后再执行。</p></aside>
+            <div class="admin-workspace">
 
-            <section class="admin-section" data-admin-section="users">
+            <section class="admin-dashboard" aria-labelledby="adminDashboardTitle">
+                <div class="admin-console-top">
+                    <h2 id="adminDashboardTitle">平台运行概览</h2>
+                    <span class="tag">管理员视图</span>
+                </div>
+                <div class="admin-dashboard-stats">
+                    <article><span>学生用户</span><strong id="adminStatUsers">—</strong><small>已注册账号</small></article>
+                    <article><span>平台商品</span><strong id="adminStatItems">—</strong><small>全部商品记录</small></article>
+                    <article><span>公开留言</span><strong id="adminStatMessages">—</strong><small>商品交流内容</small></article>
+                    <article><span>已下架商品</span><strong id="adminStatRemoved">—</strong><small>等待处理或恢复</small></article>
+                </div>
+            </section>
+
+            <section id="adminUsersPanel" class="admin-section" role="tabpanel" aria-labelledby="adminTabUsers" data-admin-section="users">
                 <div class="section-title">
                     <h2>普通用户</h2>
                     <span id="userCount"></span>
@@ -43,7 +60,7 @@
                 <div id="adminUserList" class="table-list"></div>
             </section>
 
-            <section class="admin-section" data-admin-section="messages" style="display:none;">
+            <section id="adminMessagesPanel" class="admin-section" role="tabpanel" aria-labelledby="adminTabMessages" data-admin-section="messages" style="display:none;">
                 <div class="section-title">
                     <h2>全部留言</h2>
                     <span id="messageCount"></span>
@@ -51,13 +68,19 @@
                 <div id="adminMessageList" class="table-list"></div>
             </section>
 
-            <section class="admin-section" data-admin-section="items" style="display:none;">
+            <section id="adminItemsPanel" class="admin-section" role="tabpanel" aria-labelledby="adminTabItems" data-admin-section="items" style="display:none;">
                 <div class="section-title">
                     <h2>全部商品</h2>
                     <span id="adminItemCount"></span>
                 </div>
                 <div id="adminItemList" class="table-list"></div>
             </section>
+            <section id="adminReportsPanel" class="admin-section" role="tabpanel" aria-labelledby="adminTabReports" data-admin-section="reports" style="display:none;">
+                <div class="section-title"><div><h2>举报队列</h2><select id="adminReportStatus" aria-label="按举报状态筛选"><option value="OPEN">待处理</option><option value="">全部</option><option value="RESOLVED">已确认</option><option value="DISMISSED">已驳回</option></select></div><span id="adminReportCount"></span></div>
+                <p id="adminReportMessage" class="form-message" role="status" aria-live="polite"></p>
+                <div id="adminReportList" class="report-list admin-report-list"></div>
+            </section>
+            </div>
         </section>
     </main>
 

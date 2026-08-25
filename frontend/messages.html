@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私聊消息 - 航集</title>
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="chat-page">
+<header class="topbar">
+    <a class="brand" href="index.html">航集 Campus Market</a>
+    <nav aria-label="主导航">
+        <a href="index.html" data-icon="⌂">首页</a><a href="messages.html" class="active" aria-current="page" data-icon="✉" data-requires-auth>消息 <span class="chat-nav-badge" data-chat-unread hidden></span></a>
+        <a href="publish.html" data-icon="＋" data-requires-auth>发布物品</a><a href="orders.html" data-icon="▤" data-requires-auth>订单管理</a>
+        <a href="profile.html" data-icon="○">个人中心</a><a href="admin.html" data-icon="◇" data-admin-only hidden>管理中心</a>
+    </nav>
+</header>
+<main class="layout chat-layout">
+    <section class="chat-shell" aria-label="私聊消息">
+        <aside class="chat-conversations" id="conversationPane">
+            <div class="chat-pane-heading"><h1>私聊消息</h1><span id="chatTotalUnread">0 未读</span></div>
+            <p class="chat-safety-note">请勿提前转账，建议校内当面验货交易。</p>
+            <div id="conversationList" class="conversation-list" role="list"></div>
+            <p id="conversationStatus" class="form-message" role="status" aria-live="polite"></p>
+        </aside>
+        <section class="chat-room" id="chatRoom" hidden>
+            <header class="chat-room-header">
+                <button type="button" class="secondary chat-back" id="chatBack">← 返回</button>
+                <img id="chatItemImage" src="assets/images/placeholder.svg" alt=""><div><small>正在沟通的闲置</small><a id="chatItemLink" href="index.html"><strong id="chatItemTitle"></strong></a><span id="chatOtherName"></span></div>
+                <div class="chat-room-tools"><button type="button" class="secondary" id="reportChatUser">举报</button><button type="button" class="secondary danger" id="toggleChatBlock">屏蔽</button></div>
+            </header>
+            <div class="chat-history-toolbar"><button type="button" class="secondary" id="loadOlder" hidden>加载更早消息</button><span id="chatConnection">每 8 秒自动刷新</span></div>
+            <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+            <form id="chatForm" class="chat-composer">
+                <label class="sr-only" for="chatBody">私聊内容</label><textarea id="chatBody" name="body" maxlength="2000" rows="2" placeholder="输入私聊内容，Enter 发送，Shift+Enter 换行" required></textarea>
+                <button type="submit">发送</button><p id="chatFormMessage" class="form-message" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+        <section class="chat-empty" id="chatEmpty"><div aria-hidden="true">✉</div><h2>选择一位同学开始沟通</h2><p>从商品详情点击“私聊卖家”，会话会出现在这里。</p></section>
+    </section>
+</main>
+<script src="assets/js/api.js"></script><script src="assets/js/chat.js"></script>
+</body></html>
