@@ -5,6 +5,10 @@
   "description": "Playwright end-to-end tests for the campus second-hand trading platform",
   "scripts": {
     "test:e2e": "playwright test",
+    "e2e:up": "node scripts/compose-e2e.cjs up",
+    "e2e:down": "node scripts/compose-e2e.cjs down",
+    "e2e:wait": "node scripts/wait-for-e2e.cjs",
+    "test:e2e:compose": "node scripts/run-compose-e2e.cjs",
     "test:e2e:headed": "playwright test --headed",
     "report:e2e": "playwright show-report test-results/playwright-report"
   },
