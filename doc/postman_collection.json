@@ -124,7 +124,8 @@
             "url": "{{baseUrl}}/orders"
           }
         },
-        { "name": "我的订单（不传 userId）", "request": { "method": "GET", "url": "{{baseUrl}}/orders" } },
+        { "name": "我的订单（兼容平铺视图）", "request": { "method": "GET", "url": "{{baseUrl}}/orders" } },
+        { "name": "订单工作台（买卖视角与阶段）", "request": { "method": "GET", "url": "{{baseUrl}}/orders/desk?perspective=BUYING&stage=ALL" } },
         {
           "name": "卖家选定买家（也可 DECLINE/COMPLETE/CANCEL）",
           "request": {
@@ -163,6 +164,15 @@
             "const body = pm.response.json();",
             "if (body.success) pm.collectionVariables.set('conversationId', body.data.id);"
           ] } }]
+        },
+        {
+          "name": "从订单打开参与者私聊",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-XSRF-TOKEN", "value": "{{csrfToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"orderId\": {{orderId}}\n}" },
+            "url": "{{baseUrl}}/chat/order-conversations"
+          }
         },
         { "name": "我的私聊会话与未读", "request": { "method": "GET", "url": "{{baseUrl}}/chat/conversations?size=30" } },
         { "name": "私聊历史（sequence 游标）", "request": { "method": "GET", "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/messages?size=50" } },

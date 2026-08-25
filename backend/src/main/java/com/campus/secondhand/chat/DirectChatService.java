@@ -4,6 +4,7 @@ import com.campus.secondhand.item.Item;
 import com.campus.secondhand.item.ItemModerationStatus;
 import com.campus.secondhand.item.ItemRepository;
 import com.campus.secondhand.item.ItemStatus;
+import com.campus.secondhand.order.TradeOrderRepository;
 import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
 import java.time.LocalDateTime;
@@ -27,33 +28,56 @@ public class DirectChatService implements DirectChat {
     private final ChatBlockRepository blocks;
     private final ItemRepository items;
     private final UserRepository users;
+    private final TradeOrderRepository orders;
 
     public DirectChatService(ChatConversationRepository conversations, ChatMessageRepository messages,
-                             ChatBlockRepository blocks, ItemRepository items, UserRepository users) {
+                             ChatBlockRepository blocks, ItemRepository items, UserRepository users,
+                             TradeOrderRepository orders) {
         this.conversations = conversations;
         this.messages = messages;
         this.blocks = blocks;
         this.items = items;
         this.users = users;
+        this.orders = orders;
     }
 
     @Override @Transactional
     public ConversationView open(Long actorId, Long itemId) {
         User buyer = requireStudent(actorId);
         Item item = items.findLockedById(itemId).orElseThrow(() -> new ChatRuleException("商品不存在"));
-        if (item.getStatus() != ItemStatus.ON_SALE || item.getModerationStatus() != ItemModerationStatus.VISIBLE) {
-            throw new ChatRuleException("该商品当前不能发起私聊");
-        }
         if (actorId.equals(item.getSellerId())) throw new ChatRuleException("不能和自己发起私聊");
         User seller = requireStudent(item.getSellerId());
-        ChatConversation conversation = conversations.findByItemIdAndBuyerIdAndSellerId(itemId, buyer.getId(), seller.getId())
-            .orElseGet(() -> {
+        var existing = conversations.findByItemIdAndBuyerIdAndSellerId(itemId, buyer.getId(), seller.getId());
+        if (existing.isPresent()) return view(existing.get(), actorId);
+        boolean tradeParticipant = orders.existsByItemIdAndBuyerIdAndSellerId(itemId, buyer.getId(), seller.getId());
+        if ((item.getStatus() != ItemStatus.ON_SALE || item.getModerationStatus() != ItemModerationStatus.VISIBLE)
+                && !tradeParticipant) {
+            throw new ChatRuleException("该商品当前不能发起私聊");
+        }
+        ChatConversation conversation = conversations.save(newConversation(item, buyer, seller));
+        return view(conversation, actorId);
+    }
+
+    @Override @Transactional
+    public ConversationView openTrade(Long actorId, Long orderId) {
+        requireStudent(actorId);
+        var order = orders.findById(orderId).orElseThrow(() -> new ChatRuleException("交易记录不存在"));
+        if (!actorId.equals(order.getBuyerId()) && !actorId.equals(order.getSellerId())) {
+            throw new AccessDeniedException("order conversation");
+        }
+        User buyer = requireStudent(order.getBuyerId());
+        User seller = requireStudent(order.getSellerId());
+        var existing = conversations.findByItemIdAndBuyerIdAndSellerId(order.getItemId(), buyer.getId(), seller.getId());
+        if (existing.isPresent()) return view(existing.get(), actorId);
+        Item item = items.findById(order.getItemId()).orElseThrow(() -> new ChatRuleException("交易商品不存在"));
+        return view(conversations.save(newConversation(item, buyer, seller)), actorId);
+    }
+
+    private ChatConversation newConversation(Item item, User buyer, User seller) {
                 ChatConversation created = new ChatConversation();
                 created.setItemId(item.getId()); created.setBuyerId(buyer.getId()); created.setSellerId(seller.getId());
                 created.setItemTitleSnapshot(item.getTitle()); created.setItemImageSnapshot(item.getImageUrl());
-                return conversations.save(created);
-            });
-        return view(conversation, actorId);
+                return created;
     }
 
     @Override @Transactional(readOnly = true)

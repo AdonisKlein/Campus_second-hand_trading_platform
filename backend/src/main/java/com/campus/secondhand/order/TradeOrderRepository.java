@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Lock;
 
 public interface TradeOrderRepository extends JpaRepository<TradeOrder, Long> {
     List<TradeOrder> findByBuyerIdOrSellerIdOrderByCreatedAtDesc(Long buyerId, Long sellerId);
+    List<TradeOrder> findByBuyerIdOrderByCreatedAtDesc(Long buyerId);
+    List<TradeOrder> findBySellerIdOrderByCreatedAtDesc(Long sellerId);
+    boolean existsByItemIdAndBuyerIdAndSellerId(Long itemId, Long buyerId, Long sellerId);
     Optional<TradeOrder> findFirstByItemIdAndBuyerIdAndStatusIn(Long itemId, Long buyerId, List<OrderStatus> statuses);
     List<TradeOrder> findByItemIdAndStatus(Long itemId, OrderStatus status);
     List<TradeOrder> findByStatusInAndExpiresAtBefore(List<OrderStatus> statuses, LocalDateTime cutoff);

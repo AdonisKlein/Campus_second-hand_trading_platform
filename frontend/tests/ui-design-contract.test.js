@@ -63,6 +63,16 @@ const chatJs = fs.readFileSync(path.join(frontend, "assets/js/chat.js"), "utf8")
 for (const selector of ["chat-shell", "conversationList", "chatMessages", "chatForm"]) {
     if (!chat.includes(selector)) failures.push(`messages.html: 缺少私聊结构 ${selector}`);
 }
+
+const ordersHtml = fs.readFileSync(path.join(frontend, "orders.html"), "utf8");
+const ordersJs = fs.readFileSync(path.join(frontend, "assets/js/orders.js"), "utf8");
+for (const contract of ["order-workspace", "order-perspective-tabs", "order-stage-tabs", "orderDetailDialog", "orderActionDialog"]) {
+    if (!ordersHtml.includes(contract)) failures.push(`orders.html: 第十三轮订单工作台缺少 ${contract}`);
+}
+for (const contract of ["/orders/desk", "data-order-action", "data-chat-order", 'openReportDialog("USER"', "timeline"]) {
+    if (!ordersJs.includes(contract)) failures.push(`orders.js: 订单工作台接口或交互缺少 ${contract}`);
+}
+if (ordersJs.includes("alert(")) failures.push("orders.js: 订单操作不得使用浏览器 alert");
 if (!chatJs.includes("/chat/conversations") || !chatJs.includes("preserveReadingPosition")) {
     failures.push("chat.js: 缺少私聊 API 或轮询阅读位置保护");
 }

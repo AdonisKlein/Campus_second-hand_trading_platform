@@ -23,6 +23,13 @@ public class TradeOrderController {
         return ApiResponse.ok(trading.listOrders(actors.require().userId()));
     }
 
+    @GetMapping("/desk")
+    public ApiResponse<TradeDesk.Desk> desk(
+            @RequestParam(defaultValue = "BUYING") TradeDesk.Perspective perspective,
+            @RequestParam(defaultValue = "ALL") TradeDesk.Stage stage) {
+        return ApiResponse.ok(trading.browse(actors.require().userId(), perspective, stage));
+    }
+
     @PostMapping
     public ApiResponse<OrderView> create(@Valid @RequestBody CreateOrderRequest request) {
         return ApiResponse.created(trading.requestPurchase(actors.require().userId(), request.itemId()));

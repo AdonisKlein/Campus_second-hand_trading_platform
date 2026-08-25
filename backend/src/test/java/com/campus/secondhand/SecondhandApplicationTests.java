@@ -12,6 +12,7 @@ import com.campus.secondhand.order.OrderStatus;
 import com.campus.secondhand.order.OrderAction;
 import com.campus.secondhand.order.TradingService;
 import com.campus.secondhand.order.TradingRuleException;
+import com.campus.secondhand.order.TradeDesk;
 import com.campus.secondhand.user.EmailVerificationRepository;
 import com.campus.secondhand.user.User;
 import com.campus.secondhand.user.UserRepository;
@@ -479,6 +480,7 @@ class SecondhandApplicationTests {
     void orderWorkflowUsesSessionIdentitySnapshotsAndRoleSpecificActions() throws Exception {
         User seller = saveUser("seller", "seller@example.com", "STUDENT");
         User buyer = saveUser("buyer", "buyer@example.com", "STUDENT");
+        User stranger = saveUser("order-stranger", "order-stranger@example.com", "STUDENT");
         MockCookie sellerSession = login(seller.getEmail());
         mvc.perform(post("/items").cookie(sellerSession).with(csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"title\":\"教材\",\"category\":\"书籍\",\"price\":20}"));
@@ -501,6 +503,13 @@ class SecondhandApplicationTests {
                 .contentType(MediaType.APPLICATION_JSON).content("{\"action\":\"ACCEPT\"}"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.status").value("WAITING_HANDOVER"));
+        mvc.perform(post("/chat/order-conversations").cookie(sellerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"orderId\":%d}".formatted(orderId)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.otherUserId").value(buyer.getId()));
+        mvc.perform(post("/chat/order-conversations").cookie(login(stranger.getEmail())).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"orderId\":%d}".formatted(orderId)))
+            .andExpect(status().isForbidden());
         mvc.perform(post("/orders/{id}/actions", orderId).cookie(buyerSession).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{\"action\":\"COMPLETE\"}"))
             .andExpect(status().isOk())
@@ -514,6 +523,40 @@ class SecondhandApplicationTests {
             .andExpect(jsonPath("$.data", hasSize(1)))
             .andExpect(jsonPath("$.data[0].itemTitle").value("教材"))
             .andExpect(jsonPath("$.data[0].allowedActions", hasSize(0)));
+    }
+
+    @Test
+    void orderDeskGroupsSellerRequestsAndReturnsOnlyPublicCounterpartyData() throws Exception {
+        User seller = saveUser("desk-seller", "desk-seller@example.com", "STUDENT");
+        User buyerA = saveUser("desk-a", "desk-a@example.com", "STUDENT");
+        buyerA.setNickname("学院路买家"); buyerA.setCampusRegion("学院路校区"); buyerA.setCreditScore(96);
+        users.saveAndFlush(buyerA);
+        User buyerB = saveUser("desk-b", "desk-b@example.com", "STUDENT");
+        buyerB.setNickname("沙河买家"); buyerB.setCampusRegion("沙河校区"); buyerB.setCreditScore(91);
+        users.saveAndFlush(buyerB);
+        var item = sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "订单工作台教材", "书籍", java.math.BigDecimal.valueOf(35), "九成新", ""));
+        tradingService.requestPurchase(buyerA.getId(), item.id());
+        tradingService.requestPurchase(buyerB.getId(), item.id());
+
+        var desk = tradingService.browse(seller.getId(), TradeDesk.Perspective.SELLING, TradeDesk.Stage.REQUESTS);
+        org.junit.jupiter.api.Assertions.assertEquals(2, desk.summary().requests());
+        org.junit.jupiter.api.Assertions.assertEquals(2, desk.summary().actionable());
+        org.junit.jupiter.api.Assertions.assertEquals(1, desk.groups().size());
+        org.junit.jupiter.api.Assertions.assertEquals(2, desk.groups().getFirst().entries().size());
+        org.junit.jupiter.api.Assertions.assertEquals(4, desk.groups().getFirst().entries().getFirst().timeline().size());
+
+        MockCookie sellerSession = login(seller.getEmail());
+        mvc.perform(get("/orders/desk").cookie(sellerSession)
+                .param("perspective", "SELLING").param("stage", "REQUESTS"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.summary.requests").value(2))
+            .andExpect(jsonPath("$.data.groups", hasSize(1)))
+            .andExpect(jsonPath("$.data.groups[0].entries", hasSize(2)))
+            .andExpect(jsonPath("$.data.groups[0].entries[0].counterparty.campusRegion").exists())
+            .andExpect(jsonPath("$.data.groups[0].entries[0].counterparty.creditScore").exists())
+            .andExpect(jsonPath("$.data.groups[0].entries[0].counterparty.email").doesNotExist())
+            .andExpect(jsonPath("$.data.groups[0].entries[0].counterparty.phone").doesNotExist());
     }
 
     @Test

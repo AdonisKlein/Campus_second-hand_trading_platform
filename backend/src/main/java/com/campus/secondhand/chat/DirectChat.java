@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 public interface DirectChat {
     ConversationView open(Long actorId,Long itemId);
+    ConversationView openTrade(Long actorId,Long orderId);
     ConversationPage conversations(Long actorId,int page,int size);
     MessagePage history(Long actorId,String conversationId,Long beforeSequence,int size);
     MessageView send(Long actorId,String conversationId,String body);

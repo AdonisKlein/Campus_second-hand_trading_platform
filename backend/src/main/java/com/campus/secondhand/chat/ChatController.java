@@ -20,6 +20,10 @@ public class ChatController {
     public ApiResponse<DirectChat.ConversationView> open(@Valid @RequestBody OpenRequest request) {
         return ApiResponse.ok(chat.open(actors.require().userId(), request.itemId()));
     }
+    @PostMapping("/order-conversations")
+    public ApiResponse<DirectChat.ConversationView> openTrade(@Valid @RequestBody OpenTradeRequest request) {
+        return ApiResponse.ok(chat.openTrade(actors.require().userId(), request.orderId()));
+    }
     @GetMapping("/conversations")
     public ApiResponse<DirectChat.ConversationPage> conversations(@RequestParam(defaultValue="0") int page,
                                                                    @RequestParam(defaultValue="30") int size) {
@@ -48,6 +52,7 @@ public class ChatController {
         return ApiResponse.ok(Map.of("count", chat.unreadTotal(actors.require().userId())));
     }
     public record OpenRequest(@NotNull Long itemId) {}
+    public record OpenTradeRequest(@NotNull Long orderId) {}
     public record SendRequest(@NotBlank @Size(max=2000) String body) {}
     public record ReadRequest(@NotNull Long throughSequence) {}
 }

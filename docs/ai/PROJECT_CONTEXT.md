@@ -69,16 +69,17 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 - 一个在售商品、一个买家和该商品卖家最多形成一个会话；对外只暴露随机 UUID 会话号，内部数值主键不用于客户端定位。
 - 会话和消息只能由真实买卖双方读取；发送者完全从 Session 推导，管理员没有查看学生私聊正文的特殊权限。
 - 每个会话使用单调递增 sequence；买卖双方各自保存最后已读 sequence，由此计算未读数。消息历史按 sequence 游标向前分页，不使用不稳定的 offset。
-- 新会话只允许为 `ON_SALE + VISIBLE` 商品创建；商品售出或下架后保留既有历史。任一方屏蔽后双方均不能继续发送，但仍可查看已有记录和解除自己的屏蔽。
+- 商品详情发起的新会话只允许 `ON_SALE + VISIBLE`；订单参与者可通过 `openTrade` 为对应交易创建或复用会话，因此商品进入预留后仍能沟通。商品售出或下架后保留既有历史。任一方屏蔽后双方均不能继续发送，但仍可查看已有记录和解除自己的屏蔽。
 - 当前 Web adapter 每 8 秒轮询，interface 不依赖轮询方式；未来换 SSE/WebSocket 时无需改变领域规则和数据库消息顺序。
-- 本轮只实现文本私聊；结构化议价、图片消息和订单成交价联动属于下一轮，不用自由文本伪装为报价状态。
+- 当前只实现文本私聊；第十五轮将整体重设计私聊页面并加入结构化报价，现阶段不用自由文本伪装为报价状态。
 
 ### 交易 module
 
-- Seam：`TradingService.requestPurchase/listOrders/perform`。
+- 写入 seam：`TradingService.requestPurchase/perform`；订单工作台读取 seam：`TradeDesk.browse(actorId, perspective, stage)`，当前由同一个 `TradingService` 实现以复用有效状态与 `allowedActions` 规则。
 - Interface 不变量：买家提交的是非独占购买意向，商品保持 `ON_SALE`；卖家接受其中一条后才把商品改为 `RESERVED`，并关闭其他待回应意向。
 - 商品锁顺序先于订单锁；买卖身份由 Session 和商品推导；合法动作由订单状态和参与方共同决定；意向过期不修改商品，待交接预留取消或过期才恢复在售。
 - Controller、定时任务和测试都必须穿过这个 interface，不要直接改订单状态。
+- `TradeDesk` 按“我买到的 / 我卖出的”和交易阶段返回统计、商品分组、安全的对方公开资料、有效状态、剩余时间、时间线和关闭原因。邮箱、手机号等账号资料不得进入订单投影。
 
 ### 商品详情 module（第十二轮）
 

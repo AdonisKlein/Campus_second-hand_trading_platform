@@ -20,20 +20,45 @@
         </nav>
     </header>
 
-    <main class="layout">
-        <section class="page-heading trade-heading">
-            <div><p class="eyebrow">MY TRADES</p><h1>订单管理</h1><p>在这里跟进买入和卖出的每一笔校园交易。</p></div>
-            <span id="currentUserInfo" class="user-chip"></span>
+    <main class="layout order-workspace">
+        <section class="order-page-intro">
+            <div><p class="eyebrow">TRADE WORKSPACE</p><h1>把每一次校园交易，稳稳推进到见面</h1><p>购买意向不会立即锁定商品。卖家选定买家后，双方再私聊约定校内公共地点，当面验货完成交易。</p></div>
+            <div class="order-user-card"><span>当前账号</span><strong id="currentUserInfo">正在确认登录状态…</strong><a href="index.html">继续逛逛 →</a></div>
         </section>
-        <div class="trade-shell">
-            <aside class="trade-guide">
-                <p class="section-kicker">TRADE FLOW</p><h2>交易流程</h2>
-                <div class="flow-list"><div><b>1</b><span><strong>表达购买意向</strong><small>商品继续在售，不会被抢先锁住</small></span></div><div><b>2</b><span><strong>卖家选定买家</strong><small>此时才预留商品并约定校内见面</small></span></div><div><b>3</b><span><strong>当面验货完成</strong><small>买家确认取货后交易结束</small></span></div></div>
-                <a class="text-link" href="index.html">继续逛逛 →</a>
-            </aside>
-            <section class="trade-list-panel"><div class="panel-heading"><div><p class="section-kicker">ALL ORDERS</p><h2>全部订单</h2></div></div><div id="orderList" class="table-list" aria-live="polite"></div></section>
-        </div>
+
+        <section class="order-desk" aria-labelledby="orderDeskTitle">
+            <div class="order-desk-head">
+                <div><p class="section-kicker">MY TRADES</p><h2 id="orderDeskTitle">我的交易</h2></div>
+                <div class="order-perspective-tabs" role="tablist" aria-label="交易身份">
+                    <button type="button" role="tab" aria-selected="true" data-perspective="BUYING">我买到的</button>
+                    <button type="button" role="tab" aria-selected="false" data-perspective="SELLING">我卖出的</button>
+                </div>
+            </div>
+
+            <div id="orderSummary" class="order-summary" aria-label="交易数量统计"></div>
+            <div class="order-stage-tabs" role="tablist" aria-label="交易进度">
+                <button type="button" role="tab" aria-selected="true" data-stage="ALL">全部</button>
+                <button type="button" role="tab" aria-selected="false" data-stage="REQUESTS">待回应 <span data-stage-count="requests">0</span></button>
+                <button type="button" role="tab" aria-selected="false" data-stage="HANDOVER">待当面交易 <span data-stage-count="handovers">0</span></button>
+                <button type="button" role="tab" aria-selected="false" data-stage="CLOSED">已结束 <span data-stage-count="closed">0</span></button>
+            </div>
+
+            <div class="order-content-head"><div><h3 id="orderListTitle">全部交易</h3><p id="orderListHint">需要你处理的记录会优先显示。</p></div><span id="orderResultCount"></span></div>
+            <div id="orderGroups" class="order-groups" aria-live="polite" aria-busy="true"></div>
+            <p id="orderFeedback" class="form-message" role="status" aria-live="polite"></p>
+        </section>
     </main>
+
+    <dialog id="orderDetailDialog" class="order-detail-dialog" aria-labelledby="orderDetailTitle">
+        <div class="order-detail-sheet"><button type="button" class="order-dialog-close" data-close-detail aria-label="关闭订单详情">×</button><div id="orderDetailContent"></div></div>
+    </dialog>
+
+    <dialog id="orderActionDialog" class="order-action-dialog" aria-labelledby="orderActionTitle">
+        <form method="dialog" class="order-action-sheet">
+            <p class="section-kicker">CONFIRM ACTION</p><h2 id="orderActionTitle">确认操作</h2><p id="orderActionMessage"></p>
+            <div class="order-dialog-actions"><button type="button" class="secondary" data-cancel-action>返回</button><button type="submit" data-confirm-action>确认</button></div>
+        </form>
+    </dialog>
 
     <script src="assets/js/api.js"></script>
     <script src="assets/js/orders.js"></script>
