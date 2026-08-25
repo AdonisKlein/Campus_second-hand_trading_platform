@@ -52,11 +52,17 @@ DB_PASSWORD=你的数据库密码
 VERIFICATION_PEPPER=至少32位随机字符串
 ```
 
-创建空数据库：
+创建空数据库（PowerShell 推荐进入 MySQL 后使用 `source`）：
 
 ```powershell
-mysql -u root -p < database/schema.sql
+mysql -u root -p
 ```
+
+```sql
+source D:/你的项目路径/Campus_second-hand_trading_platform/database/schema.sql;
+```
+
+在启动后端的同一个 PowerShell 设置 `DB_*`、`VERIFICATION_PEPPER` 和 CORS 环境变量；Spring Boot 不会自动加载 `.env.example`。完整命令见 [本地部署与运行文档](doc/软件部署文档.md)。
 
 启动后端，Flyway 会自动创建全部表：
 
@@ -74,9 +80,11 @@ python -m http.server 5500
 
 访问 `http://localhost:5500`。接口默认是 `http://localhost:8080/api`。
 
+不要直接用 `file://` 双击打开 HTML；Cookie、CSRF 和跨域行为需要 HTTP 静态服务器。
+
 ## 一键部署
 
-完整的全新数据库 Docker 部署说明见 [deploy/README.md](deploy/README.md)：
+完整的全新数据库 Docker 部署说明见 [deploy/README.md](deploy/README.md)，本机开发、测试和排障见 [软件部署文档](doc/软件部署文档.md)：
 
 ```powershell
 Copy-Item deploy/.env.example deploy/.env
