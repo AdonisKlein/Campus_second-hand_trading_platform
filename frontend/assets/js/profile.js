@@ -6,7 +6,7 @@ function render(user) {
     loginForm.hidden = Boolean(user); profileSection.hidden = !user; if (!user) return;
     const name = user.nickname || user.username || "校园用户";
     text("profileName", name); text("profileAvatar", name.slice(0, 1)); text("profileSubline", `${user.username || ""} · ${user.email || ""}`);
-    text("viewNickname", user.nickname || "未设置"); text("viewPhone", user.phone || "未设置"); text("viewEmail", user.email || ""); text("viewRegion", user.campusRegion || "未设置"); text("viewCredit", user.creditScore ?? 100); text("viewActive", user.lastActiveAt ? new Date(user.lastActiveAt).toLocaleDateString("zh-CN") : "刚刚");
+    text("viewUsername", user.username || ""); text("viewNickname", user.nickname || "未设置"); text("viewPhone", user.phone || "未设置"); text("viewEmail", user.email || ""); text("viewRegion", user.campusRegion || "未设置"); text("viewCredit", user.creditScore ?? 100); text("viewActive", user.lastActiveAt ? new Date(user.lastActiveAt).toLocaleDateString("zh-CN") : "刚刚");
     profileForm.nickname.value = user.nickname || ""; profileForm.phone.value = user.phone || ""; profileForm.campusRegion.value = user.campusRegion || "学院路校区";
 }
 async function stats() {
