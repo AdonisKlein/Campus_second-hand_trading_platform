@@ -30,3 +30,8 @@ backend/.env
 backend/.env.*
 !backend/.env.example
 
+# Generated Kubernetes secrets and local cluster evidence
+k8s/overlays/*/.env.secret
+k8s/overlays/*/kustomization.runtime.yaml
+!k8s/overlays/*/.env.secret.example
+

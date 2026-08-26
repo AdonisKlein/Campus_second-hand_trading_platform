@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/items/mine").authenticated()
                 .requestMatchers(HttpMethod.GET, "/media/product-images/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/items/**", "/search", "/messages/item/**", "/auth/csrf",
-                    "/actuator/health", "/actuator/health/liveness").permitAll()
+                    "/actuator/health", "/actuator/health/liveness", "/actuator/health/readiness").permitAll()
                 .requestMatchers("/auth/login", "/auth/register", "/auth/verification/**", "/auth/password/**", "/error").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated())

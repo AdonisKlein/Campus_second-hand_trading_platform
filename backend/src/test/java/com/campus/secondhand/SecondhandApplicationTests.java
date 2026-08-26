@@ -195,6 +195,9 @@ class SecondhandApplicationTests {
         mvc.perform(get("/actuator/health/liveness"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UP"));
+        mvc.perform(get("/actuator/health/readiness"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("UP"));
         mvc.perform(post("/items").with(csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"title\":\"教材\",\"category\":\"书籍\",\"price\":20}"))
             .andExpect(status().isUnauthorized());

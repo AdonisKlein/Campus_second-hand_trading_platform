@@ -4,9 +4,18 @@
 
 ## 当前状态
 
-第十三轮及其页面收口已完成：商品详情和订单工作台已经重构，实际业务页面已移除宣传性介绍区块。下一功能轮为第十四轮个人中心完整重设计；第十五轮为私聊页面完整重设计。本次只完成后续 Backlog 与本地部署文档，不提前实施计划功能。
+课程 CI 工作项 7 已完成：Kubernetes Base、Kind CI Overlay、健康探针、持久卷、Secret 注入和本地部署脚本已通过真实空集群验收。下一步是工作项 8（CI 部署、冒烟测试与成功/受控失败验收记录），本次按用户要求暂不开始。
 
 ## 已完成轮次
+
+### 课程 CI 工作项 7：Kubernetes 清单与 Kind 部署（2026-08-26）
+
+- `k8s/base` 建立 Namespace、ConfigMap、Secret 键名示例、MySQL StatefulSet、Backend/Web Deployment、ClusterIP Service 和两个 PVC；敏感值只从运行时 Secret 注入。
+- `k8s/overlays/ci` 使用 Kustomize 复用 Base，仅增加 Mailpit、CI 邮件配置和随机本地 Secret，避免复制整套 YAML。
+- Backend、Web、MySQL 和 Mailpit 均配置 readiness/liveness；启动较慢的 Backend/MySQL 另设 startup probe。后端只精确匿名开放 liveness/readiness，其他 Actuator 仍受保护。
+- `scripts/ci/kind-local.ps1` 可从零创建 Kind、构建并加载本地镜像、生成随机 Secret、等待 rollout、通过临时 port-forward 冒烟，并支持状态、访问转发和删除集群。
+- 验证：Kustomize 客户端 dry-run 创建 13 个资源；真实 Kind v0.32.0 / Kubernetes v1.36.1 空集群部署后 4/4 Pod Ready、0 次重启，2/2 PVC Bound；Web 首页和后端 liveness 经同源 Nginx 返回成功；Maven 单元测试 29/29 通过；`git diff --check` 通过。
+- 提交：本条记录所在的工作项提交（使用 `git log -1` 查看）。
 
 ### 合并后旧内容清理（2026-08-25）
 

@@ -1,6 +1,6 @@
 # AI 项目上下文
 
-更新日期：2026-08-24
+更新日期：2026-08-26
 
 ## 产品边界
 
@@ -27,6 +27,8 @@ frontend/assets/js/api.js                 Session/CSRF/请求唯一 seam
 frontend/assets/css/styles.css            全站桌面与移动视觉系统
 frontend/tests/                           无依赖的 UI 结构与会话竞态回归测试
 deploy/         MySQL + Spring Boot + Nginx Compose 部署
+k8s/            Kubernetes Base、CI Kind Overlay 与部署说明
+scripts/ci/     测试报告、Compose E2E 和 Kind 本地部署入口
 ```
 
 ## 业务页面信息架构规则
@@ -134,6 +136,9 @@ deploy/         MySQL + Spring Boot + Nginx Compose 部署
 ## 当前部署事实
 
 - Docker 服务：`mysql`、`backend`、`web`，只向宿主机暴露 Web 80 端口；`media-data` 保存商品图片。
+- Kubernetes Base 使用 MySQL StatefulSet、Backend/Web Deployment、ClusterIP Service 和独立数据库/图片 PVC；CI Overlay 增加 Mailpit，敏感值由 `campus-secrets` 运行时注入。
+- 本地 Kubernetes 验收使用 Kind；Service 对宿主机访问统一走 `kubectl port-forward`，避免依赖 Windows Docker Desktop 的 NodePort 转发差异。
+- Backend readiness 控制是否接收流量，liveness 控制失败重启，startup probe 保护首次启动；只匿名公开精确的 `/actuator/health/liveness|readiness`。
 - Nginx 同源代理 `/api/`；生产 TLS 需把 Session Cookie Secure 设为 true。
 - Flyway 从空 MySQL 建库；本项目没有历史生产库升级负担。
 - 当前本地验收数据库是 Docker Desktop 中的 `mysql:8.4`，通过 Compose 私有网络连接并保存在 Docker volume；不是远程数据库，也不是宿主机单独安装的 MySQL 服务。
