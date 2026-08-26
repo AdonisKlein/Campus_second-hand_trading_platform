@@ -8,6 +8,14 @@
 
 ## 已完成轮次
 
+### 合并后旧内容清理（2026-08-25）
+
+- 重写软件实现、概要设计和详细设计说明书，使其与 Session、CSRF、受控图片、私聊和购买意向状态机一致。
+- 修正发布页的卖家身份注释，删除未使用的订单宣传样式。
+- 保留测试中伪造 `buyerId`、`sellerId`、`adminId` 的反向用例，用于证明后端不信任客户端身份字段。
+- 验证：前端语法与页面契约检查通过；残留扫描不再在已清理文档中发现旧身份或旧订单模型。
+- 提交：本条记录所在的提交（使用 `git log -1` 查看）。
+
 ### 课程 CI 工作项 6：全测试门禁与版本化镜像（2026-08-26）
 
 - GitHub Actions 按依赖严格串联 `unit-tests → api-integration-tests → frontend-static-tests → e2e-tests → build-images`，任何测试非 0 都不会进入后续阶段，未使用 `continue-on-error`。

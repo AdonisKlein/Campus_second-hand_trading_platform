@@ -47,7 +47,7 @@
                 <input name="imageUrl" type="hidden">
                 <div class="image-upload-preview"><img id="publishImagePreview" src="assets/images/placeholder.svg" alt="商品图片预览"><div><strong>上传 JPG 或 PNG</strong><small>不超过 5MB，平台会自动移除照片定位等元数据。</small></div></div>
             </div>
-            <!-- sellerId will be filled automatically from current logged-in user -->
+            <!-- The server derives the seller from the current Session. -->
             <label>描述<textarea name="description" rows="5" maxlength="1000"></textarea></label>
             <div class="form-submit"><p class="form-message" id="publishMessage" role="status" aria-live="polite"></p><button type="submit">立即发布</button></div>
         </form>
