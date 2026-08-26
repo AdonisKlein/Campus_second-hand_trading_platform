@@ -5,6 +5,13 @@ on:
     branches: ["**"]
   pull_request:
     branches: ["**"]
+  workflow_dispatch:
+    inputs:
+      controlled_failure:
+        description: "Fail after a successful Kubernetes rollout to capture negative evidence"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -119,12 +126,14 @@ jobs:
   build-images:
     name: Build and push versioned images
     needs: e2e-tests
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
       contents: read
       packages: write
+    outputs:
+      image-tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -158,3 +167,57 @@ jobs:
           tags: ghcr.io/adonisklein/campus-web:${{ steps.version.outputs.tag }}
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
+
+  deploy-kind:
+    name: Deploy versioned images to Kind
+    needs: build-images
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      packages: read
+    env:
+      K8S_EVIDENCE_DIR: test-results/k8s-deploy/${{ github.run_id }}
+      KIND_CLUSTER_NAME: campus-ci-${{ github.run_id }}
+      CONTROLLED_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.controlled_failure || false }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Sign in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Kind
+        shell: bash
+        run: |
+          curl --fail --location --output kind https://kind.sigs.k8s.io/dl/v0.32.0/kind-linux-amd64
+          chmod +x kind
+          sudo mv kind /usr/local/bin/kind
+          kind version
+          kubectl version --client
+      - name: Deploy and run smoke checks
+        shell: bash
+        run: |
+          scripts/ci/deploy-kind.sh \
+            "ghcr.io/adonisklein/campus-backend:${{ needs.build-images.outputs.image-tag }}" \
+            "ghcr.io/adonisklein/campus-web:${{ needs.build-images.outputs.image-tag }}"
+      - name: Add deployment report to job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          report="${K8S_EVIDENCE_DIR}/summary.md"
+          if [[ -f "${report}" ]]; then
+            cat "${report}" >> "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "Deployment ended before a report could be generated." >> "${GITHUB_STEP_SUMMARY}"
+          fi
+      - name: Upload Kubernetes deployment evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: kubernetes-deployment-evidence-${{ github.run_id }}
+          if-no-files-found: warn
+          path: test-results/k8s-deploy/**

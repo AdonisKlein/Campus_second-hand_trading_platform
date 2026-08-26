@@ -4,9 +4,19 @@
 
 ## 当前状态
 
-课程 CI 工作项 7 已完成：Kubernetes Base、Kind CI Overlay、健康探针、持久卷、Secret 注入和本地部署脚本已通过真实空集群验收。下一步是工作项 8（CI 部署、冒烟测试与成功/受控失败验收记录），本次按用户要求暂不开始。
+课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
 
 ## 已完成轮次
+
+### 课程 CI 工作项 8：Kind 部署、冒烟与验收证据闭环（2026-08-26）
+
+- 新建 `scripts/ci/deploy-kind.sh` 作为唯一部署 interface：调用方只提供 Backend/Web 两个版本化镜像，implementation 负责重建隔离 Kind、随机 Secret、Kustomize apply、镜像切换、rollout、端口转发与冒烟。
+- GitHub Actions 新增 `deploy-kind` Job，仅在测试和 `sha-<提交号>` 镜像构建全部成功后运行；`main` Push 自动部署，手动运行支持 `controlled_failure`。
+- 首页、Backend liveness/readiness 均必须成功；脚本错误或受控失败保持非 0，未使用 `continue-on-error`，因此部署失败会让流水线失败。
+- EXIT 清理与取证无论成功失败都会执行，保存资源、事件、Pod 描述、所有容器日志、健康响应和 Markdown 摘要；临时 Secret 文件在退出时删除，验收 artifact 不含密码。
+- 验证：两个独立空 Kind 集群分别得到 `SUCCESS / 0` 和预期 `FAILED / 42`，两次 rollout 与冒烟均先通过且证据齐全；actionlint 1.7.7、Bash 语法和 `git diff --check` 通过。
+- `styles.css` 只有已删除宣传横幅样式的历史部分暂存，工作区内容与 HEAD 一致；已清理暂存状态，没有产生 CSS 修改或回退产品决定。
+- 提交：本条记录所在的工作项提交（使用 `git log -1` 查看）。
 
 ### 课程 CI 工作项 7：Kubernetes 清单与 Kind 部署（2026-08-26）
 

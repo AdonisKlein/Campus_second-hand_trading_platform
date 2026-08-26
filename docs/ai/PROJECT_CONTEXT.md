@@ -139,6 +139,9 @@ scripts/ci/     测试报告、Compose E2E 和 Kind 本地部署入口
 - Kubernetes Base 使用 MySQL StatefulSet、Backend/Web Deployment、ClusterIP Service 和独立数据库/图片 PVC；CI Overlay 增加 Mailpit，敏感值由 `campus-secrets` 运行时注入。
 - 本地 Kubernetes 验收使用 Kind；Service 对宿主机访问统一走 `kubectl port-forward`，避免依赖 Windows Docker Desktop 的 NodePort 转发差异。
 - Backend readiness 控制是否接收流量，liveness 控制失败重启，startup probe 保护首次启动；只匿名公开精确的 `/actuator/health/liveness|readiness`。
+- CI 部署 seam 是 `scripts/ci/deploy-kind.sh <backend-image> <web-image>`；调用方不得在 Workflow 里复制 rollout、冒烟和证据收集细节。
+- GitHub Actions 的 `deploy-kind` 只消费测试全绿后生成的不可变 SHA 镜像；`main` Push 自动执行，`workflow_dispatch` 可通过 `controlled_failure` 验证非 0 阻断与 `if: always()` 取证同时成立。
+- GitHub-hosted runner 上的 Kind 是临时发布门禁，不是长期生产集群；长期环境需另建生产 Overlay 并连接持久 Kubernetes 集群。
 - Nginx 同源代理 `/api/`；生产 TLS 需把 Session Cookie Secure 设为 true。
 - Flyway 从空 MySQL 建库；本项目没有历史生产库升级负担。
 - 当前本地验收数据库是 Docker Desktop 中的 `mysql:8.4`，通过 Compose 私有网络连接并保存在 Docker volume；不是远程数据库，也不是宿主机单独安装的 MySQL 服务。
