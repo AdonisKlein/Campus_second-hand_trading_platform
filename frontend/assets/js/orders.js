@@ -83,7 +83,7 @@ function paintDesk() {
     document.querySelector("#orderResultCount").textContent = `${groups.reduce((sum, group) => sum + group.entries.length, 0)} 条记录`;
     document.querySelector("#orderListTitle").textContent = ({ ALL: "全部交易", REQUESTS: "等待卖家回应", HANDOVER: "准备当面交易", CLOSED: "已结束的交易" })[orderUi.stage];
     document.querySelector("#orderListHint").textContent = orderUi.perspective === "SELLING" ? "同一商品的购买意向放在一起，方便比较后再选择买家。" : "按交易进度跟进，操作与关闭原因都清楚保留。";
-    orderGroups.innerHTML = groups.length ? groups.map(groupCard).join("") : `<div class="order-empty"><span>◎</span><h3>这里还没有交易记录</h3><p>${orderUi.perspective === "BUYING" ? "去首页看看校园好物，和卖家聊好后再提交购买意向。" : "发布闲置后，买家的购买意向会出现在这里。"}</p><a class="button-link" href="${orderUi.perspective === "BUYING" ? "index.html" : "publish.html"}">${orderUi.perspective === "BUYING" ? "去逛逛" : "发布闲置"}</a></div>`;
+    orderGroups.innerHTML = groups.length ? groups.map(groupCard).join("") : `<div class="order-empty"><span>◎</span><h3>这里还没有交易记录</h3><p>${orderUi.perspective === "BUYING" ? "去首页看看校园好物，和卖家聊好后再提交购买意向。" : "发布物品后，买家的购买意向会出现在这里。"}</p><a class="button-link" href="${orderUi.perspective === "BUYING" ? "index.html" : "publish.html"}">${orderUi.perspective === "BUYING" ? "去逛逛" : "发布物品"}</a></div>`;
     orderGroups.setAttribute("aria-busy", "false");
     updateCountdowns();
 }

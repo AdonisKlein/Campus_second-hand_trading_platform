@@ -20,13 +20,11 @@
         </nav>
     </header>
 
-    <main class="layout auth-layout auth-layout--compact">
-        <div class="auth-content">
+    <main class="layout profile-page">
 
         <!-- Login form -->
-        <form class="form-panel" id="loginForm">
-            <div class="form-heading"><span>账号登录</span><small>EMAIL SIGN IN</small></div>
-            <p class="small">使用校园邮箱账号登录，继续发布、沟通和交易。</p>
+        <form class="form-panel profile-login" id="loginForm">
+            <div class="form-heading"><span>账号登录</span></div><p class="small">使用校园邮箱账号登录。</p>
             <label>邮箱<input name="email" type="email" required></label>
             <label>密码<input name="password" type="password" required></label>
             <button type="submit">登录</button>
@@ -38,7 +36,6 @@
             </p>
         </form>
 
-        <!-- Forgot password form -->
         <form class="form-panel" id="forgotPasswordForm" style="display:none;">
             <div class="form-heading"><span>重置密码</span><small>RESET PASSWORD</small></div>
 
@@ -66,37 +63,28 @@
         </form>
 
         <!-- Profile view / edit (shown when logged in) -->
-        <section id="profileSection" class="form-panel" style="display:none;">
-            <div class="profile-identity"><span class="profile-avatar" aria-hidden="true">航</span><h2>我的资料</h2></div>
-            <div id="profileView" class="profile-facts">
-                <p><small>用户名</small><span id="viewUsername"></span></p>
-                <p><small>昵称</small><span id="viewNickname"></span></p>
-                <p><small>联系方式</small><span id="viewPhone"></span></p>
-                <p><small>登录邮箱</small><span id="viewEmail"></span></p>
-                <p><small>常用区域</small><span id="viewRegion"></span></p>
-                <p><small>信用分</small><span id="viewCredit"></span></p>
-            </div>
-
-            <form id="profileForm" style="display:none;">
+        <section id="profileSection" hidden>
+            <div class="profile-header"><div class="profile-person"><span class="profile-avatar" id="profileAvatar">航</span><div><h1 id="profileName">个人中心</h1><p id="profileSubline" class="muted-line"></p></div></div><button type="button" class="secondary" id="logoutBtn">退出登录</button></div>
+            <div class="profile-grid"><section class="profile-overview form-panel"><div class="profile-verification"><span>✓</span><div><strong>学校验证</strong><small>已通过登录邮箱验证</small></div></div><dl class="profile-facts"><div><dt>校园区域</dt><dd id="viewRegion">未设置</dd></div><div><dt>信用分</dt><dd id="viewCredit">100</dd></div><div><dt>最近活跃</dt><dd id="viewActive">刚刚</dd></div></dl><button type="button" id="editProfileBtn">编辑公开资料</button></section><section class="profile-content"><div class="panel-heading"><div><h2>我的动态</h2></div></div><div class="profile-stats"><a href="my-items.html" data-requires-auth><strong id="statItems">-</strong><span>在售发布</span></a><a href="orders.html?perspective=BUYING" data-requires-auth><strong id="statBuying">-</strong><span>购买意向</span></a><a href="orders.html?perspective=SELLING" data-requires-auth><strong id="statSelling">-</strong><span>待处理卖出</span></a><a href="messages.html" data-requires-auth><strong id="statUnread">-</strong><span>未读消息</span></a></div><div class="profile-links"><a href="my-items.html" data-requires-auth><span>我的发布</span><small>管理商品、编辑或重新上架</small><b>›</b></a><a href="orders.html?perspective=BUYING" data-requires-auth><span>我买到的</span><small>查看购买意向与交易进度</small><b>›</b></a><a href="orders.html?perspective=SELLING" data-requires-auth><span>我卖出的</span><small>处理买家意向和当面交接</small><b>›</b></a><a href="messages.html" data-requires-auth><span>消息</span><small>继续与交易对象沟通</small><b>›</b></a><a href="reports.html" data-requires-auth><span>举报记录</span><small>查看提交过的举报及处理结果</small><b>›</b></a><a href="admin.html" data-admin-only hidden><span>进入管理中心</span><small>处理平台治理任务</small><b>›</b></a></div></section><section class="profile-settings form-panel"><div class="panel-heading"><h2>公开资料与安全</h2></div><div id="profileView" class="profile-setting-summary"><p><span>昵称</span><strong id="viewNickname"></strong></p><p><span>联系方式</span><strong id="viewPhone">未设置</strong></p><p><span>登录邮箱</span><strong id="viewEmail"></strong></p></div>
+            <form id="profileForm" hidden>
                 <label>昵称<input name="nickname" maxlength="80"></label>
                 <label>联系方式（手机号）<input name="phone" maxlength="30"></label>
                 <label>常用校园区域<select name="campusRegion"><option>学院路校区</option><option>沙河校区</option><option>大运村</option><option>其他校内区域</option></select></label>
-                <p class="small">邮箱是登录账号，修改邮箱功能将在下一轮加入。</p>
+                <p class="small">登录邮箱和密码需要通过账户安全流程修改。</p>
 
                 <div class="actions">
-                    <button type="submit" id="saveBtn">保存资料</button>
+                    <button type="submit" id="saveBtn">保存资料</button><button type="button" class="secondary" id="cancelEditBtn">取消</button>
                 </div>
                 <p class="form-message" id="profileMessage"></p>
             </form>
 
-            <div class="profile-controls">
+            <div class="profile-controls" hidden>
                 <a class="button-link secondary-link" href="my-items.html" data-requires-auth>管理我的发布</a>
                 <a class="button-link secondary-link" href="reports.html" data-requires-auth>我的举报</a>
                 <button type="button" id="editProfileBtn">修改资料</button>
                 <button type="button" id="logoutBtn" class="secondary">退出登录</button>
             </div>
-        </section>
-        </div>
+        </section></section></div>
     </main>
 
     <!-- Toast / confirm container -->

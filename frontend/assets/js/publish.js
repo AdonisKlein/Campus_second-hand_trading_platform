@@ -18,7 +18,7 @@ publishImage.addEventListener("change", () => {
 });
 
 async function requireLoginForPublish() {
-    return requireAuthenticatedUser({ message: "登录后才能发布闲置，是否前往登录？", returnTo: "publish.html" });
+    return requireAuthenticatedUser({ message: "登录后才能发布物品，是否前往登录？", returnTo: "publish.html" });
 }
 
 requireLoginForPublish();
