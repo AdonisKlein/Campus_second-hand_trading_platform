@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.Clock;
 import java.util.HexFormat;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -22,22 +23,24 @@ public class VerificationService {
     private final SecureRandom random = new SecureRandom();
     private final byte[] pepper;
     private final TransactionTemplate transactions;
+    private final Clock clock;
 
     public VerificationService(EmailVerificationRepository repository, EmailService emailService,
                                @Value("${app.verification.pepper}") String pepper,
-                               TransactionTemplate transactions) {
+                               TransactionTemplate transactions, Clock clock) {
         this.repository = repository;
         this.emailService = emailService;
         if (pepper.length() < 32) throw new IllegalStateException("VERIFICATION_PEPPER 至少需要 32 个字符");
         this.pepper = pepper.getBytes(StandardCharsets.UTF_8);
         this.transactions = transactions;
+        this.clock = clock;
     }
 
     public void sendCode(String email, VerificationPurpose purpose) {
         String code = String.format("%06d", random.nextInt(1_000_000));
         try {
             transactions.executeWithoutResult(status -> {
-                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime now = LocalDateTime.now(clock);
                 EmailVerification challenge = repository.findByEmailAndPurpose(email, purpose).map(latest -> {
                     if (latest.getCreatedAt().plusSeconds(60).isAfter(now)) {
                         throw new VerificationRateLimitException("请稍后再获取验证码");
@@ -72,7 +75,7 @@ public class VerificationService {
         var optional = repository.findByEmailAndPurpose(email, purpose);
         if (optional.isEmpty()) return false;
         EmailVerification challenge = optional.get();
-        if (challenge.isUsed() || challenge.getExpiresAt().isBefore(LocalDateTime.now())
+        if (challenge.isUsed() || challenge.getExpiresAt().isBefore(LocalDateTime.now(clock))
             || challenge.getAttempts() >= MAX_ATTEMPTS) return false;
         boolean matches = MessageDigest.isEqual(
             challenge.getCodeHash().getBytes(StandardCharsets.US_ASCII),

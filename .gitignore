@@ -17,6 +17,11 @@ Thumbs.db
 # Runtime uploads
 backend/uploads/
 
+# Generated test dependencies and reports
+e2e/node_modules/
+e2e/test-results/
+test-results/
+
 # Local secrets and environment overrides
 .env
 .env.*

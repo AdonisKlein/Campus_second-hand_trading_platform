@@ -16,6 +16,23 @@
 - 验证：前端语法与页面契约检查通过；残留扫描不再在已清理文档中发现旧身份或旧订单模型。
 - 提交：本条记录所在的提交（使用 `git log -1` 查看）。
 
+### 课程 CI 工作项 6：全测试门禁与版本化镜像（2026-08-26）
+
+- GitHub Actions 按依赖严格串联 `unit-tests → api-integration-tests → frontend-static-tests → e2e-tests → build-images`，任何测试非 0 都不会进入后续阶段，未使用 `continue-on-error`。
+- 单元/API 测试失败时仍上传 Surefire、Failsafe 和 HTML 报告；E2E 无论成功失败都上传 Playwright HTML、截图、视频、trace、控制台和网络失败证据。
+- E2E Job 使用 MySQL、Mailpit、Backend、Web 的独立 Docker Compose 环境；5 条核心业务旅程和 runner smoke 全绿后才允许镜像 Job 执行。
+- 仅 push 事件使用 GitHub Token 写 GHCR，分别生成 `ghcr.io/adonisklein/campus-backend:sha-<7位提交号>` 和 `campus-web:sha-<7位提交号>`；PR 只执行测试，不推镜像，也不生成 `latest`。
+- 验证：actionlint 1.7.7 无输出且退出 0；前端 3/3 契约测试及全部 JS 语法通过；首次完整 E2E 稳定复现管理员 prompt 竞态并返回非 0、证据齐全，修复为对话框与点击原子等待后定点 1/1、全量 6/6 通过。
+- 提交：本条记录所在的工作项提交（使用 `git log -1` 查看）。
+
+### 课程 CI 工作项 5：API 集成测试与 MySQL 并发门禁（2026-08-26）
+
+- 将认证、资料、商品、私聊、交易、举报治理和管理员场景拆入独立 `*ApiIT`，共享 `AbstractApiIntegrationTest` 统一 Session 登录、数据工厂与外键安全清理。
+- 每组 API 测试均覆盖成功、输入/备选分支、未登录或越权分支，并直接断言商品、订单、举报、用户状态和审计记录等数据库最终状态。
+- 新建真实 MySQL 8.4 Testcontainers 门禁，覆盖空库 Flyway/Session，以及同邮箱注册、同验证码消费、同商品并发选择买家、同举报并发处理四种竞争条件。
+- 验证：`mvn clean -Djava.version=24 verify` 的首轮失败已证明 Failsafe 会返回非 0；修正契约断言后，单元测试、API 集成测试和真实 MySQL 并发测试统一由 `mvn verify` 执行并生成 XML/HTML 报告。
+- 提交：本条记录所在的工作项提交（使用 `git log -1` 查看）。
+
 ### 重构分支并入 main（2026-08-25）
 
 - 将 `codex/refactor-foundation` 合并到 `main`。

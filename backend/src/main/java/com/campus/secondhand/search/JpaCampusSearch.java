@@ -14,11 +14,8 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -39,11 +36,11 @@ public class JpaCampusSearch implements CampusSearch {
 
     @Override
     public SearchPage search(SearchQuery raw, String viewerRegion) {
-        NormalizedQuery query = normalize(raw);
+        SearchQueryRules.NormalizedQuery query = SearchQueryRules.normalize(raw);
         return query.scope() == Scope.USERS ? searchUsers(query, viewerRegion) : searchItems(query, viewerRegion);
     }
 
-    private SearchPage searchItems(NormalizedQuery query, String viewerRegion) {
+    private SearchPage searchItems(SearchQueryRules.NormalizedQuery query, String viewerRegion) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Item> criteria = cb.createQuery(Item.class);
         Root<Item> item = criteria.from(Item.class);
@@ -64,7 +61,7 @@ public class JpaCampusSearch implements CampusSearch {
             MarketplaceOptions.REGIONS, MarketplaceOptions.TAGS);
     }
 
-    private SearchPage searchUsers(NormalizedQuery query, String viewerRegion) {
+    private SearchPage searchUsers(SearchQueryRules.NormalizedQuery query, String viewerRegion) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteria = cb.createQuery(User.class);
         Root<User> user = criteria.from(User.class);
@@ -92,7 +89,7 @@ public class JpaCampusSearch implements CampusSearch {
             MarketplaceOptions.REGIONS, MarketplaceOptions.TAGS);
     }
 
-    private List<Predicate> publicItemPredicates(NormalizedQuery query, CriteriaBuilder cb,
+    private List<Predicate> publicItemPredicates(SearchQueryRules.NormalizedQuery query, CriteriaBuilder cb,
                                                   Root<Item> item, Root<User> seller) {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(item.get("sellerId"), seller.get("id")));
@@ -115,7 +112,7 @@ public class JpaCampusSearch implements CampusSearch {
         return predicates;
     }
 
-    private List<Order> itemOrders(NormalizedQuery query, String viewerRegion, CriteriaBuilder cb,
+    private List<Order> itemOrders(SearchQueryRules.NormalizedQuery query, String viewerRegion, CriteriaBuilder cb,
                                    Root<Item> item, Root<User> seller) {
         List<Order> orders = new ArrayList<>();
         switch (query.sort()) {
@@ -132,7 +129,7 @@ public class JpaCampusSearch implements CampusSearch {
         return orders;
     }
 
-    private List<Order> userOrders(NormalizedQuery query, String viewerRegion, CriteriaBuilder cb, Root<User> user) {
+    private List<Order> userOrders(SearchQueryRules.NormalizedQuery query, String viewerRegion, CriteriaBuilder cb, Root<User> user) {
         List<Order> orders = new ArrayList<>();
         switch (query.sort()) {
             case ACTIVE -> orders.add(cb.desc(user.get("lastActiveAt")));
@@ -146,7 +143,7 @@ public class JpaCampusSearch implements CampusSearch {
         return orders;
     }
 
-    private Expression<Integer> itemRelevance(NormalizedQuery query, CriteriaBuilder cb, Root<Item> item) {
+    private Expression<Integer> itemRelevance(SearchQueryRules.NormalizedQuery query, CriteriaBuilder cb, Root<Item> item) {
         Expression<Integer> score = cb.literal(0);
         for (String term : query.terms()) {
             String pattern = containsPattern(term);
@@ -160,7 +157,7 @@ public class JpaCampusSearch implements CampusSearch {
         return score;
     }
 
-    private Expression<Integer> userRelevance(NormalizedQuery query, CriteriaBuilder cb, Root<User> user) {
+    private Expression<Integer> userRelevance(SearchQueryRules.NormalizedQuery query, CriteriaBuilder cb, Root<User> user) {
         Expression<Integer> score = cb.literal(0);
         for (String term : query.terms()) {
             String pattern = containsPattern(term);
@@ -188,39 +185,8 @@ public class JpaCampusSearch implements CampusSearch {
             seller == null ? null : seller.getLastActiveAt(), item.getCreatedAt());
     }
 
-    private NormalizedQuery normalize(SearchQuery raw) {
-        Scope scope = raw.scope() == null ? Scope.ITEMS : raw.scope();
-        Sort sort = raw.sort() == null ? Sort.RELEVANCE : raw.sort();
-        if (scope == Scope.USERS && (sort == Sort.PRICE_ASC || sort == Sort.PRICE_DESC)) sort = Sort.RELEVANCE;
-        if (raw.minPrice() != null && raw.minPrice().signum() < 0
-            || raw.maxPrice() != null && raw.maxPrice().signum() < 0) {
-            throw new SearchQueryException("价格不能小于 0");
-        }
-        if (raw.minPrice() != null && raw.maxPrice() != null && raw.minPrice().compareTo(raw.maxPrice()) > 0) {
-            throw new SearchQueryException("最低价格不能高于最高价格");
-        }
-        String region = raw.region() == null || raw.region().isBlank() ? null : raw.region().trim();
-        if (region != null && !MarketplaceOptions.REGIONS.contains(region)) throw new SearchQueryException("区域无效");
-        Set<String> tags = raw.tags() == null ? Set.of() : new LinkedHashSet<>(raw.tags());
-        if (!MarketplaceOptions.TAGS.containsAll(tags)) throw new SearchQueryException("标签无效");
-        int page = Math.max(0, raw.page());
-        int size = Math.min(48, Math.max(1, raw.size()));
-        return new NormalizedQuery(terms(raw.keywords()), scope, sort, raw.minPrice(), raw.maxPrice(), region,
-            Set.copyOf(tags), raw.sellerId(), page, size);
-    }
-
-    private List<String> terms(String raw) {
-        if (raw == null || raw.isBlank()) return List.of();
-        return java.util.Arrays.stream(raw.trim().split("[\\s,，]+"))
-            .map(value -> value.toLowerCase(Locale.ROOT)).filter(value -> !value.isBlank())
-            .distinct().limit(8).toList();
-    }
-
     private String containsPattern(String term) {
         return "%" + term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%";
     }
 
-    private record NormalizedQuery(List<String> terms, Scope scope, Sort sort, BigDecimal minPrice,
-                                   BigDecimal maxPrice, String region, Set<String> tags, Long sellerId,
-                                   int page, int size) {}
 }
