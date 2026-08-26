@@ -17,8 +17,51 @@ async function stats() {
     text("statUnread", unread.success ? unread.data?.count || 0 : "-");
 }
 function edit(on) { document.querySelector("#profileView").hidden = on; profileForm.hidden = !on; document.querySelector("#editProfileBtn").hidden = on; }
-(async () => { const user = await session.current(); render(user); if (user) stats(); })();
+(async () => {
+    const successMessage = sessionStorage.getItem("authSuccessMessage") || sessionStorage.getItem("registrationMessage");
+    if (successMessage) {
+        document.querySelector("#loginMessage").textContent = successMessage;
+        sessionStorage.removeItem("authSuccessMessage");
+        sessionStorage.removeItem("registrationMessage");
+    }
+    const user = await session.current(); render(user); if (user) stats();
+})();
 loginForm.addEventListener("submit", async event => { event.preventDefault(); const result = await session.login(loginForm.email.value.trim(), loginForm.password.value); if (result.success) { const target = consumePostLoginTarget(); if (target) location.href = target; else { render(result.data); stats(); } } else document.querySelector("#loginMessage").textContent = result.message || "登录失败"; });
 document.querySelector("#editProfileBtn").addEventListener("click", () => edit(true)); document.querySelector("#cancelEditBtn").addEventListener("click", () => edit(false));
 profileForm.addEventListener("submit", async event => { event.preventDefault(); const button = document.querySelector("#saveBtn"), message = document.querySelector("#profileMessage"); button.disabled = true; message.textContent = "正在保存…"; const result = await request("/users/me", { method: "PUT", body: JSON.stringify(formToJson(profileForm)) }); button.disabled = false; if (result.success) { session.set(result.data); render(result.data); edit(false); message.textContent = "资料已保存"; } else message.textContent = result.message || "保存失败，请稍后重试"; });
 document.querySelector("#logoutBtn").addEventListener("click", async () => { await session.logout(); render(null); });
+
+const forgotPasswordLink = document.querySelector("#forgotPasswordLink");
+const forgotPasswordForm = document.querySelector("#forgotPasswordForm");
+const fpBackToLogin = document.querySelector("#fpBackToLogin");
+const fpSendCodeBtn = document.querySelector("#fpSendCodeBtn");
+const fpCountdownEl = document.querySelector("#fpCountdown");
+const fpMessage = document.querySelector("#fpMessage");
+const fpStep2 = document.querySelector("#fpStep2");
+const fpEmail = document.querySelector("#fpEmail");
+let fpTimer = null;
+
+forgotPasswordLink?.addEventListener("click", event => {
+    event.preventDefault(); loginForm.hidden = true; forgotPasswordForm.style.display = "block";
+});
+fpBackToLogin?.addEventListener("click", event => {
+    event.preventDefault(); forgotPasswordForm.style.display = "none"; loginForm.hidden = false;
+});
+fpSendCodeBtn?.addEventListener("click", async () => {
+    const email = fpEmail.value.trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) { fpMessage.textContent = "请输入有效的邮箱地址"; return; }
+    const result = await request("/auth/verification/reset-password", { method: "POST", body: JSON.stringify({ email }) });
+    fpMessage.textContent = result.message || result.data;
+    if (result.success) {
+        fpStep2.style.display = "block"; let remaining = 60; fpSendCodeBtn.disabled = true; clearInterval(fpTimer);
+        fpTimer = setInterval(() => { fpCountdownEl.textContent = `请在 ${remaining--} 秒后重发`; if (remaining < 0) { clearInterval(fpTimer); fpSendCodeBtn.disabled = false; fpCountdownEl.textContent = ""; } }, 1000);
+    }
+});
+forgotPasswordForm?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const data = { email: fpEmail.value.trim(), code: forgotPasswordForm.code.value.trim(), newPassword: forgotPasswordForm.newPassword.value };
+    if (data.newPassword !== forgotPasswordForm.confirmPassword.value) { fpMessage.textContent = "两次输入的密码不一致"; return; }
+    const result = await request("/auth/password/reset", { method: "POST", body: JSON.stringify(data) });
+    if (result.success) { redirectToLoginWithMessage("密码重置成功，请使用新密码登录"); return; }
+    fpMessage.textContent = result.message || "密码重置失败，请稍后重试";
+});
