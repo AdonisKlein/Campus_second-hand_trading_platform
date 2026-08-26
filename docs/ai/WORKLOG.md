@@ -6,6 +6,16 @@
 
 课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
 
+## 第十四轮：个人中心完整重设计
+
+- 分支：`codex/round-14-profile-redesign`。
+- 将个人中心拆为身份概览、学校验证/信用与区域信息、真实交易统计、功能入口和公开资料设置；管理员入口继续默认隐藏并由 Session 角色 hydration 控制。
+- 统计仅使用现有 `/items/mine`、`/orders/desk` 和 `/chat/unread-count` 接口；未实现的收藏/关注没有添加假入口。
+- 资料保存加入 loading、成功提示、失败恢复和取消编辑；移动端改为纵向工作区，桌面端采用概览 + 内容双栏。
+- 验证：全部前端 JS `node --check`、`node frontend/tests/ui-design-contract.test.js`、`git diff --check` 通过。
+- 提交号：本轮尚未提交。
+- 遗留项：收藏/关注数据结构与入口待对应后端能力落地后实施；Maven 全量测试和真实 Docker 截图尚未在本轮运行。
+
 ## 已完成轮次
 
 ### 课程 CI 工作项 8：Kind 部署、冒烟与验收证据闭环（2026-08-26）
