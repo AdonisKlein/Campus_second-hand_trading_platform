@@ -14,7 +14,7 @@ try {
   if (exitCode === 0) exitCode = run(process.execPath, ['scripts/compose-e2e.cjs', 'seed']);
   if (exitCode === 0) {
     const playwrightCli = require.resolve('@playwright/test/cli');
-    exitCode = run(process.execPath, [playwrightCli, 'test'], {
+    exitCode = run(process.execPath, [playwrightCli, 'test', ...process.argv.slice(2)], {
       env: { ...process.env, E2E_BASE_URL: process.env.E2E_BASE_URL || 'http://127.0.0.1:18080' }
     });
   }

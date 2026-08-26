@@ -8,6 +8,15 @@
 
 ## 已完成轮次
 
+### 课程 CI 工作项 6：全测试门禁与版本化镜像（2026-08-26）
+
+- GitHub Actions 按依赖严格串联 `unit-tests → api-integration-tests → frontend-static-tests → e2e-tests → build-images`，任何测试非 0 都不会进入后续阶段，未使用 `continue-on-error`。
+- 单元/API 测试失败时仍上传 Surefire、Failsafe 和 HTML 报告；E2E 无论成功失败都上传 Playwright HTML、截图、视频、trace、控制台和网络失败证据。
+- E2E Job 使用 MySQL、Mailpit、Backend、Web 的独立 Docker Compose 环境；5 条核心业务旅程和 runner smoke 全绿后才允许镜像 Job 执行。
+- 仅 push 事件使用 GitHub Token 写 GHCR，分别生成 `ghcr.io/adonisklein/campus-backend:sha-<7位提交号>` 和 `campus-web:sha-<7位提交号>`；PR 只执行测试，不推镜像，也不生成 `latest`。
+- 验证：actionlint 1.7.7 无输出且退出 0；前端 3/3 契约测试及全部 JS 语法通过；首次完整 E2E 稳定复现管理员 prompt 竞态并返回非 0、证据齐全，修复为对话框与点击原子等待后定点 1/1、全量 6/6 通过。
+- 提交：本条记录所在的工作项提交（使用 `git log -1` 查看）。
+
 ### 课程 CI 工作项 5：API 集成测试与 MySQL 并发门禁（2026-08-26）
 
 - 将认证、资料、商品、私聊、交易、举报治理和管理员场景拆入独立 `*ApiIT`，共享 `AbstractApiIntegrationTest` 统一 Session 登录、数据工厂与外键安全清理。

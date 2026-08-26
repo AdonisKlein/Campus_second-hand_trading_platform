@@ -5,6 +5,11 @@ function uniqueTitle(prefix) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
 
+async function acceptDialogOnClick(page, locator, promptText) {
+  const handled = page.waitForEvent('dialog').then(dialog => dialog.accept(promptText));
+  await Promise.all([handled, locator.click()]);
+}
+
 test('私聊→未读→屏蔽', async ({ page: buyer, browser }) => {
   const sellerContext = await browser.newContext();
   const seller = await sellerContext.newPage();
@@ -98,8 +103,8 @@ test('管理员举报治理及用户管理', async ({ page: admin, browser }) =>
     await admin.locator('[data-admin-tab="reports"]').click();
     const report = admin.locator('.admin-report-card').filter({ hasText: item.title }).first();
     await expect(report).toBeVisible();
-    admin.once('dialog', dialog => dialog.accept('E2E 核查确认商品违规并执行下架'));
-    await report.locator('[data-action="resolve-report"]').click();
+    await acceptDialogOnClick(admin, report.locator('[data-action="resolve-report"]'),
+      'E2E 核查确认商品违规并执行下架');
     await expect(admin.locator('#adminReportMessage')).toContainText('举报处理完成');
     await expect(admin.locator('#adminItemList').filter({ hasText: item.title })).toContainText('已下架');
 
