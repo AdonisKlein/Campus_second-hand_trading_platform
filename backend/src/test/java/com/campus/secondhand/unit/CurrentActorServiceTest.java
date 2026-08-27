@@ -15,6 +15,7 @@ import com.campus.secondhand.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
+import java.time.Instant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 class CurrentActorServiceTest {
     private UserRepository users;
@@ -111,6 +114,24 @@ class CurrentActorServiceTest {
         assertEquals(10L, actor.userId());
         assertEquals("ADMIN", actor.role());
         assertTrue(actor.isAdmin());
+    }
+
+    @Test
+    void acceptsGatewayJwtWithoutReadingTheMonolithUserTable() {
+        Jwt jwt = Jwt.withTokenValue("internal-token")
+            .header("alg", "HS256")
+            .subject("42")
+            .claim("role", "STUDENT")
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusSeconds(60))
+            .build();
+        SecurityContextHolder.getContext().setAuthentication(new JwtAuthenticationToken(jwt,
+            java.util.List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))));
+
+        CurrentActor actor = actors.require();
+
+        assertEquals(42L, actor.userId());
+        assertEquals("STUDENT", actor.role());
     }
 
     private void authenticateAs(String email) {

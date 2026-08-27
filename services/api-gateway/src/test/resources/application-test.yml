@@ -1,0 +1,10 @@
+campus:
+  gateway:
+    internal-service-token: test-service-token-012345678901234567890123
+    internal-jwt-secret: 01234567890123456789012345678901
+    cors-origins: [http://localhost:3000]
+    cors-allowed-headers: [Content-Type, X-XSRF-TOKEN, Authorization]
+    secure-cookies: false
+spring:
+  session:
+    store-type: none

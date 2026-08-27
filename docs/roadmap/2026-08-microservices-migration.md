@@ -79,12 +79,14 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 验收结果：Spring Boot `4.0.8` 单体单元测试 29/29、API 与真实 MySQL 集成测试 50/50 通过；五个独立工程各 1/1 通过。
 - 提交：`refactor: establish microservice migration baseline`（使用 `git log -1` 查看提交号）。
 
-### 工作项 2：Gateway 与 Account Service — 未开始
+### 工作项 2：Gateway 与 Account Service — 已完成
 
 - Gateway 接管 Redis Session、CSRF、登录入口、身份清洗和内部 JWT。
 - Account 独占用户及验证码数据；其他模块不再读取 `UserRepository`。
 - 验收注册、登录、改密、会话恢复、账号禁用与身份伪造反向测试。
-- 计划提交：`refactor: extract account service and gateway authentication`
+- 迁移期尚未提取的业务由 Gateway 转发给单体；单体只接受 Gateway 签发的短时 JWT 或原有直连 Session，因此现有页面契约保持兼容。
+- 验收结果：Gateway 6/6、Account 8/8、兼容单体单元 30/30 与 API/真实 MySQL 50/50、五个独立工程统一验证及前端契约 3/3 全绿。
+- 提交：`refactor: extract account service and gateway authentication`（使用 `git log -1` 查看提交号）。
 
 ### 工作项 3：Marketplace Service — 未开始
 

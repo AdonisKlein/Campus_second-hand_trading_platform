@@ -1,10 +1,10 @@
 # method	path	owner	authentication	csrf
-GET	/api/auth/csrf	account	PUBLIC	NO
+GET	/api/auth/csrf	gateway	PUBLIC	NO
 POST	/api/auth/verification/register	account	PUBLIC	YES
 POST	/api/auth/verification/reset-password	account	PUBLIC	YES
 POST	/api/auth/register	account	PUBLIC	YES
-POST	/api/auth/login	account	PUBLIC	YES
-POST	/api/auth/logout	account	AUTHENTICATED	YES
+POST	/api/auth/login	gateway	PUBLIC	YES
+POST	/api/auth/logout	gateway	AUTHENTICATED	YES
 POST	/api/auth/password/reset	account	PUBLIC	YES
 GET	/api/users/me	account	AUTHENTICATED	NO
 PUT	/api/users/me	account	AUTHENTICATED	YES

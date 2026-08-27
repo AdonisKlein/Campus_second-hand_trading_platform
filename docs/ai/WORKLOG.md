@@ -18,6 +18,15 @@
 
 ## 已完成轮次
 
+### 微服务工作项 2：Gateway 与 Account Service（2026-08-27）
+
+- Gateway 接管浏览器 Redis Session、CSRF、登录/退出、精确 CORS 和身份头清洗；每个受保护请求向 Account 复核 `status`、`role` 与 `authVersion`，再签发 60 秒内部 JWT。
+- Account 成为首个真正提取的业务服务，只拥有 `users` 与 `email_verification` 及独立 Flyway V1；注册、验证码、密码重置、资料和管理员账号状态接口不再依赖单体数据库。
+- 内部密码验证与安全状态查询由 `AccountClient` 深 interface 隔离：生产使用 300ms 连接/800ms 响应的 HTTP adapter，测试使用 mock adapter；仅安全 GET 重试一次，依赖失败固定返回 503 与 `Retry-After`。
+- 浏览器仍只持有 HttpOnly Session Cookie 与 CSRF token；内部 JWT 不暴露给前端。未迁出的业务暂时由 Gateway 转发给单体，单体通过兼容 JWT actor 继续执行原有资源权限规则。
+- 验证：Gateway 6/6、Account 8/8、兼容单体单元 30/30 与 API/真实 MySQL 50/50、五个独立工程统一 `mvn verify`、前端契约 3/3 全绿。
+- 提交：`refactor: extract account service and gateway authentication`（使用 `git log -1` 查看）。
+
 ### 微服务工作项 1：冻结单体行为并建立迁移基线（2026-08-27）
 
 - 单体从 Spring Boot 3.5.14 升级到 4.0.8，并适配 Boot 4 的 WebMVC 测试、Flyway、JDBC Session 和 Jackson 3 模块坐标；浏览器 Session + CSRF 安全边界保持不变。

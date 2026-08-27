@@ -1,0 +1,13 @@
+CREATE TABLE users (
+ id BIGINT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) NOT NULL UNIQUE, password_hash VARCHAR(255) NOT NULL,
+ nickname VARCHAR(80), phone VARCHAR(30), email VARCHAR(254) NOT NULL UNIQUE, role VARCHAR(20) NOT NULL DEFAULT 'STUDENT',
+ status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE', login_failed_count INT NOT NULL DEFAULT 0, locked_until DATETIME(6),
+ auth_version INT NOT NULL DEFAULT 0, campus_region VARCHAR(40) DEFAULT '学院路校区', credit_score INT NOT NULL DEFAULT 100,
+ last_active_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
+);
+CREATE TABLE email_verification (
+ id BIGINT AUTO_INCREMENT PRIMARY KEY, version BIGINT NOT NULL DEFAULT 0, email VARCHAR(254) NOT NULL, code_hash VARCHAR(64) NOT NULL,
+ purpose VARCHAR(32) NOT NULL, created_at DATETIME(6) NOT NULL, expires_at DATETIME(6) NOT NULL, attempts INT NOT NULL DEFAULT 0, used BOOLEAN NOT NULL DEFAULT FALSE,
+ CONSTRAINT uq_email_verification_scope UNIQUE(email,purpose)
+);
+CREATE INDEX idx_email_verification_expiry ON email_verification(expires_at);

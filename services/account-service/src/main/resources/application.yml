@@ -3,11 +3,33 @@ server:
 spring:
   application:
     name: campus-account-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+app:
+  verification:
+    pepper: ${VERIFICATION_PEPPER}
+  security:
+    internal-service-token: ${INTERNAL_SERVICE_TOKEN}
+    internal-jwt-secret: ${INTERNAL_JWT_SECRET}
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:}
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health
   endpoint:
     health:
       probes:

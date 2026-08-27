@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 @Service
 public class CurrentActorService {
@@ -22,6 +23,16 @@ public class CurrentActorService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
             throw new AccessDeniedException("请先登录");
+        }
+        if (authentication instanceof JwtAuthenticationToken jwtAuthentication) {
+            try {
+                Long userId = Long.valueOf(jwtAuthentication.getToken().getSubject());
+                String role = jwtAuthentication.getToken().getClaimAsString("role");
+                if (role == null || role.isBlank()) throw new IllegalArgumentException("missing role");
+                return new CurrentActor(userId, role);
+            } catch (RuntimeException ex) {
+                throw new AccessDeniedException("内部身份无效", ex);
+            }
         }
         User user = users.findByEmailIgnoreCase(authentication.getName())
             .orElseThrow(() -> new AccessDeniedException("登录状态已失效"));
