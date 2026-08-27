@@ -8,6 +8,15 @@
 
 ## 已完成轮次
 
+### 微服务工作项 1：冻结单体行为并建立迁移基线（2026-08-27）
+
+- 单体从 Spring Boot 3.5.14 升级到 4.0.8，并适配 Boot 4 的 WebMVC 测试、Flyway、JDBC Session 和 Jackson 3 模块坐标；浏览器 Session + CSRF 安全边界保持不变。
+- 建立 `api-gateway` 与 Account、Marketplace、Trading、Governance 四个独立 Maven/Spring Boot 工程骨架。每个工程可独立编译、测试和生成可执行 JAR；骨架尚不代表业务完成迁移。
+- 新增 `contracts/http/public-api-v1.tsv` 冻结 45 个公开 method + path 及未来服务归属，并以 `PublicApiContractIT` 自动比对真实 Controller 映射。
+- 新增 `scripts/ci/verify-services.ps1`，逐个验证五个新工程，任一个失败均停止并返回非零。
+- 验证：Java 24 兼容覆盖项目声明的 Java 25；单体 `mvn clean -Djava.version=24 verify` 为单元 29/29、API/真实 MySQL 50/50 全绿；五个新工程各 1/1 全绿。
+- 提交：`refactor: establish microservice migration baseline`（使用 `git log -1` 查看）。
+
 ### 课程 CI 工作项 8：Kind 部署、冒烟与验收证据闭环（2026-08-26）
 
 - 新建 `scripts/ci/deploy-kind.sh` 作为唯一部署 interface：调用方只提供 Backend/Web 两个版本化镜像，implementation 负责重建隔离 Kind、随机 Secret、Kustomize apply、镜像切换、rollout、端口转发与冒烟。

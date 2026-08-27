@@ -1,5 +1,14 @@
 # 测试报告汇总
 
+`verify-services.ps1` 会逐个执行 Gateway 和四个业务服务的独立
+`mvn verify`。任一工程失败即返回非零，避免聚合构建掩盖某个服务无法
+独立构建的问题。本机 JDK 版本与项目声明不同时，可在迁移期间显式传入
+`-JavaVersion 24`。
+
+```powershell
+./scripts/ci/verify-services.ps1 -JavaVersion 24
+```
+
 `test-report.mjs` 不依赖第三方 Node 包，把 Maven Surefire/Failsafe 和 Playwright 的 JUnit XML 合并为：
 
 - `test-report.json`：流水线上传、门禁和后续统计使用的机器可读结果；

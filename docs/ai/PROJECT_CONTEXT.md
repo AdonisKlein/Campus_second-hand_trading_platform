@@ -1,6 +1,15 @@
 # AI 项目上下文
 
-更新日期：2026-08-26
+更新日期：2026-08-27
+
+## 微服务迁移工作区
+
+- 当前迁移分支为 `codex/microservices-refactor`；不可移动的单体基线标记 `monolith-start` 指向课程指定提交。
+- `backend/` 仍是迁移期间可运行的 Spring Boot 4.0.8 单体，用作行为基准和尚未提取路径的兼容实现。
+- `services/api-gateway`、`account-service`、`marketplace-service`、`trading-service`、`governance-service` 是五个彼此独立的 Maven 工程；工作项 1 只建立可构建骨架，不能把骨架误记为业务已迁移。
+- `contracts/http/public-api-v1.tsv` 冻结当前公开 method + path，并标记未来 owner；`PublicApiContractIT` 会在 Controller 映射意外增删时失败。
+- `scripts/ci/verify-services.ps1` 是逐个验证五个工程独立构建的入口。任一工程失败立即返回非零。
+- 完整实施顺序、数据库归属和通信规则见 `docs/roadmap/2026-08-microservices-migration.md`。
 
 ## 产品边界
 

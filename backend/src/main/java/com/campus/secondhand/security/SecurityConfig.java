@@ -2,7 +2,7 @@ package com.campus.secondhand.security;
 
 import com.campus.secondhand.common.ApiResponse;
 import com.campus.secondhand.user.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

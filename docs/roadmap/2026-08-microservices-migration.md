@@ -70,13 +70,14 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 
 ## 4. 实施工作项
 
-### 工作项 1：冻结单体行为并建立迁移基线 — 进行中
+### 工作项 1：冻结单体行为并建立迁移基线 — 已完成
 
 - 升级受支持的 Spring Boot 技术基线并跑通单体回归。
 - 建立 Gateway 与四个业务服务的独立 Maven 工程骨架。
 - 冻结当前公开 HTTP interface 清单和契约回归测试。
 - 验收：单体回归全绿；五个新工程均可单独 `mvn verify`。
-- 计划提交：`refactor: establish microservice migration baseline`
+- 验收结果：Spring Boot `4.0.8` 单体单元测试 29/29、API 与真实 MySQL 集成测试 50/50 通过；五个独立工程各 1/1 通过。
+- 提交：`refactor: establish microservice migration baseline`（使用 `git log -1` 查看提交号）。
 
 ### 工作项 2：Gateway 与 Account Service — 未开始
 
