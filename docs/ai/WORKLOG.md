@@ -6,6 +6,23 @@
 
 课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
 
+## 需求追溯表统一（2026-08-27）
+
+- 将旧版仅含 8 个用例的 `doc/需求追溯矩阵.md` 更新为当前 `REQ01`～`REQ18` / `UC01`～`UC18` 基线。
+- 在同一张表中汇总需求、用例、系统/组件/对象三层模型编号、实际代码模块、UNIT/INT/E2E 测试编号、具体测试类和结果。
+- 区分“当前执行通过”“最近一次 E2E 通过”“由集成测试覆盖”和“尚无独立 E2E 断言”，避免把规划编号误写为已经执行的独立测试。
+- 验证：追溯表包含 18 条 `REQxx` 记录，`git diff --check` 通过；全部前端 JS `node --check` 和 3 组 Node 契约测试通过；`mvn '-Djava.version=24' verify` 构建成功，单元测试 29/29、已执行集成测试 44/44 通过，Docker 不可用导致 6 项 MySQL Testcontainers 测试跳过。完整 Compose E2E 未在本轮重跑，沿用 2026-08-26 的 6/6 通过记录并在表中明确标注。
+- 提交号：本轮尚未提交。
+
+### 本轮补充：封禁提示与举报治理回执（2026-08-27）
+
+- 管理员封禁账号时保存治理说明；被撤销的旧 Session 访问接口返回包含说明的封禁提示，前端保留提示并在当前页面展示后再引导重新登录。
+- 举报支持绑定当前私聊会话，服务端校验举报人和被举报人确属会话参与方，并保存最近 30 条消息证据快照；管理员治理队列展示该快照。
+- 新增“收到的治理结果”接口和个人中心页面区块，被举报方可查看处理结果及管理员确认说明；举报提交、治理动作和证据均保持服务端身份与资源归属校验。
+- 新增 Flyway `V6__governance_evidence_and_notices.sql`，同步更新接口模型、前端报告页、Postman 契约相关字段和项目上下文。
+- 验证：Docker 恢复后执行 `mvn clean verify`，单元与集成测试 49/49 通过，真实 MySQL 8.4 完成 V1—V6 空库迁移、Hibernate validate 与并发测试；前端 Node 静态测试 3/3、全部 JS `node --check`、`git diff --check` 通过。验证过程中修复多构造器导致的 Spring 注入歧义，并将 MySQL 迁移计数断言同步为 6。
+- 提交号：本轮尚未提交。遗留项：Playwright Compose 已进入构建阶段，但 Docker Hub 被本机代理证书阻断（`x509: certificate signed by unknown authority`），需修复 Docker Desktop CA/代理信任后全量复验。
+
 ## 第十四轮：个人中心完整重设计
 
 - 分支：`codex/round-14-profile-redesign`。
@@ -17,6 +34,23 @@
 - 遗留项：收藏/关注数据结构与入口待对应后端能力落地后实施；Maven 全量测试和真实 Docker 截图尚未在本轮运行。
 
 ## 已完成轮次
+
+### 第十五轮：私聊页面完整重设计（进行中）
+
+- 分支：`codex/round-15-chat-redesign`。
+- 私聊页重构为桌面会话列表、聊天房间、商品/交易上下文三栏；移动端保持会话列表与房间两级导航。
+- 会话列表增加关键词搜索、未读优先和分页；消息增加日期分段、历史加载状态、发送中、失败重试和断线重连反馈。
+- `DirectChat.ConversationView` 增加真实商品价格与状态，商品下架、预留或售出后旧会话继续展示上下文；管理员私聊权限边界不变。
+- 结构化报价尚未实现：需要独立消息类型、报价状态机及与购买意向的服务端事务集成，不使用文本或前端状态伪造。
+- 当前验证：Docker Compose 的 MySQL、Backend、Web 均正常启动，后端 liveness 为 `UP`；`mvn verify` 50/50 通过、0 失败、0 跳过，真实执行 MySQL 8.4 Testcontainers 空库迁移、Hibernate validate 与并发测试；前端 Node 测试 3/3、全部 JS 语法通过；浏览器检查 1440、390、320px 无整体横向溢出。
+- E2E 复验修复 MySQL 健康检查误判：改用 `127.0.0.1:3306`，避免初始化临时 Unix socket 服务使 Backend 在正式 TCP 服务启动前连接失败。修复后隔离 MySQL、Backend、Web 均稳定健康；本机 Playwright 1.62.1 与 Chromium 1234 已补齐。最终全量重跑时 Docker Engine 整体失去响应（独立 `docker ps` 同样超时），浏览器用例未取得最终通过结果，需 Docker Desktop 恢复后重跑 `cd e2e; npm run test:e2e:compose`。
+- Docker Desktop 恢复后重新验证：全量 6 个用例中 5 个首次通过，发现 E2E 未读文案断言仍使用旧的 `1 未读`，已同步为页面当前契约 `1 条未读`；定点重跑私聊/交易/管理员 3 个用例全部通过。完整 6 个用例的另外 5 个已在同一轮通过，剩余风险为未在文案修复后再次执行全量命令。
+- 消息流改为顶部对齐的纵向 flex 布局，每条消息禁止伸缩，气泡宽度随内容变化并继续受桌面 `72%/580px`、移动 `84%` 上限约束，修复少量消息均分聊天区高度的问题；前端 Node 测试 3/3、全部 JS 语法、`git diff --check` 通过，Docker Web 已重建。
+- 用户复验后进一步将消息气泡上下内边距收紧为 `7px`、行高设为 `1.35`、消息间距降为 `6px`，并显式清除消息项最小高度；前端 Node 测试 3/3 与 `git diff --check` 通过。Docker Web 重建时 Engine 在解析 Nginx 镜像阶段无响应，需 Engine 恢复后再次部署。
+- 截图复核确认用户所指为左侧 `button.conversation-card`：`.conversation-list` 的 Grid 默认拉伸导致少量会话均分整列高度。列表现改为 `align-content:start` 与 `grid-auto-rows:max-content`，会话行使用紧凑的 `88px` 最小高度；前端 Node 测试 3/3 与 `git diff --check` 通过。
+- 聊天工作区高度改为受桌面/移动动态视口约束，`.chat-room` 禁止内容撑高，`.chat-messages` 成为独立纵向滚动区域；会话列表与交易信息列也在工作区内部滚动。前端 Node 测试 3/3、全部 JS 语法和 `git diff --check` 通过，Docker Web 已重建部署。
+- 复核新增会话路径：所有 `button.conversation-card` 均由 `paintConversations()` 渲染到 `.conversation-list`，列表使用 `flex:1`、`min-height:0` 与 `overflow-y:auto`，新增聊天只增加内部滚动长度，不会撑高页面；UI 静态契约现同时锁定会话列与消息列的内部滚动约束，前端 Node 测试 3/3 通过。
+- 提交号：本轮尚未提交。
 
 ### 课程 CI 工作项 8：Kind 部署、冒烟与验收证据闭环（2026-08-26）
 

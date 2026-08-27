@@ -43,7 +43,14 @@ async function request(path, options = {}) {
         try { payload = JSON.parse(text); }
         catch (_) { payload = { success: false, message: `HTTP ${response.status}` }; }
     }
-    if (response.status === 401 && requestGeneration === sessionGeneration) invalidateSession();
+    const sessionEnded = response.status === 401 || (response.status === 403 && payload?.message?.includes("账号已被管理员封禁"));
+    if (sessionEnded && requestGeneration === sessionGeneration) {
+        if (payload?.message?.includes("账号已被管理员封禁")) {
+            sessionStorage.setItem("accountStatusMessage", payload.message);
+            showAccountStatusNotice(payload.message);
+        }
+        invalidateSession();
+    }
     if (!response.ok && !(payload && typeof payload === "object")) {
         payload = { success: false, message: `HTTP ${response.status}` };
     }
@@ -96,6 +103,18 @@ function invalidateSession() {
     sessionUser = null;
     sessionUserPromise = null;
     applyRoleNavigation(null);
+}
+
+function showAccountStatusNotice(message) {
+    let notice = document.querySelector("#accountStatusNotice");
+    if (!notice) {
+        notice = document.createElement("div");
+        notice.id = "accountStatusNotice";
+        notice.className = "account-status-notice";
+        notice.setAttribute("role", "alert");
+        document.body.prepend(notice);
+    }
+    notice.textContent = message;
 }
 
 function safeReturnTarget(value) {
@@ -181,7 +200,7 @@ function reportDialog() {
     return dialog;
 }
 
-async function openReportDialog(targetType, targetId, summary = "该内容") {
+async function openReportDialog(targetType, targetId, summary = "该内容", context = {}) {
     const user = await requireAuthenticatedUser({ message: "登录后才能提交举报，是否前往登录？", returnTo: location.pathname + location.search });
     if (!user) return false;
     const dialog = reportDialog();
@@ -198,7 +217,8 @@ async function openReportDialog(targetType, targetId, summary = "该内容") {
             button.disabled = true;
             const data = formToJson(form);
             const result = await request("/reports", { method: "POST", body: JSON.stringify({
-                targetType, targetId: Number(targetId), reasonCode: data.reasonCode, description: data.description
+                targetType, targetId: Number(targetId), reasonCode: data.reasonCode, description: data.description,
+                contextConversationId: context.conversationId || null
             }) });
             button.disabled = false;
             if (!result.success) { dialog.querySelector("[data-report-message]").textContent = result.message || "举报提交失败"; return; }
@@ -290,3 +310,8 @@ document.addEventListener("click", event => {
 });
 
 hydrateRoleNavigation();
+const pendingAccountStatus = typeof sessionStorage === "undefined" ? null : sessionStorage.getItem("accountStatusMessage");
+if (pendingAccountStatus) {
+    showAccountStatusNotice(pendingAccountStatus);
+    sessionStorage.removeItem("accountStatusMessage");
+}
