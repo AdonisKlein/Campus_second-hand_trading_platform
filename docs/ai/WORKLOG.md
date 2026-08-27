@@ -6,6 +6,16 @@
 
 课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
 
+## 第十四轮：个人中心完整重设计
+
+- 分支：`codex/round-14-profile-redesign`。
+- 将个人中心拆为身份概览、学校验证/信用与区域信息、真实交易统计、功能入口和公开资料设置；管理员入口继续默认隐藏并由 Session 角色 hydration 控制。
+- 统计仅使用现有 `/items/mine`、`/orders/desk` 和 `/chat/unread-count` 接口；未实现的收藏/关注没有添加假入口。
+- 资料保存加入 loading、成功提示、失败恢复和取消编辑；移动端改为纵向工作区，桌面端采用概览 + 内容双栏。
+- 验证：全部前端 JS `node --check`、`node frontend/tests/ui-design-contract.test.js`、`git diff --check` 通过。
+- 提交号：本轮尚未提交。
+- 遗留项：收藏/关注数据结构与入口待对应后端能力落地后实施；Maven 全量测试和真实 Docker 截图尚未在本轮运行。
+
 ## 已完成轮次
 
 ### 微服务工作项 1：冻结单体行为并建立迁移基线（2026-08-27）
@@ -16,6 +26,14 @@
 - 新增 `scripts/ci/verify-services.ps1`，逐个验证五个新工程，任一个失败均停止并返回非零。
 - 验证：Java 24 兼容覆盖项目声明的 Java 25；单体 `mvn clean -Djava.version=24 verify` 为单元 29/29、API/真实 MySQL 50/50 全绿；五个新工程各 1/1 全绿。
 - 提交：`refactor: establish microservice migration baseline`（使用 `git log -1` 查看）。
+
+### GitHub Actions Node 24 依赖升级（2026-08-27）
+
+- 将 CI 中 GitHub 官方 Action 升级到 Node 24 兼容主版本：`checkout@v7`、`setup-java@v5`、`setup-node@v7`、`upload-artifact@v7`。
+- 同步升级镜像构建与发布链路：`setup-buildx-action@v4`、`login-action@v4`、`build-push-action@v7`；现有 GHCR 权限、版本化镜像标签和 Kind 部署条件保持不变。
+- 项目测试运行时保持 Java 25 与 Node.js 22；本轮只升级 Action 自身运行时依赖，不改变应用兼容基线。
+- 验证：actionlint 1.7.12 无输出且退出 0；旧 Action 主版本扫描无匹配，`git diff --check` 通过。远程最终证据为 GitHub Actions 完整流水线。
+- 提交：本条记录所在的提交（使用 `git log -1` 查看）。
 
 ### 课程 CI 工作项 8：Kind 部署、冒烟与验收证据闭环（2026-08-26）
 
