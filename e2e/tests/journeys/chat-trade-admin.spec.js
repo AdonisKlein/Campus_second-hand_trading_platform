@@ -27,7 +27,7 @@ test('私聊→未读→屏蔽', async ({ page: buyer, browser }) => {
     await expect(buyer.locator('#chatMessages')).toContainText(message);
 
     await seller.goto('/messages.html');
-    await expect(seller.locator('#chatTotalUnread')).toContainText('1 未读');
+    await expect(seller.locator('#chatTotalUnread')).toContainText('1 条未读');
     const conversation = seller.locator('.conversation-card').filter({ hasText: item.title }).first();
     await expect(conversation.locator('em')).toHaveText('1');
     await conversation.click();

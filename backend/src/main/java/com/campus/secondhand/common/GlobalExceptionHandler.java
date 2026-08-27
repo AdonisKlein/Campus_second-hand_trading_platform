@@ -73,8 +73,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
+        String message = ex.getMessage() != null && ex.getMessage().startsWith("账号已被管理员封禁")
+            ? ex.getMessage() : "无权执行此操作";
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail("无权执行此操作"));
+            .contentType(MediaType.APPLICATION_JSON).body(ApiResponse.fail(message));
     }
 
     @ExceptionHandler(TradingRuleException.class)

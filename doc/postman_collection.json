@@ -9,7 +9,8 @@
     { "key": "csrfToken", "value": "" },
     { "key": "imageUrl", "value": "" },
     { "key": "itemId", "value": "1" },
-    { "key": "orderId", "value": "1" }
+    { "key": "orderId", "value": "1" },
+    { "key": "conversationId", "value": "" }
   ],
   "item": [
     {

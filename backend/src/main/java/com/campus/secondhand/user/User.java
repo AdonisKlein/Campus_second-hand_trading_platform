@@ -37,6 +37,9 @@ public class User {
     @Column(nullable = false, length = 20)
     private String status = "ACTIVE";
 
+    @Column(name = "status_reason", length = 1000)
+    private String statusReason;
+
     @Column(name = "login_failed_count", nullable = false)
     private Integer loginFailedCount = 0;
 
@@ -121,6 +124,9 @@ public class User {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getStatusReason() { return statusReason; }
+    public void setStatusReason(String statusReason) { this.statusReason = statusReason; }
 
     public Integer getLoginFailedCount() {
         return loginFailedCount;

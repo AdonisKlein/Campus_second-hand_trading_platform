@@ -140,6 +140,9 @@ async function loadReports() {
             <div class="report-card-top"><span class="status-badge ${report.status === "OPEN" ? "pending" : report.status === "RESOLVED" ? "completed" : "cancelled"}">${adminStatusLabel(report.status)}</span><time>${escapeHtml(formatTime(report.createdAt))}</time></div>
             <h3>${adminTargetLabel(report.targetType)} #${report.targetId}：${escapeHtml(report.targetSummary)}</h3>
             <p><strong>${escapeHtml(report.reporterName)}</strong> 举报为“${adminReportLabel(report.reasonCode)}”</p><p>${escapeHtml(report.description)}</p>
+            ${report.evidenceSnapshot
+                ? `<section class="report-evidence"><strong>举报关联聊天证据</strong><pre>${escapeHtml(report.evidenceSnapshot)}</pre></section>`
+                : report.targetType === "USER" ? '<p class="report-evidence-missing">该举报未关联聊天会话，无法展示聊天证据。</p>' : ""}
             ${report.resolutionNote ? `<div class="report-resolution"><strong>处理说明</strong><p>${escapeHtml(report.resolutionNote)}</p></div>` : ""}
             ${report.status === "OPEN" ? `<div class="admin-row-actions"><button type="button" data-action="resolve-report" data-report-id="${report.id}" data-target-type="${report.targetType}">确认并治理</button><button type="button" class="secondary" data-action="dismiss-report" data-report-id="${report.id}">驳回举报</button></div>` : ""}
         </article>`).join("") : '<p class="empty-state">当前筛选下没有举报。</p>';
