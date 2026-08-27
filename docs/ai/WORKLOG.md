@@ -51,6 +51,13 @@
 - 聊天工作区高度改为受桌面/移动动态视口约束，`.chat-room` 禁止内容撑高，`.chat-messages` 成为独立纵向滚动区域；会话列表与交易信息列也在工作区内部滚动。前端 Node 测试 3/3、全部 JS 语法和 `git diff --check` 通过，Docker Web 已重建部署。
 - 复核新增会话路径：所有 `button.conversation-card` 均由 `paintConversations()` 渲染到 `.conversation-list`，列表使用 `flex:1`、`min-height:0` 与 `overflow-y:auto`，新增聊天只增加内部滚动长度，不会撑高页面；UI 静态契约现同时锁定会话列与消息列的内部滚动约束，前端 Node 测试 3/3 通过。
 - 提交号：本轮尚未提交。
+### GitHub Actions Node 24 依赖升级（2026-08-27）
+
+- 将 CI 中 GitHub 官方 Action 升级到 Node 24 兼容主版本：`checkout@v7`、`setup-java@v5`、`setup-node@v7`、`upload-artifact@v7`。
+- 同步升级镜像构建与发布链路：`setup-buildx-action@v4`、`login-action@v4`、`build-push-action@v7`；现有 GHCR 权限、版本化镜像标签和 Kind 部署条件保持不变。
+- 项目测试运行时保持 Java 25 与 Node.js 22；本轮只升级 Action 自身运行时依赖，不改变应用兼容基线。
+- 验证：actionlint 1.7.12 无输出且退出 0；旧 Action 主版本扫描无匹配，`git diff --check` 通过。远程最终证据为 GitHub Actions 完整流水线。
+- 提交：本条记录所在的提交（使用 `git log -1` 查看）。
 
 ### 课程 CI 工作项 8：Kind 部署、冒烟与验收证据闭环（2026-08-26）
 
