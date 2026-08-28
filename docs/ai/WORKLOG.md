@@ -6,6 +6,15 @@
 
 课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
 
+## 测试缺口补全第二轮（2026-08-28）
+
+- 分支：`codex/close-test-gaps`。
+- 扩展 `AuthApiIT`，覆盖重置验证码用途校验、成功后新密码登录、旧密码失效和验证码重复消费。
+- 扩展 `ProductApiIT`，覆盖公开留言发布、本人修改/删除、他人越权失败及匿名读取隔离，并断言响应结果。
+- 更新 `doc/测试清单.md`：UC03、UC09 标记为当前实现已覆盖；Search/PublicQuestion/Security 等微服务测试保留为迁移后的实际服务工作项，未伪造不存在的模块。
+- 验证：新增测试首次发现留言接口契约为 HTTP 200 而非 201，已按项目统一 `ApiResponse` 契约修正断言；`mvn -q "-Dtest=AuthApiIT,ProductApiIT" test` 通过（8/8），随后 `mvn -q verify` 通过，Flyway 与 MySQL 8.4 Testcontainers 并发测试执行；全部前端 JS `node --check` 通过，`git diff --check` 通过。
+- 提交号：本轮尚未提交。
+
 ## 测试补全分支首轮（2026-08-28）
 
 - 新建分支 `codex/complete-uc-tests`。
