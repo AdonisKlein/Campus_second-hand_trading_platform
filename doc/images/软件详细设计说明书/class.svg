@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1632" height="1056" viewBox="0 0 1632 1056">
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<g>
+<g>
+    <rect x="40" y="32" width="156" height="36" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 40 68 L 40 268 L 536 268 L 536 68 L 196 68 L 196 32 L 40 32 Z"
+      fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="52" y="58" font-size="24" font-family="Arial, sans-serif">security</text>
+  </g>
+<g>
+    <rect x="568" y="32" width="156" height="36" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 568 68 L 568 268 L 1064 268 L 1064 68 L 724 68 L 724 32 L 568 32 Z"
+      fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="580" y="58" font-size="24" font-family="Arial, sans-serif">user</text>
+  </g>
+<g>
+    <rect x="1096" y="32" width="156" height="36" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 1096 68 L 1096 308 L 1592 308 L 1592 68 L 1252 68 L 1252 32 L 1096 32 Z"
+      fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="1108" y="58" font-size="24" font-family="Arial, sans-serif">search</text>
+  </g>
+<g>
+    <rect x="40" y="340" width="156" height="36" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 40 376 L 40 716 L 536 716 L 536 376 L 196 376 L 196 340 L 40 340 Z"
+      fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="52" y="366" font-size="24" font-family="Arial, sans-serif">item</text>
+  </g>
+<g>
+    <rect x="568" y="340" width="156" height="36" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 568 376 L 568 616 L 1064 616 L 1064 376 L 724 376 L 724 340 L 568 340 Z"
+      fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="580" y="366" font-size="24" font-family="Arial, sans-serif">media</text>
+  </g>
+<g>
+    <rect x="1096" y="340" width="156" height="36" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 1096 376 L 1096 616 L 1592 616 L 1592 376 L 1252 376 L 1252 340 L 1096 340 Z"
+      fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="1108" y="366" font-size="24" font-family="Arial, sans-serif">order</text>
+  </g>
+<g>
+    <rect x="40" y="748" width="156" height="36" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 40 784 L 40 1024 L 536 1024 L 536 784 L 196 784 L 196 748 L 40 748 Z"
+      fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="52" y="774" font-size="24" font-family="Arial, sans-serif">chat</text>
+  </g>
+<g>
+    <rect x="568" y="748" width="156" height="36" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 568 784 L 568 1024 L 1064 1024 L 1064 784 L 724 784 L 724 748 L 568 748 Z"
+      fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="580" y="774" font-size="24" font-family="Arial, sans-serif">report</text>
+  </g>
+<g>
+      <path d="M 1330 192 L 1330 192" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="10 7"/>
+      <polygon points="1330,176 1322,192 1338,192" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    </g>
+<g>
+      <path d="M 802 500 L 802 500" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="10 7"/>
+      <polygon points="802,484 794,500 810,500" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    </g>
+<g>
+      <path d="M 1330 500 L 1330 500" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="10 7"/>
+      <polygon points="1330,484 1322,500 1338,500" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    </g>
+<g>
+      <path d="M 274 908 L 274 908" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="10 7"/>
+      <polygon points="274,892 266,908 282,908" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    </g>
+<g>
+      <path d="M 802 908 L 802 908" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="10 7"/>
+      <polygon points="802,892 794,908 810,908" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    </g>
+<g>
+      <path d="M 274 608 L 274 608" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="10 7"/>
+      <polygon points="274,592 266,608 282,608" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    </g>
+<g>
+    <path d="M 802 176 L 802 172" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="10 7"/>
+    <path d="M 794 172 L 802 188 L 810 172" fill="none" stroke="#141414" stroke-width="1.5"/>
+  </g>
+<g>
+    <rect x="64" y="84" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="274" y="124" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">CurrentActorService</text>
+  </g>
+<g>
+    <rect x="64" y="160" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="274" y="200" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">SecurityConfig</text>
+  </g>
+<g>
+      <rect x="592" y="84" width="420" height="92" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+      <line x1="592" y1="120" x2="1012" y2="120" stroke="#141414" stroke-width="1.5"/>
+      <text x="802" y="110" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" font-style="normal">&lt;&lt;Controller&gt;&gt;</text>
+      <text x="802" y="152" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">AuthController</text>
+    </g>
+<g>
+    <rect x="592" y="188" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="802" y="228" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">VerificationService</text>
+  </g>
+<g>
+      <rect x="1120" y="84" width="420" height="92" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+      <line x1="1120" y1="120" x2="1540" y2="120" stroke="#141414" stroke-width="1.5"/>
+      <text x="1330" y="110" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" font-style="italic">&lt;&lt;interface&gt;&gt;</text>
+      <text x="1330" y="152" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">CampusSearch</text>
+    </g>
+<g>
+    <rect x="1120" y="192" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="1330" y="232" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">JpaCampusSearch</text>
+  </g>
+<g>
+      <rect x="64" y="392" width="420" height="92" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+      <line x1="64" y1="428" x2="484" y2="428" stroke="#141414" stroke-width="1.5"/>
+      <text x="274" y="418" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" font-style="italic">&lt;&lt;interface&gt;&gt;</text>
+      <text x="274" y="460" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">SellerInventory</text>
+    </g>
+<g>
+      <rect x="64" y="500" width="420" height="92" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+      <line x1="64" y1="536" x2="484" y2="536" stroke="#141414" stroke-width="1.5"/>
+      <text x="274" y="526" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" font-style="italic">&lt;&lt;interface&gt;&gt;</text>
+      <text x="274" y="568" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">ProductDetail</text>
+    </g>
+<g>
+    <rect x="64" y="608" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="274" y="648" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">ProductDetailService</text>
+  </g>
+<g>
+      <rect x="592" y="392" width="420" height="92" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+      <line x1="592" y1="428" x2="1012" y2="428" stroke="#141414" stroke-width="1.5"/>
+      <text x="802" y="418" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" font-style="italic">&lt;&lt;interface&gt;&gt;</text>
+      <text x="802" y="460" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">ProductImages</text>
+    </g>
+<g>
+    <rect x="592" y="500" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="802" y="540" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">FileSystemProductImages</text>
+  </g>
+<g>
+      <rect x="1120" y="392" width="420" height="92" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+      <line x1="1120" y1="428" x2="1540" y2="428" stroke="#141414" stroke-width="1.5"/>
+      <text x="1330" y="418" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" font-style="italic">&lt;&lt;interface&gt;&gt;</text>
+      <text x="1330" y="460" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">TradeDesk</text>
+    </g>
+<g>
+    <rect x="1120" y="500" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="1330" y="540" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">TradingService</text>
+  </g>
+<g>
+      <rect x="64" y="800" width="420" height="92" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+      <line x1="64" y1="836" x2="484" y2="836" stroke="#141414" stroke-width="1.5"/>
+      <text x="274" y="826" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" font-style="italic">&lt;&lt;interface&gt;&gt;</text>
+      <text x="274" y="868" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">DirectChat</text>
+    </g>
+<g>
+    <rect x="64" y="908" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="274" y="948" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">DirectChatService</text>
+  </g>
+<g>
+      <rect x="592" y="800" width="420" height="92" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+      <line x1="592" y1="836" x2="1012" y2="836" stroke="#141414" stroke-width="1.5"/>
+      <text x="802" y="826" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" font-style="italic">&lt;&lt;interface&gt;&gt;</text>
+      <text x="802" y="868" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">ContentGovernance</text>
+    </g>
+<g>
+    <rect x="592" y="908" width="420" height="64" fill="#FFFFFF" stroke="#141414" stroke-width="1.5"/>
+    <text x="802" y="948" text-anchor="middle" font-size="24" font-family="Arial, sans-serif">ContentGovernanceService</text>
+  </g>
+<g>
+    <path d="M 1096 748 L 1564 748 L 1592 776 L 1592 1024 L 1096 1024 Z"
+      fill="#FFFBE6" stroke="#141414" stroke-width="1.5"/>
+    <path d="M 1564 748 L 1564 776 L 1592 776"
+      fill="none" stroke="#141414" stroke-width="1.5"/>
+    <text x="1120" y="804" font-size="20" font-family="Arial, sans-serif">写接口 Controller</text>
+<text x="1120" y="840" font-size="20" font-family="Arial, sans-serif">经 CurrentActorService</text>
+<text x="1120" y="876" font-size="20" font-family="Arial, sans-serif">取得操作者身份，</text>
+<text x="1120" y="912" font-size="20" font-family="Arial, sans-serif">不从请求体读取。</text>
+  </g>
+</g></svg>

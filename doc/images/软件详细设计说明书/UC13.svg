@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1176" height="1020" viewBox="0 0 1176 1020">
+  <defs>
+    <marker id="uml-filled-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#141414"/>
+    </marker>
+    <marker id="uml-open-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#141414" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1176" height="1020" fill="#FFFFFF"/>
+  <g>
+<g>
+    <circle cx="132" cy="22" r="9" fill="none" stroke="#141414" stroke-width="1.5"/>
+    <line x1="132" y1="31" x2="132" y2="45" stroke="#141414" stroke-width="1.5"/>
+    <line x1="121" y1="38" x2="143" y2="38" stroke="#141414" stroke-width="1.5"/>
+    <line x1="132" y1="45" x2="123" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <line x1="132" y1="45" x2="141" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <text x="132" y="56" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline">buyer:Buyer</text>
+  </g>
+<line x1="132" y1="78" x2="132" y2="1000" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <circle cx="284" cy="22" r="9" fill="none" stroke="#141414" stroke-width="1.5"/>
+    <line x1="284" y1="31" x2="284" y2="45" stroke="#141414" stroke-width="1.5"/>
+    <line x1="273" y1="38" x2="295" y2="38" stroke="#141414" stroke-width="1.5"/>
+    <line x1="284" y1="45" x2="275" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <line x1="284" y1="45" x2="293" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <text x="284" y="56" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline">seller:Seller</text>
+  </g>
+<line x1="284" y1="78" x2="284" y2="1000" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="369" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="436" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="436" dy="0">transSvc :</tspan><tspan x="436" dy="14">TransactionService</tspan></text>
+  </g>
+<line x1="436" y1="78" x2="436" y2="1000" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="521" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="588" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="588" dy="0">orderRepo :</tspan><tspan x="588" dy="14">OrderRepository</tspan></text>
+  </g>
+<line x1="588" y1="78" x2="588" y2="1000" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="673" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="740" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="740" dy="0">itemRepo :</tspan><tspan x="740" dy="14">ItemRepository</tspan></text>
+  </g>
+<line x1="740" y1="78" x2="740" y2="1000" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="825" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="892" y="42" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="892" dy="0">order : Order</tspan></text>
+  </g>
+<line x1="892" y1="78" x2="892" y2="1000" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="977" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="1044" y="42" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="1044" dy="0">item : Item</tspan></text>
+  </g>
+<line x1="1044" y1="78" x2="1044" y2="1000" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<rect x="130" y="102" width="8" height="58.599999999999994" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="430" y="102" width="12" height="813.4000000000001" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="586" y="170" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="890" y="306" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="890" y="442" width="8" height="65.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="738" y="510" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="1042" y="646" width="8" height="65.40000000000009" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="586" y="714" width="8" height="65.40000000000009" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="738" y="782" width="8" height="65.40000000000009" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="130" y="850" width="8" height="58.59999999999991" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<g>
+    <line x1="142" y1="130" x2="426" y2="130" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="210.2" y="98" width="147.6" height="16" fill="#FFFFFF"/>
+    <text x="284" y="110" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">完成交易(订单ID, 买家ID)</text>
+  </g>
+<g>
+    <line x1="446" y1="198" x2="578" y2="198" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="447" y="166" width="130" height="16" fill="#FFFFFF"/>
+    <text x="512" y="178" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据ID查找订单(订单ID)</text>
+  </g>
+<g>
+    <line x1="578" y1="266" x2="446" y2="266" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="496" y="278" width="32" height="16" fill="#FFFFFF"/>
+    <text x="512" y="290" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">订单</text>
+  </g>
+<g>
+    <line x1="446" y1="334" x2="882" y2="334" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="608.1" y="302" width="111.80000000000001" height="16" fill="#FFFFFF"/>
+    <text x="664" y="314" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">验证参与者(买家ID)</text>
+  </g>
+<g>
+    <line x1="882" y1="402" x2="446" y2="402" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="646.6" y="414" width="34.8" height="16" fill="#FFFFFF"/>
+    <text x="664" y="426" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">true</text>
+  </g>
+<g>
+    <line x1="446" y1="470" x2="882" y2="470" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="614.3" y="438" width="99.4" height="16" fill="#FFFFFF"/>
+    <text x="664" y="450" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">设置状态(已完成)</text>
+  </g>
+<g>
+    <line x1="446" y1="538" x2="730" y2="538" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="506.3" y="506" width="163.39999999999998" height="16" fill="#FFFFFF"/>
+    <text x="588" y="518" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据ID查找商品(订单.商品ID)</text>
+  </g>
+<g>
+    <line x1="730" y1="606" x2="446" y2="606" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="572" y="618" width="32" height="16" fill="#FFFFFF"/>
+    <text x="588" y="630" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">商品</text>
+  </g>
+<g>
+    <line x1="446" y1="674" x2="1034" y2="674" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="690.3" y="642" width="99.4" height="16" fill="#FFFFFF"/>
+    <text x="740" y="654" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">设置状态(已售出)</text>
+  </g>
+<g>
+    <line x1="446" y1="742" x2="578" y2="742" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="478.8" y="710" width="66.4" height="16" fill="#FFFFFF"/>
+    <text x="512" y="722" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">保存(订单)</text>
+  </g>
+<g>
+    <line x1="446" y1="810" x2="730" y2="810" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="554.8" y="778" width="66.4" height="16" fill="#FFFFFF"/>
+    <text x="588" y="790" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">保存(商品)</text>
+  </g>
+<g>
+    <line x1="426" y1="878" x2="142" y2="878" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="257" y="890" width="54" height="16" fill="#FFFFFF"/>
+    <text x="284" y="902" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">交易完成</text>
+  </g>
+<g>
+    <line x1="436" y1="904" x2="436" y2="920" stroke="#141414" stroke-width="1" stroke-dasharray="4 3"/>
+    <rect x="345" y="920" width="182" height="52" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="436" y="920" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif"><tspan x="436" dy="16">取消交易或超时处理流程类似：</tspan><tspan x="436" dy="16">订单关闭，商品恢复在售</tspan></text>
+  </g>
+</g></svg>

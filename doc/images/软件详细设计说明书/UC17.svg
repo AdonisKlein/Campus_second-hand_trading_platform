@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1288" height="952" viewBox="0 0 1288 952">
+  <defs>
+    <marker id="uml-filled-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#141414"/>
+    </marker>
+    <marker id="uml-open-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#141414" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1288" height="952" fill="#FFFFFF"/>
+  <g>
+<g>
+    <circle cx="140" cy="22" r="9" fill="none" stroke="#141414" stroke-width="1.5"/>
+    <line x1="140" y1="31" x2="140" y2="45" stroke="#141414" stroke-width="1.5"/>
+    <line x1="129" y1="38" x2="151" y2="38" stroke="#141414" stroke-width="1.5"/>
+    <line x1="140" y1="45" x2="131" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <line x1="140" y1="45" x2="149" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <text x="140" y="56" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline">admin:Admin</text>
+  </g>
+<line x1="140" y1="78" x2="140" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="234" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="308" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="308" dy="0">adminSvc :</tspan><tspan x="308" dy="14">AdminService</tspan></text>
+  </g>
+<line x1="308" y1="78" x2="308" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="402" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="476" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="476" dy="0">userRepo :</tspan><tspan x="476" dy="14">UserRepository</tspan></text>
+  </g>
+<line x1="476" y1="78" x2="476" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="570" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="644" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="644" dy="0">itemRepo :</tspan><tspan x="644" dy="14">ItemRepository</tspan></text>
+  </g>
+<line x1="644" y1="78" x2="644" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="738" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="812" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="812" dy="0">msgRepo :</tspan><tspan x="812" dy="14">MessageRepository</tspan></text>
+  </g>
+<line x1="812" y1="78" x2="812" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="906" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="980" y="42" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="980" dy="0">user : User</tspan></text>
+  </g>
+<line x1="980" y1="78" x2="980" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="1074" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="1148" y="42" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="1148" dy="0">item : Item</tspan></text>
+  </g>
+<line x1="1148" y1="78" x2="1148" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<rect x="138" y="102" width="8" height="58.599999999999994" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="302" y="102" width="12" height="337.4" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="474" y="170" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="978" y="306" width="8" height="65.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="474" y="374" width="8" height="65.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="138" y="442" width="8" height="58.60000000000002" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="302" y="442" width="12" height="337.4000000000001" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="642" y="510" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="1146" y="646" width="8" height="65.40000000000009" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="642" y="714" width="8" height="65.40000000000009" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="138" y="782" width="8" height="58.59999999999991" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="302" y="782" width="12" height="133.4000000000001" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="810" y="850" width="8" height="65.40000000000009" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<g>
+    <line x1="150" y1="130" x2="298" y2="130" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="156.39999999999998" y="98" width="135.20000000000002" height="16" fill="#FFFFFF"/>
+    <text x="224" y="110" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">管理用户(用户ID, 操作)</text>
+  </g>
+<g>
+    <line x1="318" y1="198" x2="466" y2="198" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="324.4" y="166" width="135.20000000000002" height="16" fill="#FFFFFF"/>
+    <text x="392" y="178" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据ID查找用户(用户ID)</text>
+  </g>
+<g>
+    <line x1="466" y1="266" x2="318" y2="266" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="376" y="278" width="32" height="16" fill="#FFFFFF"/>
+    <text x="392" y="290" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">用户</text>
+  </g>
+<g>
+    <line x1="318" y1="334" x2="970" y2="334" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="585.7" y="302" width="116.60000000000001" height="16" fill="#FFFFFF"/>
+    <text x="644" y="314" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">设置状态(禁用/启用)</text>
+  </g>
+<g>
+    <line x1="318" y1="402" x2="466" y2="402" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="358.8" y="370" width="66.4" height="16" fill="#FFFFFF"/>
+    <text x="392" y="382" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">保存(用户)</text>
+  </g>
+<g>
+    <line x1="150" y1="470" x2="298" y2="470" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="156.39999999999998" y="438" width="135.20000000000002" height="16" fill="#FFFFFF"/>
+    <text x="224" y="450" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">管理商品(商品ID, 操作)</text>
+  </g>
+<g>
+    <line x1="318" y1="538" x2="634" y2="538" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="408.4" y="506" width="135.20000000000002" height="16" fill="#FFFFFF"/>
+    <text x="476" y="518" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据ID查找商品(商品ID)</text>
+  </g>
+<g>
+    <line x1="634" y1="606" x2="318" y2="606" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="460" y="618" width="32" height="16" fill="#FFFFFF"/>
+    <text x="476" y="630" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">商品</text>
+  </g>
+<g>
+    <line x1="318" y1="674" x2="1138" y2="674" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="675.9" y="642" width="104.2" height="16" fill="#FFFFFF"/>
+    <text x="728" y="654" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">设置审核状态/移除</text>
+  </g>
+<g>
+    <line x1="318" y1="742" x2="634" y2="742" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="442.8" y="710" width="66.4" height="16" fill="#FFFFFF"/>
+    <text x="476" y="722" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">保存(商品)</text>
+  </g>
+<g>
+    <line x1="150" y1="810" x2="298" y2="810" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="173.6" y="778" width="100.80000000000001" height="16" fill="#FFFFFF"/>
+    <text x="224" y="790" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">移除留言(留言ID)</text>
+  </g>
+<g>
+    <line x1="318" y1="878" x2="802" y2="878" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="520.6" y="846" width="78.80000000000001" height="16" fill="#FFFFFF"/>
+    <text x="560" y="858" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">删除(留言ID)</text>
+  </g>
+</g></svg>
