@@ -2,6 +2,7 @@ const publishForm = document.querySelector("#publishForm");
 const publishMessage = document.querySelector("#publishMessage");
 const publishImage = document.querySelector("#publishImage");
 const publishImagePreview = document.querySelector("#publishImagePreview");
+const removePublishImage = document.querySelector("#removePublishImage");
 let previewObjectUrl = null;
 installImageFallbacks(document);
 
@@ -15,6 +16,13 @@ publishImage.addEventListener("change", () => {
     }
     previewObjectUrl = file && !error ? URL.createObjectURL(file) : null;
     publishImagePreview.src = previewObjectUrl || "assets/images/placeholder.svg";
+});
+
+removePublishImage.addEventListener("click", () => {
+    if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl = null;
+    publishImage.value = "";
+    publishImagePreview.src = "assets/images/placeholder.svg";
 });
 
 async function requireLoginForPublish() {

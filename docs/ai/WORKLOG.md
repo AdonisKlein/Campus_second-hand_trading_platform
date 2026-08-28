@@ -6,6 +6,30 @@
 
 课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
 
+## 测试清单与补齐项（2026-08-28）
+
+- 新增 `doc/测试清单.md`，按照单元测试、集成/API 测试、端到端测试三层定义执行内容、结果断言、有效性标准和 UC01～UC18 覆盖关系。
+- 清单区分当前已有自动化覆盖与仍需补齐的独立测试：SearchApiIT、PublicQuestionApiIT、SecurityApiIT、TradingServiceTest、DirectChatServiceTest、图片规则单测、订单工作台 E2E 及若干反向旅程。
+- 明确不能用“程序未报错”、HTTP 2xx 或 smoke 测试代替业务结果断言；MySQL Testcontainers 不可用时必须记录为未完成/跳过，不得计为通过。
+- 验证：清单引用的实际测试类和 E2E 文件均存在；新增文档 `git diff --check` 通过。本轮未修改测试代码，未重新执行全量 Maven/E2E。
+- 提交号：本轮尚未提交。
+
+## 恢复需求说明书图片引用（2026-08-28）
+
+- 在《软件需求说明书》中恢复当前 `doc/images/软件需求说明书/` 目录下的用例图参考、概念类图以及 `SYS-SEQ01`～`SYS-SEQ18` 系统顺序图引用。
+- 图片按 `REQ01`～`REQ18` 分节放置，未回退已重写的新版需求正文和交易/安全规则。
+- 验证：20 个 Markdown 图片引用全部解析到现有文件；`git diff --check` 通过；需求说明书仍包含 18 条 `REQxx`。
+- 提交号：本轮尚未提交。
+
+## UC01～UC18 课程文档统一（2026-08-28）
+
+- 依据新版《业务场景（用例）清单》和《需求追溯矩阵》，重写软件需求说明书、软件测试文档、软件用户手册、软件开发计划书、模块设计方案和 UI 视觉与交互设计方案。
+- 移除旧版“创建订单即售出”、商品分类侧栏、客户端卖家 ID、`schema.sql` 建表和直接打开 HTML 等过时描述；统一为学生用户、非独占购买意向、唯一预留、当面交接、Session/CSRF、`CurrentActorService`、`TradingService` 和 Flyway 当前契约。
+- 需求说明书现包含 `REQ01`～`REQ18` 唯一基线；测试文档按单元、API、MySQL 并发、前端契约、Playwright E2E 和部署门禁组织；用户手册覆盖 UC01～UC17 的实际页面流程和 UC18 安全体验。
+- 模块设计方案从历史“未来重构草案”改为当前模块化单体基线；UI 方案移除宣传横幅、分类侧栏等已废弃结构，固化桌面与 390px 移动端业务页面规则。
+- 验证：18 条 `REQxx` 与 18 个 `UCxx` 数量一致；全部 Markdown 图片引用存在；旧术语定点扫描无错误性残留；`git diff --check` 通过；前端 Node 契约测试 3/3、全部 JS `node --check` 通过；`mvn verify` 构建成功，单元测试 29/29、已执行集成测试 44/44 通过，当前 Docker 环境不可用导致 5 项 MySQL Testcontainers 测试跳过。
+- 提交号：本轮尚未提交。遗留项：本轮仅改文档，未重跑 Compose E2E 或浏览器截图；真实 MySQL 门禁沿用此前通过记录，待 Docker 可用时可再次执行。
+
 ## 需求追溯表统一（2026-08-27）
 
 - 将旧版仅含 8 个用例的 `doc/需求追溯矩阵.md` 更新为当前 `REQ01`～`REQ18` / `UC01`～`UC18` 基线。
@@ -264,6 +288,27 @@
 
 - 提交：`8c8d21a docs: establish refactor baseline and UI direction`
 - 确认角色、模块、视觉方向和重构计划。
+
+### 图片上传 HTTP 413 排障（2026-08-28）
+
+- Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。
+- 验证：检查 Nginx 配置、Spring multipart 配置与前端上传请求链路；未运行完整 Maven/Docker 验证。提交号：本轮提交后使用 `git log -1` 查看。
+- 遗留：需在实际 Docker 部署中重建 web 容器并用接近 5MB 的 JPG/PNG 上传复验。
+
+### 发布页图片移除（2026-08-28）
+
+- 发布页补充“移除图片”按钮，清空文件输入、释放预览 Blob URL 并恢复占位图；提交时继续将 `imageUrl` 发送为 `null`，与“我的发布”编辑器行为一致。
+- 验证：前端发布脚本语法检查与 `git diff --check`；未运行完整 Maven/Docker 验证。
+
+### 个人中心退出按钮宽度（2026-08-28）
+
+- 覆盖全局按钮 `width: 100%` 规则，仅将 `.profile-header #logoutBtn` 设为内容宽度，避免退出按钮横向撑满个人中心标题行。
+- 验证：`git diff --check`；未运行完整 Maven/Docker 验证。
+
+### 个人中心入口卡片样式（2026-08-28）
+
+- 将“我的发布、我买到的、我卖出的、消息、举报记录”等 `.profile-links` 入口改为独立白色圆角矩形边框，补充间距与悬停边框反馈，与 `.profile-overview.form-panel` 视觉一致。
+- 验证：`git diff --check`；未运行完整 Maven/Docker 验证。
 
 ## 接手检查清单
 
