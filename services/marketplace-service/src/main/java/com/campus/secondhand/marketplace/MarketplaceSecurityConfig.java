@@ -44,7 +44,7 @@ public class MarketplaceSecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET,
                                 "/actuator/health", "/actuator/health/liveness", "/actuator/health/readiness",
                                 "/api/items", "/api/search").permitAll()
-                        .requestMatchers("/internal/items/**").permitAll()
+                        .requestMatchers("/internal/items/**", "/internal/messages/**").permitAll()
                         .requestMatchers(
                                 RegexRequestMatcher.regexMatcher(org.springframework.http.HttpMethod.GET,
                                         "^/api/items/[1-9]\\d*$"),

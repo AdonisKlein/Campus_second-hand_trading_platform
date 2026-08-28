@@ -26,6 +26,9 @@ campus:
   trading-events:
     enabled: ${TRADING_EVENTS_ENABLED:false}
     exchange: ${TRADING_EVENTS_EXCHANGE:campus.trading}
+  governance-events:
+    enabled: ${GOVERNANCE_EVENTS_ENABLED:false}
+    exchange: ${GOVERNANCE_EVENTS_EXCHANGE:campus.governance}
 management:
   endpoints:
     web:

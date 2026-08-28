@@ -29,14 +29,13 @@ spring:
         - id: trading
           uri: ${TRADING_SERVICE_URI:http://localhost:8083}
           predicates: [Path=/api/orders/**,/api/chat/**]
-        - id: monolith-fallback
-          uri: ${MONOLITH_URI:http://localhost:8088}
-          predicates: [Path=/api/**]
+        - id: governance
+          uri: ${GOVERNANCE_SERVICE_URI:http://localhost:8084}
+          predicates: [Path=/api/reports/**,/api/admin/reports/**]
 
 campus:
   gateway:
     account-uri: ${ACCOUNT_SERVICE_URI:http://localhost:8081}
-    monolith-uri: ${MONOLITH_URI:http://localhost:8088}
     redis-url: ${REDIS_URL:redis://localhost:6379}
     internal-service-token: ${INTERNAL_SERVICE_TOKEN}
     internal-jwt-secret: ${INTERNAL_JWT_SECRET}

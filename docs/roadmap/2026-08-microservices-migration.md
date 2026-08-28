@@ -8,9 +8,9 @@
 
 ## 1. 当前状态
 
-- Account、Marketplace 与 Trading 已提取为独立业务服务；Governance 仍由迁移期单体承载。
+- Account、Marketplace、Trading 与 Governance 四个业务服务均已提取，Gateway 已删除单体兜底路由。
 - 单体版已经具备单元测试、API/MySQL 集成测试、Playwright E2E、版本化镜像、Kind 部署、健康检查和失败证据收集。
-- 业务微服务完成度目前为 `3/4`；完整微服务部署拓扑、HPA、故障实验和性能对比尚未开始。
+- 业务微服务代码完成度目前为 `4/4`；完整微服务部署拓扑、HPA、故障实验和性能对比尚未开始。
 - `monolith-start` 是不可移动的改造前版本标记；微服务工作项 1—8 全绿后创建 `microservices-end`。
 
 ## 2. 最终服务划分
@@ -109,12 +109,16 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 验收结果：Trading 16/16、Marketplace 17/17 通过；依赖失败不留下半条订单、Saga Pending 不会被普通过期覆盖、陌生人越权、重复事件、第二订单抢占预留、未读与屏蔽均有断言。RabbitMQ 容器及完整部署接线仍属于工作项 6。
 - 提交：`refactor: extract trading and direct-chat service`（使用 `git log -1` 查看提交号）。
 
-### 工作项 5：Governance Service 与退役单体 — 未开始
+### 工作项 5：Governance Service 与退役单体 — 已完成
 
 - 提取举报和治理审计；治理动作由数据所有者幂等执行。
 - 删除 Gateway 的单体兜底路由，旧 `backend` 不再参与构建部署。
 - 验收 UC15—UC17、四服务独立构建以及零跨服务 Repository。
-- 计划提交：`refactor: extract governance service and retire monolith`
+- 实现结果：Governance 独占 `content_reports`、`report_actions` 和自己的 Inbox/Outbox；Account 与 Marketplace 通过内部快照 port 验证举报对象，不存在跨库查询。`ContentGovernance` 集中举报限流、防重复、管理员决策、失败重试和追加审计。
+- 管理员决定与远端执行状态分离：决定可为 `RESOLVED`，动作状态单独经历 `PENDING/APPLIED/FAILED`。治理命令由 Outbox 发布，Account 负责禁用用户，Marketplace 负责下架商品或公开留言；消费者用 Inbox 幂等，旧回执不能覆盖新重试。
+- Gateway 已将 `/api/reports/**` 与 `/api/admin/reports/**` 直达 Governance `8084`，并完全移除单体 URI 与兜底路由。旧 `backend/` 仅作为 `monolith-start` 行为基线保留，不再是微服务运行路径；Compose/Kind 的物理切换属于工作项 6。
+- 验收结果：Gateway 6/6、Account 13/13、Marketplace 19/19、Trading 16/16、Governance 12/12，共 66/66 通过；前端契约 3/3 与全部 JS 语法通过。
+- 提交：`refactor: extract governance service and retire monolith`（使用 `git log -1` 查看提交号）。
 
 ### 工作项 6：独立数据库与部署环境 — 未开始
 

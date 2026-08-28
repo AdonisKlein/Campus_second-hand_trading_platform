@@ -37,8 +37,12 @@ Ports reserved during the migration:
   `/api/items|media|messages|search|admin` paths directly to port 8082.
 - Trading Service is extracted and owns purchase intents, the order state machine,
   trade desk, direct chat, unread cursors and blocks. Gateway routes
-  `/api/orders/**` and `/api/chat/**` directly to port 8083. Governance is the only
-  remaining health-checkable skeleton and its routes still use the monolith fallback.
+  `/api/orders/**` and `/api/chat/**` directly to port 8083.
+- Governance Service is extracted and owns reports, governance decisions and its
+  append-only action audit. A decision and its remote delivery state are separate:
+  Account or Marketplace applies the requested action idempotently and returns an
+  applied/failed event. Gateway routes all report paths directly to port 8084 and
+  has no monolith fallback.
 
 ## Extracted service local configuration
 
@@ -48,9 +52,8 @@ Account Service requires `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
 delivery requires the existing Mailpit or SMTP variables.
 
 Gateway requires Redis plus the same `INTERNAL_SERVICE_TOKEN` and
-`INTERNAL_JWT_SECRET`. Set `ACCOUNT_SERVICE_URI` (default `http://localhost:8081`)
-and `MONOLITH_URI` (default `http://localhost:8088`). The two shared secrets must
-match Account and the compatibility monolith. For the static development server,
+`INTERNAL_JWT_SECRET`. Set the four service URI variables when their defaults are
+not suitable. The shared secrets must match every internal service. For the static development server,
 the default exact CORS allowlist contains localhost/127.0.0.1 port 5500.
 
 Marketplace Service requires its own `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, the
@@ -68,9 +71,16 @@ Account and Marketplace through HTTP ports. Set `TRADING_MESSAGING_ENABLED=true`
 and configure `SPRING_RABBITMQ_*` only in the supported work item 6 topology;
 transactional Inbox/Outbox and command/result consumers are already implemented.
 
-Work items 2 through 4 validate these applications independently; the repository's default
-Compose stack still runs the monolith. Do not mix an ad-hoc Account database with
-the default monolith database and treat it as a complete environment. Work item 6
-will add the supported Redis/Gateway/four-database Compose and Kind topology. In
-that topology browsers call Gateway only; they never call internal Account
-endpoints or receive the internal JWT.
+Governance Service requires its own `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
+`INTERNAL_SERVICE_TOKEN`, `INTERNAL_JWT_SECRET`, `ACCOUNT_SERVICE_URI` and
+`MARKETPLACE_SERVICE_URI`. Set `GOVERNANCE_MESSAGING_ENABLED=true` with RabbitMQ
+in the work item 6 topology. Its database contains only reports, action audit and
+its own Inbox/Outbox; it never joins Account or Marketplace tables.
+
+Work items 2 through 5 validate all four business services independently. The old
+`backend/` source is now a historical behavior reference only and is no longer a
+Gateway runtime path. The repository's default Compose stack has not yet been
+replaced, so it still represents the legacy environment rather than a supported
+complete microservice runtime. Work item 6 adds Redis, RabbitMQ, Gateway and the
+four isolated databases to Compose and Kind. In that topology browsers call
+Gateway only; they never call internal endpoints or receive the internal JWT.

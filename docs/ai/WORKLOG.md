@@ -18,6 +18,15 @@
 
 ## 已完成轮次
 
+### 微服务工作项 5：Governance Service 与单体运行路径退役（2026-08-28）
+
+- Governance 成为第四个提取的业务服务，独占举报、治理决定、追加式动作审计和本服务 Inbox/Outbox；Gateway 将 `/api/reports/**`、`/api/admin/reports/**` 直达端口 8084，并删除单体兜底及 `MONOLITH_URI`。
+- `ContentGovernance` 集中举报快照、24 小时限流、防自举报、防重复、管理员决定和失败重试。举报 `RESOLVED/DISMISSED` 与治理动作 `NONE/PENDING/APPLIED/FAILED` 分开表达，页面不会把“已决定”误报成“远端已执行”。
+- Governance 只经 Account/Marketplace 内部 port 获取安全快照；Account 幂等执行用户禁用，Marketplace 幂等执行商品/留言下架。命令与结果通过 Outbox/Inbox 和 correlationId 串联，重复结果被忽略，旧回执不能覆盖新重试。
+- 旧 `backend/` 仅作为 `monolith-start` 行为与性能比较基线保留，不再是 Gateway 运行路径；默认 Compose 的四库、Redis、RabbitMQ 和五应用接线将在工作项 6 完成。
+- 验证：Gateway 6/6、Account 13/13、Marketplace 19/19、Trading 16/16、Governance 12/12，共 66/66；前端契约 3/3、全部 JS 语法和 `git diff --check` 通过。
+- 提交：`refactor: extract governance service and retire monolith`（使用 `git log -1` 查看）。
+
 ### 微服务工作项 4：Trading Service 与私聊（2026-08-28）
 
 - Trading 成为第三个提取的业务服务，独占购买意向/订单、私聊会话、消息、屏蔽和本服务 Inbox/Outbox；Gateway 将 `/api/orders/**`、`/api/chat/**` 直接转发端口 8083。

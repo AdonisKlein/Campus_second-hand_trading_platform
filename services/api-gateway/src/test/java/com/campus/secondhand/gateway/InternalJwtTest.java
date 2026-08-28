@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class InternalJwtTest {
     @Test
     void tokenContainsGatewayIssuerSubjectAndAuthVersion() {
-        GatewayProperties properties = new GatewayProperties("http://account", "http://monolith", "redis://localhost",
+        GatewayProperties properties = new GatewayProperties("http://account", "redis://localhost",
                 "service-token-012345678901234567890123", "01234567890123456789012345678901",
                 java.util.List.of("http://localhost:3000"), java.util.List.of("Content-Type"), false);
         String token = new InternalJwt(properties).issue(new AuthenticatedAccount(42L, "s@x.test", "student",

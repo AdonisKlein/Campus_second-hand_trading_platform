@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "campus.gateway")
-public record GatewayProperties(String accountUri, String monolithUri, String redisUrl,
+public record GatewayProperties(String accountUri, String redisUrl,
                                 String internalServiceToken, String internalJwtSecret,
                                 List<String> corsOrigins, List<String> corsAllowedHeaders,
                                 boolean secureCookies) {

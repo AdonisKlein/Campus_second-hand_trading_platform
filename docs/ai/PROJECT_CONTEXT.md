@@ -5,14 +5,15 @@
 ## 微服务迁移工作区
 
 - 当前迁移分支为 `codex/microservices-refactor`；不可移动的单体基线标记 `monolith-start` 指向课程指定提交。
-- `backend/` 仍是迁移期间可运行的 Spring Boot 4.0.8 单体，用作行为基准和尚未提取路径的兼容实现。
-- `services/api-gateway`、`account-service`、`marketplace-service` 与 `trading-service` 已完成工作项 2—4；仅 Governance 仍是可构建骨架。
+- `backend/` 只作为 `monolith-start` 的行为和性能对比参考保留，不再是 Gateway 运行路径。
+- `services/api-gateway` 与 Account、Marketplace、Trading、Governance 已完成工作项 2—5；四个业务服务均已提取。
 - Gateway 是浏览器唯一后端入口：Redis 保存 HttpOnly Session，Gateway 保留 CSRF、精确 CORS、登录/退出、账号安全状态复核、客户端身份头清洗并签发 60 秒内部 JWT。JWT 不进入浏览器或 localStorage。
 - Account 独占自己的 `users` 与 `email_verification` 数据库结构；内部密码验证和安全状态查询要求共享内部服务 token，外部资料/管理员接口要求 Gateway JWT。
-- 商品、图片、公开问答、搜索与商品管理路径已由 Gateway 直接转发 Marketplace；订单和私聊路径已转发 Trading；仅治理路径继续转发 `backend/`。兼容单体路径会在工作项 5 删除。
+- 商品、图片、公开问答、搜索与商品管理路径由 Gateway 转发 Marketplace；订单和私聊路径转发 Trading；举报路径转发 Governance。Gateway 不再包含单体 URI 或兜底路由。
 - Marketplace 独占 `items`、`item_tags`、`messages`、`searchable_user_projection`；Account/Trading 依赖位于 `AccountPublicPort`、`TradingInquiryPort`，生产 adapter 使用 300ms/800ms 超时，测试 adapter 可替换。搜索只读本地公开投影，不查询 Account 数据库。
 - Trading 独占 `trade_orders`、`chat_conversations`、`chat_messages`、`chat_blocks` 及自己的 Inbox/Outbox。`TradingWorkflow` 负责购买意向与 Saga 状态机，`DirectChat` 负责会话、未读、屏蔽和消息；Account/Marketplace 通过 REST port 查询安全快照，商品预留、释放和售出通过 RabbitMQ 事件完成。
-- 当前默认 Compose 仍只部署单体，不代表微服务运行拓扑已经完成。工作项 2 的 Gateway/Account 已独立构建和测试；Redis、四库四账号及完整 Compose/Kind 接线统一留在工作项 6，开发成员此时不要手工混用 Account 数据库与单体数据库。
+- Governance 独占 `content_reports`、`report_actions` 及自己的 Inbox/Outbox。`ContentGovernance` 区分管理员决定和动作交付状态；举报对象通过 Account/Marketplace 快照 port 读取，治理动作通过 RabbitMQ 交给数据所有者幂等执行。
+- 当前默认 Compose 仍是旧单体环境，不代表微服务运行拓扑已经完成。五个工程已独立构建测试，但 Redis、RabbitMQ、四库四账号及完整 Compose/Kind 接线统一留在工作项 6；开发成员此时不要把默认 Compose 当作微服务验收环境。
 - `contracts/http/public-api-v1.tsv` 冻结当前公开 method + path，并标记未来 owner；`PublicApiContractIT` 会在 Controller 映射意外增删时失败。
 - `scripts/ci/verify-services.ps1` 是逐个验证五个工程独立构建的入口。任一工程失败立即返回非零。
 - 完整实施顺序、数据库归属和通信规则见 `docs/roadmap/2026-08-microservices-migration.md`。
@@ -167,4 +168,4 @@ scripts/ci/     测试报告、Compose E2E 和 Kind 本地部署入口
 - 未被商品引用的上传图片暂未自动回收；后续可增加临时上传记录与定时清理。
 - 文件系统 adapter 适合当前单机部署；多实例部署前应替换为 MinIO/S3 adapter。
 - Windows/移动原生客户端的短 access token + rotation refresh token 尚未实现。
-- 当前是模块化单体；只有出现明确独立伸缩/部署需求后才拆微服务。
+- 微服务业务代码已完成 4/4 提取；完整容器与 Kubernetes 运行拓扑从工作项 6 开始落地。

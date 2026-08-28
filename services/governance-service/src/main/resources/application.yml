@@ -1,8 +1,34 @@
 server:
   port: 8084
+  forward-headers-strategy: framework
 spring:
   application:
     name: campus-governance-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        auto-startup: ${GOVERNANCE_MESSAGING_ENABLED:false}
+campus:
+  governance:
+    account-uri: ${ACCOUNT_SERVICE_URI:http://localhost:8081}
+    marketplace-uri: ${MARKETPLACE_SERVICE_URI:http://localhost:8082}
+    internal-service-token: ${INTERNAL_SERVICE_TOKEN}
+    internal-jwt-secret: ${INTERNAL_JWT_SECRET}
+    messaging-enabled: ${GOVERNANCE_MESSAGING_ENABLED:false}
 management:
   endpoints:
     web:
