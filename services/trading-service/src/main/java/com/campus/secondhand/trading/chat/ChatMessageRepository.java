@@ -1,0 +1,3 @@
+package com.campus.secondhand.trading.chat;
+import java.time.LocalDateTime;import java.util.*;import org.springframework.data.domain.Pageable;import org.springframework.data.jpa.repository.*;import org.springframework.data.repository.query.Param;
+public interface ChatMessageRepository extends JpaRepository<ChatMessage,Long>{@Query("select m from ChatMessage m where m.conversationId=:conversation and m.sequenceNumber<:before order by m.sequenceNumber desc")List<ChatMessage>page(@Param("conversation")Long conversation,@Param("before")Long before,Pageable pageable);long countBySenderIdAndCreatedAtAfter(Long sender,LocalDateTime after);}

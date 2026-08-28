@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: campus-marketplace-service
+  rabbitmq:
+    addresses: ${RABBITMQ_URL:amqp://localhost:5672}
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -21,6 +23,9 @@ campus:
     internal-service-token: ${INTERNAL_SERVICE_TOKEN}
     internal-jwt-secret: ${INTERNAL_JWT_SECRET}
     upload-dir: ${UPLOAD_DIR:uploads}
+  trading-events:
+    enabled: ${TRADING_EVENTS_ENABLED:false}
+    exchange: ${TRADING_EVENTS_EXCHANGE:campus.trading}
 management:
   endpoints:
     web:

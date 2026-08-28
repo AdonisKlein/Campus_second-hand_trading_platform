@@ -18,11 +18,21 @@
 
 ## 已完成轮次
 
+### 微服务工作项 4：Trading Service 与私聊（2026-08-28）
+
+- Trading 成为第三个提取的业务服务，独占购买意向/订单、私聊会话、消息、屏蔽和本服务 Inbox/Outbox；Gateway 将 `/api/orders/**`、`/api/chat/**` 直接转发端口 8083。
+- `TradingWorkflow` 保持闲鱼式流程：买家意向不锁商品，卖家接受后才经 Outbox 请求 Marketplace 预留；取消、完成和超时使用释放/售出 Saga，不做跨库事务。
+- Marketplace 以商品悲观锁保证一个商品最多归一个订单预留；命令和结果都以 eventId 幂等，事件包含 correlationId。Broker 暂不可用时未发布 Outbox 保留等待重试。
+- `DirectChat` 集中参与者校验、会话复用、sequence 游标分页、双方独立已读游标、未读统计、双向屏蔽和发送限流；只保存跨服务快照，不读取 Account/Marketplace 数据库。
+- 修复验收发现的 Pending Saga 被普通过期覆盖风险；Saga 未完成时不会被定时任务改写，第二订单也不能抢占 Marketplace 已有预留。
+- 验证：Trading 16/16、Marketplace 17/17 通过；三路低成本子 Agent 做 Saga/并发、安全和 API/边界只读验收，最终无剩余 P0/P1。
+- 提交：`refactor: extract trading and direct-chat service`（使用 `git log -1` 查看）。
+
 ### 微服务工作项 3：Marketplace Service（2026-08-28）
 
 - Marketplace 成为第二个提取的业务服务，独占商品、标签、受控图片、公开问答和用户公开搜索投影；Gateway 保持浏览器 `/api/items|media|messages|search|admin` 契约并改为直达 Marketplace。
 - 核心 interface 为 `CampusSearch`、`ProductDetail`、`SellerInventory`、`ProductImages`、`PublicQuestions`；服务内没有 Account/Trading Repository，跨服务查询集中在 `AccountPublicPort` 与 `TradingInquiryPort`。
-- `UserPublicProfileChanged` 消费端按 source version 幂等维护投影，Account 不可用时已有投影仍可搜索；RabbitMQ/Outbox transport 按路线图留到工作项 6。
+- `UserPublicProfileChanged` 消费端按 source version 幂等维护投影，Account 不可用时已有投影仍可搜索；交易 Saga 的 RabbitMQ/Inbox/Outbox adapter 已在工作项 4 加入，容器部署接线仍留到工作项 6。
 - 内部 JWT 只由 Gateway 生成，Marketplace 精确公开游客 GET，其他接口要求身份；角色 claim 映射 `ROLE_*`，请求体中的 sellerId/receiverId 不参与身份或资源归属判断。
 - 图片 adapter 按真实文件内容识别 JPG/PNG、重新编码清除元数据、限制体积/像素/配额，并只生成 ownerId + UUID 平台路径。
 - 验证：Marketplace 14/14、Account 9/9、Gateway 6/6 通过；Flyway/Hibernate 空库校验、JWT API、权限反向测试、游客详情、投影并发乱序、搜索相关度、图片真实内容均有断言。

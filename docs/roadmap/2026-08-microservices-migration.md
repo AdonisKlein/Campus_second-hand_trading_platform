@@ -8,9 +8,9 @@
 
 ## 1. 当前状态
 
-- Account 与 Marketplace 已提取为独立业务服务；Trading、Governance 仍由迁移期单体承载。
+- Account、Marketplace 与 Trading 已提取为独立业务服务；Governance 仍由迁移期单体承载。
 - 单体版已经具备单元测试、API/MySQL 集成测试、Playwright E2E、版本化镜像、Kind 部署、健康检查和失败证据收集。
-- 业务微服务完成度目前为 `2/4`；完整微服务部署拓扑、HPA、故障实验和性能对比尚未开始。
+- 业务微服务完成度目前为 `3/4`；完整微服务部署拓扑、HPA、故障实验和性能对比尚未开始。
 - `monolith-start` 是不可移动的改造前版本标记；微服务工作项 1—8 全绿后创建 `microservices-end`。
 
 ## 2. 最终服务划分
@@ -93,17 +93,21 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 提取商品、图片、标签、搜索、详情、公开留言和卖家商品管理。
 - 通过事件维护用户公开搜索投影，不读取 Account 数据库。
 - 验收 UC05—UC09 和数据库隔离。
-- 实现结果：Marketplace 独占 `items`、`item_tags`、`messages` 与 `searchable_user_projection`；商品详情通过 Account/Trading port 查询，不出现跨服务 Repository。用户公开投影消费版本化 `UserPublicProfileChanged`，旧事件不会覆盖新资料；RabbitMQ transport 与 Outbox 留在工作项 6 接线。
+- 实现结果：Marketplace 独占 `items`、`item_tags`、`messages` 与 `searchable_user_projection`；商品详情通过 Account/Trading port 查询，不出现跨服务 Repository。用户公开投影消费版本化 `UserPublicProfileChanged`，旧事件不会覆盖新资料；工作项 4 已加入交易 Saga 的 Inbox/Outbox 与 RabbitMQ adapter，RabbitMQ 容器和完整部署拓扑留在工作项 6 接线。
 - Gateway 已将 Marketplace 所有公开路径从单体兜底切到 `8082`，浏览器仍使用原 `/api` 路径；学生身份只取 Gateway JWT subject，管理员角色由 JWT authority 与资源规则共同校验。
 - 验收结果：Marketplace 14/14、Account 9/9、Gateway 6/6 通过；Flyway 从空 H2 建立 Marketplace 独立结构并由 Hibernate validate；静态扫描确认 Marketplace 不引用 `UserRepository`、`TradeOrderRepository` 或其他服务数据库表。
 - 提交：`refactor: extract marketplace service`（使用 `git log -1` 查看提交号）。
 
-### 工作项 4：Trading Service — 未开始
+### 工作项 4：Trading Service — 已完成
 
 - 提取购买意向、订单、交易工作台、私聊、未读与屏蔽。
 - 通过 RabbitMQ Saga 完成预留、释放和售出，不使用跨库事务。
 - 验收 UC10—UC14、并发预留、重复事件和依赖故障。
-- 计划提交：`refactor: extract trading and direct-chat service`
+- 实现结果：购买意向不锁商品；卖家接受后由 Trading Outbox 发起预留，Marketplace 以商品行锁裁决并通过 Inbox/Outbox 返回结果。取消、完成和超时分别使用释放/售出事件，消息重复消费不会重复改变状态。
+- 私聊以 `DirectChat` 集中参与者授权、稳定 sequence 分页、买卖双方独立已读游标、未读统计、双向屏蔽和发送限流；会话只保存用户、商品和订单快照，不读取其他服务 Repository。
+- Gateway 已将 `/api/orders/**` 与 `/api/chat/**` 从单体兜底切到 Trading `8083`。Trading 只拥有订单、会话、私聊、屏蔽和自己的 Inbox/Outbox 表；Marketplace V2 只增加商品预留关联字段及自己的 Inbox/Outbox。
+- 验收结果：Trading 16/16、Marketplace 17/17 通过；依赖失败不留下半条订单、Saga Pending 不会被普通过期覆盖、陌生人越权、重复事件、第二订单抢占预留、未读与屏蔽均有断言。RabbitMQ 容器及完整部署接线仍属于工作项 6。
+- 提交：`refactor: extract trading and direct-chat service`（使用 `git log -1` 查看提交号）。
 
 ### 工作项 5：Governance Service 与退役单体 — 未开始
 

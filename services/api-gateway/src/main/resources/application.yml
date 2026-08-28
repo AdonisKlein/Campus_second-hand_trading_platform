@@ -26,6 +26,9 @@ spring:
         - id: marketplace
           uri: ${MARKETPLACE_SERVICE_URI:http://localhost:8082}
           predicates: [Path=/api/items/**,/api/media/**,/api/messages/**,/api/search,/api/admin/items/**,/api/admin/messages/**]
+        - id: trading
+          uri: ${TRADING_SERVICE_URI:http://localhost:8083}
+          predicates: [Path=/api/orders/**,/api/chat/**]
         - id: monolith-fallback
           uri: ${MONOLITH_URI:http://localhost:8088}
           predicates: [Path=/api/**]

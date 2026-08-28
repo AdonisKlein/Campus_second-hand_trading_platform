@@ -35,8 +35,10 @@ Ports reserved during the migration:
 - Marketplace Service is extracted and owns products, tags, images, public
   questions and the searchable public-user projection. Gateway routes its frozen
   `/api/items|media|messages|search|admin` paths directly to port 8082.
-- Trading and Governance are still health-checkable skeletons. Their public routes
-  continue through the Gateway's monolith fallback.
+- Trading Service is extracted and owns purchase intents, the order state machine,
+  trade desk, direct chat, unread cursors and blocks. Gateway routes
+  `/api/orders/**` and `/api/chat/**` directly to port 8083. Governance is the only
+  remaining health-checkable skeleton and its routes still use the monolith fallback.
 
 ## Extracted service local configuration
 
@@ -56,9 +58,17 @@ same `INTERNAL_SERVICE_TOKEN` and `INTERNAL_JWT_SECRET`, plus
 `ACCOUNT_SERVICE_URI`, `TRADING_SERVICE_URI` and `UPLOAD_DIR`. Its internal REST
 queries use a 300ms connect timeout and 800ms response timeout; only GET requests
 retry once. `UserPublicProfileChanged` and its idempotent projection consumer are
-already defined, while RabbitMQ/Outbox transport is connected in work item 6.
+already defined. The trading Saga RabbitMQ/Inbox/Outbox adapter is implemented;
+the supported broker and deployment wiring is connected in work item 6.
 
-Work items 2 and 3 validate these applications independently; the repository's default
+Trading Service requires its own `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
+`INTERNAL_SERVICE_TOKEN`, `INTERNAL_JWT_SECRET`, `ACCOUNT_SERVICE_URI` and
+`MARKETPLACE_SERVICE_URI`. It owns only trading/chat tables and communicates with
+Account and Marketplace through HTTP ports. Set `TRADING_MESSAGING_ENABLED=true`
+and configure `SPRING_RABBITMQ_*` only in the supported work item 6 topology;
+transactional Inbox/Outbox and command/result consumers are already implemented.
+
+Work items 2 through 4 validate these applications independently; the repository's default
 Compose stack still runs the monolith. Do not mix an ad-hoc Account database with
 the default monolith database and treat it as a complete environment. Work item 6
 will add the supported Redis/Gateway/four-database Compose and Kind topology. In

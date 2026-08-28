@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:trading;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+campus:
+  trading:
+    account-uri: http://localhost:1
+    marketplace-uri: http://localhost:1
+    internal-service-token: test-internal-service-token-32-bytes
+    internal-jwt-secret: test-internal-jwt-secret-at-least-32-bytes
+    purchase-request-minutes: 1440
+    handover-minutes: 4320
+    messaging-enabled: false
+    expiry-scan-ms: 3600000
