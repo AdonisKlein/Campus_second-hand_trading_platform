@@ -6,6 +6,15 @@
 
 课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
 
+## 测试补全分支首轮（2026-08-28）
+
+- 新建分支 `codex/complete-uc-tests`。
+- 扩展现有 `TradingApiIT`：补充卖家拒绝、买家取消、卖家取消预留订单、重复取消/完成等状态和异常断言。
+- 扩展现有 Playwright 旅程文件：新增独立订单工作台旅程，断言买卖视角、阶段筛选、商品分组、时间线和 `allowedActions` 对应的页面动作。
+- 更新 `doc/测试清单.md` 的覆盖状态，明确微服务目录尚不存在，Search/PublicQuestion/Security 等测试需在服务迁移后落到实际 owner，而不是旧 backend。
+- 验证：`mvn verify` 通过，单元/API/MySQL 集成测试 51/51 通过（真实 MySQL 8.4 Testcontainers 5 项并发测试均执行）；前端 Node 契约 3/3、全部 JS 语法通过；Compose Playwright E2E 7/7 通过，包含新增订单工作台旅程。期间修正了订单工作台实际按钮文案“取消交易”“确认已取货”和实际容器 `#orderGroups` 选择器。
+- 提交号：本轮尚未提交。
+
 ## 测试清单与补齐项（2026-08-28）
 
 - 新增 `doc/测试清单.md`，按照单元测试、集成/API 测试、端到端测试三层定义执行内容、结果断言、有效性标准和 UC01～UC18 覆盖关系。

@@ -76,6 +76,46 @@ test('购买意向→卖家选择→交接完成', async ({ page: buyer, browser
   }
 });
 
+test('订单工作台→买卖视角→阶段筛选→时间线与动作集合', async ({ page: buyer, browser }) => {
+  const sellerContext = await browser.newContext();
+  const seller = await sellerContext.newPage();
+  try {
+    await login(seller, 'seller');
+    const item = await publishItem(seller, uniqueTitle('工作台商品'));
+    await login(buyer, 'buyer');
+    await buyer.goto(`/detail.html?id=${item.id}`);
+    await buyer.locator('button[data-product-action="request"]').first().click();
+    await expect(buyer.locator('.purchase-request-notice')).toContainText('购买意向已提交');
+
+    await buyer.goto('/orders.html');
+    const buyerGroup = buyer.locator('.order-item-group').filter({ hasText: item.title }).first();
+    const buyerOrder = buyerGroup.locator('.order-record').first();
+    await expect(buyerOrder).toContainText('等待卖家回应');
+    await expect(buyerOrder.locator('.order-record-actions')).toContainText('取消交易');
+    await buyer.locator('[data-stage="REQUESTS"]').click();
+    await expect(buyer.locator('#orderGroups')).toContainText(item.title);
+
+    const orderId = await buyerOrder.getAttribute('data-order-record');
+    await seller.goto('/orders.html');
+    await seller.locator('[data-perspective="SELLING"]').click();
+    const sellerOrder = seller.locator(`[data-order-record="${orderId}"]`);
+    await expect(sellerOrder).toBeVisible();
+    await expect(sellerOrder.locator('.order-record-actions')).toContainText('接受');
+    await sellerOrder.locator('[data-order-action="ACCEPT"]').click();
+    await seller.locator('[data-confirm-action]').click();
+    await expect(seller.locator(`[data-order-record="${orderId}"]`)).toContainText('待当面交易');
+    await expect(seller.locator(`[data-order-record="${orderId}"] .order-mini-timeline`)).toBeVisible();
+
+    await buyer.reload();
+    await expect(buyer.locator(`[data-order-record="${orderId}"]`)).toContainText('待当面交易');
+    await buyer.locator('[data-stage="HANDOVER"]').click();
+    await expect(buyer.locator('#orderGroups')).toContainText(item.title);
+    await expect(buyer.locator(`[data-order-record="${orderId}"] .order-record-actions`)).toContainText('确认已取货');
+  } finally {
+    await sellerContext.close();
+  }
+});
+
 test('管理员举报治理及用户管理', async ({ page: admin, browser }) => {
   const sellerContext = await browser.newContext();
   const buyerContext = await browser.newContext();
