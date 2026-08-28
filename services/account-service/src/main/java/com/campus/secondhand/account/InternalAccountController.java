@@ -38,6 +38,14 @@ class InternalAccountController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ApiResponse.fail("用户不存在")));
     }
+
+    @GetMapping("/users/{id}/public")
+    ResponseEntity<ApiResponse<PublicAccount>> publicAccount(@PathVariable Long id) {
+        return users.findById(id)
+                .map(user -> ResponseEntity.ok(ApiResponse.ok(PublicAccount.from(user))))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.fail("用户不存在")));
+    }
 }
 
 record LoginRequest(@NotBlank @Email String email, @NotBlank String password) {}
@@ -55,5 +63,13 @@ record AuthenticatedAccount(Long userId, String email, String username, String n
 record SecurityState(Long userId, String status, String role, Integer authVersion) {
     static SecurityState from(User user) {
         return new SecurityState(user.getId(), user.getStatus(), user.getRole(), user.getAuthVersion());
+    }
+}
+
+record PublicAccount(Long id, String username, String nickname, String campusRegion,
+                     Integer creditScore, String status, String role, LocalDateTime lastActiveAt) {
+    static PublicAccount from(User user) {
+        return new PublicAccount(user.getId(), user.getUsername(), user.getNickname(), user.getCampusRegion(),
+                user.getCreditScore(), user.getStatus(), user.getRole(), user.getLastActiveAt());
     }
 }

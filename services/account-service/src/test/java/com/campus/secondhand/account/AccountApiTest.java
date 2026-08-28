@@ -50,6 +50,17 @@ class AccountApiTest {
     }
 
     @Test
+    void internalPublicProfileRequiresServiceToken() throws Exception {
+        mvc.perform(get("/internal/users/999/public"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false));
+        mvc.perform(get("/internal/users/999/public")
+                        .header("X-Internal-Service-Token", INTERNAL_TOKEN))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
     void disabledMailAdapterReturnsServiceUnavailable() throws Exception {
         mvc.perform(post("/api/auth/verification/register")
                         .contentType(MediaType.APPLICATION_JSON)

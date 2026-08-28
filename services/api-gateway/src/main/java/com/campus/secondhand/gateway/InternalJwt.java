@@ -22,7 +22,7 @@ public class InternalJwt {
 
     public String issue(AuthenticatedAccount account) {
         Instant now = Instant.now();
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        JwtClaimsSet.Builder claimsBuilder = JwtClaimsSet.builder()
                 .issuer("campus-gateway")
                 .subject(String.valueOf(account.userId()))
                 .claim("email", account.email())
@@ -31,8 +31,11 @@ public class InternalJwt {
                 .claim("role", account.role())
                 .claim("auth_version", account.authVersion())
                 .issuedAt(now)
-                .expiresAt(now.plusSeconds(60))
-                .build();
+                .expiresAt(now.plusSeconds(60));
+        if (account.campusRegion() != null) {
+            claimsBuilder.claim("campus_region", account.campusRegion());
+        }
+        JwtClaimsSet claims = claimsBuilder.build();
         return encoder.encode(JwtEncoderParameters.from(
                 JwsHeader.with(MacAlgorithm.HS256).build(), claims)).getTokenValue();
     }

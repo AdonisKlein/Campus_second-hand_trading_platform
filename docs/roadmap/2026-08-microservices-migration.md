@@ -8,9 +8,9 @@
 
 ## 1. 当前状态
 
-- 当前后端仍是一个 Maven/Spring Boot 应用、一个后端镜像和一个业务数据库，属于模块化单体。
+- Account 与 Marketplace 已提取为独立业务服务；Trading、Governance 仍由迁移期单体承载。
 - 单体版已经具备单元测试、API/MySQL 集成测试、Playwright E2E、版本化镜像、Kind 部署、健康检查和失败证据收集。
-- 业务微服务完成度目前为 `0/4`；HPA、故障实验和单体/微服务性能对比尚未开始。
+- 业务微服务完成度目前为 `2/4`；完整微服务部署拓扑、HPA、故障实验和性能对比尚未开始。
 - `monolith-start` 是不可移动的改造前版本标记；微服务工作项 1—8 全绿后创建 `microservices-end`。
 
 ## 2. 最终服务划分
@@ -88,12 +88,15 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 验收结果：Gateway 6/6、Account 8/8、兼容单体单元 30/30 与 API/真实 MySQL 50/50、五个独立工程统一验证及前端契约 3/3 全绿。
 - 提交：`refactor: extract account service and gateway authentication`（使用 `git log -1` 查看提交号）。
 
-### 工作项 3：Marketplace Service — 未开始
+### 工作项 3：Marketplace Service — 已完成
 
 - 提取商品、图片、标签、搜索、详情、公开留言和卖家商品管理。
 - 通过事件维护用户公开搜索投影，不读取 Account 数据库。
 - 验收 UC05—UC09 和数据库隔离。
-- 计划提交：`refactor: extract marketplace service`
+- 实现结果：Marketplace 独占 `items`、`item_tags`、`messages` 与 `searchable_user_projection`；商品详情通过 Account/Trading port 查询，不出现跨服务 Repository。用户公开投影消费版本化 `UserPublicProfileChanged`，旧事件不会覆盖新资料；RabbitMQ transport 与 Outbox 留在工作项 6 接线。
+- Gateway 已将 Marketplace 所有公开路径从单体兜底切到 `8082`，浏览器仍使用原 `/api` 路径；学生身份只取 Gateway JWT subject，管理员角色由 JWT authority 与资源规则共同校验。
+- 验收结果：Marketplace 14/14、Account 9/9、Gateway 6/6 通过；Flyway 从空 H2 建立 Marketplace 独立结构并由 Hibernate validate；静态扫描确认 Marketplace 不引用 `UserRepository`、`TradeOrderRepository` 或其他服务数据库表。
+- 提交：`refactor: extract marketplace service`（使用 `git log -1` 查看提交号）。
 
 ### 工作项 4：Trading Service — 未开始
 

@@ -1,8 +1,26 @@
 server:
   port: 8082
+  forward-headers-strategy: framework
 spring:
   application:
     name: campus-marketplace-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+campus:
+  marketplace:
+    account-uri: ${ACCOUNT_SERVICE_URI:http://localhost:8081}
+    trading-uri: ${TRADING_SERVICE_URI:http://localhost:8083}
+    internal-service-token: ${INTERNAL_SERVICE_TOKEN}
+    internal-jwt-secret: ${INTERNAL_JWT_SECRET}
+    upload-dir: ${UPLOAD_DIR:uploads}
 management:
   endpoints:
     web:

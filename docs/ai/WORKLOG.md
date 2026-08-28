@@ -18,6 +18,16 @@
 
 ## 已完成轮次
 
+### 微服务工作项 3：Marketplace Service（2026-08-28）
+
+- Marketplace 成为第二个提取的业务服务，独占商品、标签、受控图片、公开问答和用户公开搜索投影；Gateway 保持浏览器 `/api/items|media|messages|search|admin` 契约并改为直达 Marketplace。
+- 核心 interface 为 `CampusSearch`、`ProductDetail`、`SellerInventory`、`ProductImages`、`PublicQuestions`；服务内没有 Account/Trading Repository，跨服务查询集中在 `AccountPublicPort` 与 `TradingInquiryPort`。
+- `UserPublicProfileChanged` 消费端按 source version 幂等维护投影，Account 不可用时已有投影仍可搜索；RabbitMQ/Outbox transport 按路线图留到工作项 6。
+- 内部 JWT 只由 Gateway 生成，Marketplace 精确公开游客 GET，其他接口要求身份；角色 claim 映射 `ROLE_*`，请求体中的 sellerId/receiverId 不参与身份或资源归属判断。
+- 图片 adapter 按真实文件内容识别 JPG/PNG、重新编码清除元数据、限制体积/像素/配额，并只生成 ownerId + UUID 平台路径。
+- 验证：Marketplace 14/14、Account 9/9、Gateway 6/6 通过；Flyway/Hibernate 空库校验、JWT API、权限反向测试、游客详情、投影并发乱序、搜索相关度、图片真实内容均有断言。
+- 提交：`refactor: extract marketplace service`（使用 `git log -1` 查看）。
+
 ### 微服务工作项 2：Gateway 与 Account Service（2026-08-27）
 
 - Gateway 接管浏览器 Redis Session、CSRF、登录/退出、精确 CORS 和身份头清洗；每个受保护请求向 Account 复核 `status`、`role` 与 `authVersion`，再签发 60 秒内部 JWT。

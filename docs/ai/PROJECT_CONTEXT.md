@@ -1,15 +1,16 @@
 # AI 项目上下文
 
-更新日期：2026-08-27
+更新日期：2026-08-28
 
 ## 微服务迁移工作区
 
 - 当前迁移分支为 `codex/microservices-refactor`；不可移动的单体基线标记 `monolith-start` 指向课程指定提交。
 - `backend/` 仍是迁移期间可运行的 Spring Boot 4.0.8 单体，用作行为基准和尚未提取路径的兼容实现。
-- `services/api-gateway` 与 `account-service` 已完成工作项 2；Marketplace、Trading、Governance 仍只是可构建骨架，不能把它们误记为业务已迁移。
+- `services/api-gateway`、`account-service` 与 `marketplace-service` 已完成工作项 2—3；Trading、Governance 仍只是可构建骨架。
 - Gateway 是浏览器唯一后端入口：Redis 保存 HttpOnly Session，Gateway 保留 CSRF、精确 CORS、登录/退出、账号安全状态复核、客户端身份头清洗并签发 60 秒内部 JWT。JWT 不进入浏览器或 localStorage。
 - Account 独占自己的 `users` 与 `email_verification` 数据库结构；内部密码验证和安全状态查询要求共享内部服务 token，外部资料/管理员接口要求 Gateway JWT。
-- 尚未迁出的商品、交易、私聊和治理路径经 Gateway 转发到 `backend/`。兼容单体的 `CurrentActorService` 同时支持旧 Session 和 Gateway JWT；此兼容路径会在工作项 5 删除。
+- 商品、图片、公开问答、搜索与商品管理路径已由 Gateway 直接转发 Marketplace；尚未迁出的交易、私聊和治理路径继续转发 `backend/`。兼容单体路径会在工作项 5 删除。
+- Marketplace 独占 `items`、`item_tags`、`messages`、`searchable_user_projection`；Account/Trading 依赖位于 `AccountPublicPort`、`TradingInquiryPort`，生产 adapter 使用 300ms/800ms 超时，测试 adapter 可替换。搜索只读本地公开投影，不查询 Account 数据库。
 - 当前默认 Compose 仍只部署单体，不代表微服务运行拓扑已经完成。工作项 2 的 Gateway/Account 已独立构建和测试；Redis、四库四账号及完整 Compose/Kind 接线统一留在工作项 6，开发成员此时不要手工混用 Account 数据库与单体数据库。
 - `contracts/http/public-api-v1.tsv` 冻结当前公开 method + path，并标记未来 owner；`PublicApiContractIT` 会在 Controller 映射意外增删时失败。
 - `scripts/ci/verify-services.ps1` 是逐个验证五个工程独立构建的入口。任一工程失败立即返回非零。
