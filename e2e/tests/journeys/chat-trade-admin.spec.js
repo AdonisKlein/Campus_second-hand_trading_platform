@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures/evidence');
-const { ACCOUNTS, login, publishItem } = require('../fixtures/app');
+const { ACCOUNTS, api, login, publishItem } = require('../fixtures/app');
 
 function uniqueTitle(prefix) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -133,6 +133,11 @@ test('管理员举报治理及用户管理', async ({ page: admin, browser }) =>
     await reportDialog.locator('button[type="submit"]').click();
     await expect(reportDialog).toBeHidden();
 
+    const publicQuestion = `待管理员删除的留言${Date.now()}`;
+    await buyer.locator('#publicQuestion').fill(publicQuestion);
+    await buyer.locator('#messageForm button[type="submit"]').click();
+    await expect(buyer.locator('#messageList')).toContainText(publicQuestion);
+
     await buyer.goto('/admin.html');
     await expect(buyer.locator('#adminGate')).toBeVisible();
     await expect(buyer.locator('#adminPanel')).toBeHidden();
@@ -147,6 +152,21 @@ test('管理员举报治理及用户管理', async ({ page: admin, browser }) =>
       'E2E 核查确认商品违规并执行下架');
     await expect(admin.locator('#adminReportMessage')).toContainText('举报处理完成');
     await expect(admin.locator('#adminItemList').filter({ hasText: item.title })).toContainText('已下架');
+
+    await admin.locator('[data-admin-tab="messages"]').click();
+    const messageRow = admin.locator('#adminMessageList .admin-row').filter({ hasText: publicQuestion }).first();
+    await expect(messageRow).toBeVisible();
+    const dialog = admin.waitForEvent('dialog').then(d => d.accept());
+    await Promise.all([dialog, messageRow.locator('[data-action="delete-message"]').click()]);
+    await admin.waitForTimeout(300);
+    await expect(admin.locator('#adminMessageList')).not.toContainText(publicQuestion);
+
+    await buyer.goto('/reports.html');
+    await expect(buyer.locator('#myReportList')).toContainText(item.title);
+    await expect(buyer.locator('#myReportList')).toContainText('处理说明');
+
+    const forbidden = await buyer.request.get('/api/admin/messages');
+    expect(forbidden.status()).toBe(403);
 
     await admin.locator('[data-admin-tab="users"]').click();
     const buyerRow = admin.locator('#adminUserList .admin-row').filter({ hasText: ACCOUNTS.buyer.email });
