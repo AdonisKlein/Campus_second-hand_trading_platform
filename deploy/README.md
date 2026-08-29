@@ -1,6 +1,8 @@
 # 从空数据库部署
 
-这套方案会启动 MySQL、后端和 Web/Nginx。MySQL 只创建空数据库，后端启动时由 Flyway 自动创建并校验全部表。
+## PowerShell 启动
+
+这套 Compose 配置会启动 MySQL、后端和 Web/Nginx。MySQL 只创建空数据库，后端启动时由 Flyway 自动创建并校验全部表。
 
 1. 安装并启动 Docker Desktop，执行 `docker version`，确认 Client 和 Server 都可用。
 2. 复制 `deploy/.env.example` 为 `deploy/.env`，填写数据库密码和 `VERIFICATION_PEPPER`。这些关键值留空时 Compose 会直接拒绝启动，避免误用公开示例密钥。可用 PowerShell 生成随机值：
