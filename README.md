@@ -18,7 +18,7 @@
 - 学生可举报商品、留言或用户并查看处理结果；管理员通过举报队列执行下架、移除、禁用或驳回并保留审计记录。
 - 管理员管理用户、商品和留言。
 - Flyway 从空数据库建立并校验表结构。
-- Spring Session JDBC 让多个 Web 后端实例共享登录状态。
+- Gateway 使用 Redis 保存 Web Session，多个 Gateway 实例可共享登录状态。
 
 ## 登录方案
 
@@ -29,10 +29,10 @@ Windows 和移动端后续会增加短期访问令牌与可撤销刷新令牌，
 ## 技术栈
 
 - 前端：HTML、CSS、JavaScript，Nginx 同源代理 `/api`
-- 后端：Java 25、Spring Boot 3.5、Spring Security、Spring Data JPA
-- 数据库：MySQL 8.4、Flyway
-- 会话：Spring Session JDBC；高并发阶段可替换为 Redis adapter
-- 测试：JUnit 5、MockMvc、H2、Testcontainers MySQL 8.4，测试时也真实执行 Flyway
+- 后端：Java 25、Spring Boot 4.0.8；API Gateway + Account、Marketplace、Trading、Governance 四个业务服务
+- 数据库：MySQL 8.4 四个独立数据库和最小权限账号、Flyway
+- 会话与消息：Gateway Redis Session、RabbitMQ Inbox/Outbox 事件
+- 测试：JUnit 5、MockMvc、H2、Testcontainers；每个服务可独立 `mvn verify`
 
 ## 本地开发
 
@@ -44,44 +44,7 @@ winget install --id EclipseAdoptium.Temurin.25.JDK --exact
 
 安装后重新打开终端，用 `java -version` 和 `mvn -version` 确认二者都指向 Java 25。若只使用下面的 Docker 部署，则不需要在宿主机单独安装 JDK。
 
-环境变量参考 [backend/.env.example](backend/.env.example)。至少需要：
-
-```text
-DB_URL=jdbc:mysql://localhost:3306/campus_secondhand?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-DB_USERNAME=root
-DB_PASSWORD=你的数据库密码
-VERIFICATION_PEPPER=至少32位随机字符串
-```
-
-创建空数据库（PowerShell 推荐进入 MySQL 后使用 `source`）：
-
-```powershell
-mysql -u root -p
-```
-
-```sql
-source D:/你的项目路径/Campus_second-hand_trading_platform/database/schema.sql;
-```
-
-在启动后端的同一个 PowerShell 设置 `DB_*`、`VERIFICATION_PEPPER` 和 CORS 环境变量；Spring Boot 不会自动加载 `.env.example`。完整命令见 [本地部署与运行文档](doc/软件部署文档.md)。
-
-启动后端，Flyway 会自动创建全部表：
-
-```powershell
-cd backend
-mvn spring-boot:run
-```
-
-启动前端：
-
-```powershell
-cd frontend
-python -m http.server 5500
-```
-
-访问 `http://localhost:5500`。接口默认是 `http://localhost:8080/api`。
-
-不要直接用 `file://` 双击打开 HTML；Cookie、CSRF 和跨域行为需要 HTTP 静态服务器。
+推荐直接使用下面的 Compose 微服务环境。若要在 IDE 单独调试某个服务，请参考 [services/README.md](services/README.md) 设置该服务自己的数据库、内部凭据和依赖 URI；不要让服务使用其他服务的数据库账号。
 
 ## 一键部署
 
@@ -89,13 +52,14 @@ python -m http.server 5500
 
 ```powershell
 Copy-Item deploy/.env.example deploy/.env
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build
+powershell -ExecutionPolicy Bypass -File scripts/dev/microservices.ps1 -Action up -Mailpit
+powershell -ExecutionPolicy Bypass -File scripts/dev/microservices.ps1 -Action verify -Mailpit
 ```
 
 本地测试邮箱验证码可叠加 Mailpit：
 
 ```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml up -d --build
+powershell -ExecutionPolicy Bypass -File scripts/dev/microservices.ps1 -Action up -Mailpit
 ```
 
 随后在 `http://localhost:8025` 查看测试验证码邮件；Mailpit 不会向公网发送邮件。
@@ -103,8 +67,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/doc
 ## 测试
 
 ```powershell
-cd backend
-mvn test
+powershell -ExecutionPolicy Bypass -File scripts/ci/verify-services.ps1
 ```
 
 快速测试使用 H2；Docker 可用时还会启动真正的 MySQL 8.4，验证空库迁移、Hibernate 映射和 JDBC Session 表。Hibernate 只负责 `validate`，不会用自动建表掩盖迁移错误。
@@ -112,12 +75,15 @@ mvn test
 ## 主要目录
 
 ```text
-backend/                              Spring Boot 后端与 Dockerfile
-backend/src/main/resources/db/migration/  Flyway 数据库基线
+services/api-gateway/                 Web 会话、安全与公开路由
+services/account-service/             账号业务与独立 Flyway
+services/marketplace-service/         商品业务与独立 Flyway
+services/trading-service/             交易/私聊业务与独立 Flyway
+services/governance-service/          举报治理业务与独立 Flyway
+backend/                              不再运行的单体行为基线
 frontend/                             Web 页面、Nginx 配置与 Dockerfile
-database/schema.sql                   仅创建空数据库
-database/seed.sql                     可选本地演示数据
-deploy/                               Docker Compose 全新部署方案
+deploy/                               Docker Compose 微服务部署方案
+k8s/                                  Kubernetes Base 与 Kind Overlay
 doc/                                  产品、设计和测试文档
 CONTEXT.md                            已确认的业务词汇
 AGENTS.md                             AI/自动化开发者入口与完成定义

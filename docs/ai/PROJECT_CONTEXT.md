@@ -13,7 +13,7 @@
 - Marketplace 独占 `items`、`item_tags`、`messages`、`searchable_user_projection`；Account/Trading 依赖位于 `AccountPublicPort`、`TradingInquiryPort`，生产 adapter 使用 300ms/800ms 超时，测试 adapter 可替换。搜索只读本地公开投影，不查询 Account 数据库。
 - Trading 独占 `trade_orders`、`chat_conversations`、`chat_messages`、`chat_blocks` 及自己的 Inbox/Outbox。`TradingWorkflow` 负责购买意向与 Saga 状态机，`DirectChat` 负责会话、未读、屏蔽和消息；Account/Marketplace 通过 REST port 查询安全快照，商品预留、释放和售出通过 RabbitMQ 事件完成。
 - Governance 独占 `content_reports`、`report_actions` 及自己的 Inbox/Outbox。`ContentGovernance` 区分管理员决定和动作交付状态；举报对象通过 Account/Marketplace 快照 port 读取，治理动作通过 RabbitMQ 交给数据所有者幂等执行。
-- 当前默认 Compose 仍是旧单体环境，不代表微服务运行拓扑已经完成。五个工程已独立构建测试，但 Redis、RabbitMQ、四库四账号及完整 Compose/Kind 接线统一留在工作项 6；开发成员此时不要把默认 Compose 当作微服务验收环境。
+- 工作项 6 已完成默认微服务运行拓扑：Compose/Kind 均包含 Gateway、四个业务服务、MySQL 四库四账号、Redis、RabbitMQ 和 Web。`scripts/dev/microservices.ps1` 会验证容器健康、Flyway、跨库拒绝和同源入口；`scripts/ci/kind-local.ps1` 负责本地 Kind 构建、部署与冒烟。
 - `contracts/http/public-api-v1.tsv` 冻结当前公开 method + path，并标记未来 owner；`PublicApiContractIT` 会在 Controller 映射意外增删时失败。
 - `scripts/ci/verify-services.ps1` 是逐个验证五个工程独立构建的入口。任一工程失败立即返回非零。
 - 完整实施顺序、数据库归属和通信规则见 `docs/roadmap/2026-08-microservices-migration.md`。
@@ -25,26 +25,17 @@
 ## 代码地图
 
 ```text
-backend/src/main/java/com/campus/secondhand/
-  security/     Session 当前身份、Security 配置、Client IP
-  user/         邮箱注册登录、验证码、个人资料
-  item/         商品发布、公开查询、卖家商品管理
-  search/       多关键词商品/用户搜索、筛选、排序与安全公开投影
-  report/       学生举报、管理员治理决策与追加式处理审计
-  media/        商品图片验证、标准化、持久存储与公开读取
-  message/      商品公开留言及本人维护
-  chat/         仅买卖双方可见的商品私聊、未读游标与屏蔽
-  order/        预留、订单状态机、超时释放
-  admin/        管理员用户/商品/留言操作
-  common/       统一响应和异常映射
-backend/src/main/resources/db/migration/  Flyway 全新数据库结构
-frontend/       HTML 页面
-frontend/assets/js/api.js                 Session/CSRF/请求唯一 seam
-frontend/assets/css/styles.css            全站桌面与移动视觉系统
-frontend/tests/                           无依赖的 UI 结构与会话竞态回归测试
-deploy/         MySQL + Spring Boot + Nginx Compose 部署
-k8s/            Kubernetes Base、CI Kind Overlay 与部署说明
-scripts/ci/     测试报告、Compose E2E 和 Kind 本地部署入口
+services/api-gateway/          Redis Session、CSRF、身份校验、内部 JWT 和公开路由
+services/account-service/      注册登录、验证码、资料、账号安全与用户治理
+services/marketplace-service/  商品、图片、搜索、公开问答和用户公开投影
+services/trading-service/      购买意向、订单 Saga、交易工作台与私聊
+services/governance-service/   举报决定、治理事件和追加式审计
+backend/                       不再运行的单体行为/性能对比基线
+frontend/                      HTML、CSS、JavaScript 与 Nginx 同源代理
+deploy/                        Compose 四库、Redis、RabbitMQ 和服务编排
+k8s/                           Kubernetes Base、CI Kind Overlay 与部署说明
+scripts/dev/                   本地微服务启动与验收入口
+scripts/ci/                    服务验证、测试报告和 Kind 本地部署入口
 ```
 
 ## 业务页面信息架构规则
@@ -69,7 +60,7 @@ scripts/ci/     测试报告、Compose E2E 和 Kind 本地部署入口
 
 - Seam：后端 `/auth/login|logout|csrf`、`/users/me` 与前端 `api.js` 的 `session`/`request`。
 - Interface 不变量：Web 凭据仅在 HttpOnly Session Cookie；写请求带 CSRF；本地用户对象只用于渲染。
-- Adapter：Spring Session JDBC；未来可替换为 Redis，页面调用方不变。
+- Adapter：Gateway Spring Session Redis；页面调用方不理解 Redis 或内部 JWT。
 - 页面角色导航由 `api.js` 统一 hydration；所有 `data-admin-only` 入口必须在 HTML 默认 `hidden`，仅当前 Session 的 `/users/me` 返回 ADMIN 后显示。这个规则只改善体验，不替代后端授权。
 - 会话读取带 generation；登录、退出或 401 后，旧请求不得覆盖新会话的页面状态。
 
@@ -151,21 +142,17 @@ scripts/ci/     测试报告、Compose E2E 和 Kind 本地部署入口
 
 ## 当前部署事实
 
-- Docker 服务：`mysql`、`backend`、`web`，只向宿主机暴露 Web 80 端口；`media-data` 保存商品图片。
-- Kubernetes Base 使用 MySQL StatefulSet、Backend/Web Deployment、ClusterIP Service 和独立数据库/图片 PVC；CI Overlay 增加 Mailpit，敏感值由 `campus-secrets` 运行时注入。
-- 本地 Kubernetes 验收使用 Kind；Service 对宿主机访问统一走 `kubectl port-forward`，避免依赖 Windows Docker Desktop 的 NodePort 转发差异。
-- Backend readiness 控制是否接收流量，liveness 控制失败重启，startup probe 保护首次启动；只匿名公开精确的 `/actuator/health/liveness|readiness`。
-- CI 部署 seam 是 `scripts/ci/deploy-kind.sh <backend-image> <web-image>`；调用方不得在 Workflow 里复制 rollout、冒烟和证据收集细节。
-- GitHub Actions 的 `deploy-kind` 只消费测试全绿后生成的不可变 SHA 镜像；`main` Push 自动执行，`workflow_dispatch` 可通过 `controlled_failure` 验证非 0 阻断与 `if: always()` 取证同时成立。
-- GitHub-hosted runner 上的 Kind 是临时发布门禁，不是长期生产集群；长期环境需另建生产 Overlay 并连接持久 Kubernetes 集群。
-- Nginx 同源代理 `/api/`；生产 TLS 需把 Session Cookie Secure 设为 true。
-- Flyway 从空 MySQL 建库；本项目没有历史生产库升级负担。
-- 当前本地验收数据库是 Docker Desktop 中的 `mysql:8.4`，通过 Compose 私有网络连接并保存在 Docker volume；不是远程数据库，也不是宿主机单独安装的 MySQL 服务。
-- `database/seed.sql` 仅允许全新空业务库执行一次，禁止生产导入。
+- Docker 服务包括 MySQL、Redis、RabbitMQ、Gateway、四个业务服务和 Web；只向宿主机暴露 Web，`media-data` 保存商品图片。
+- 同一个 MySQL 服务器包含 `campus_account`、`campus_marketplace`、`campus_trading`、`campus_governance`；四个账号经 GRANT 限制不能跨库访问。
+- Kubernetes Base 使用同一拓扑，每个 Java 服务都有独立 Deployment、ClusterIP Service 与三类探针；MySQL、Redis、RabbitMQ 和图片分别使用 PVC，CI Overlay 增加 Mailpit。
+- 本地 Compose seam 是 `scripts/dev/microservices.ps1`；本地 Kind seam 是 `scripts/ci/kind-local.ps1`。后者通过 `kubectl port-forward` 做同源冒烟，避免 Windows NodePort 差异。
+- 当前 `.github/workflows/ci.yml` 与 `scripts/ci/deploy-kind.sh` 仍是旧单体 CI 接口，只作为工作项 8 的改造输入；不得用它们宣称微服务已经自动发布。
+- Nginx 同源代理 `/api/` 到 Gateway；生产 TLS 需把 Session Cookie Secure 设为 true。
+- Flyway 分别从四个空库建表；本项目没有历史生产库升级负担。旧 `database/seed.sql` 不兼容微服务四库，不能导入。
 
 ## 已知非阻断债务
 
 - 未被商品引用的上传图片暂未自动回收；后续可增加临时上传记录与定时清理。
 - 文件系统 adapter 适合当前单机部署；多实例部署前应替换为 MinIO/S3 adapter。
 - Windows/移动原生客户端的短 access token + rotation refresh token 尚未实现。
-- 微服务业务代码已完成 4/4 提取；完整容器与 Kubernetes 运行拓扑从工作项 6 开始落地。
+- 微服务业务代码已完成 4/4 提取；完整 Compose 与 Kubernetes 运行拓扑已在工作项 6 落地。下一项是补齐微服务测试追溯和跨服务测试。

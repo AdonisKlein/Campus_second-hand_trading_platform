@@ -61,8 +61,8 @@ same `INTERNAL_SERVICE_TOKEN` and `INTERNAL_JWT_SECRET`, plus
 `ACCOUNT_SERVICE_URI`, `TRADING_SERVICE_URI` and `UPLOAD_DIR`. Its internal REST
 queries use a 300ms connect timeout and 800ms response timeout; only GET requests
 retry once. `UserPublicProfileChanged` and its idempotent projection consumer are
-already defined. The trading Saga RabbitMQ/Inbox/Outbox adapter is implemented;
-the supported broker and deployment wiring is connected in work item 6.
+already defined. The trading Saga RabbitMQ/Inbox/Outbox adapter is implemented
+and wired to the supported RabbitMQ topology in Compose and Kubernetes.
 
 Trading Service requires its own `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
 `INTERNAL_SERVICE_TOKEN`, `INTERNAL_JWT_SECRET`, `ACCOUNT_SERVICE_URI` and
@@ -77,10 +77,10 @@ Governance Service requires its own `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
 in the work item 6 topology. Its database contains only reports, action audit and
 its own Inbox/Outbox; it never joins Account or Marketplace tables.
 
-Work items 2 through 5 validate all four business services independently. The old
+Work items 2 through 6 validate all four business services independently and run
+them behind Gateway with Redis, RabbitMQ and four isolated databases. The old
 `backend/` source is now a historical behavior reference only and is no longer a
-Gateway runtime path. The repository's default Compose stack has not yet been
-replaced, so it still represents the legacy environment rather than a supported
-complete microservice runtime. Work item 6 adds Redis, RabbitMQ, Gateway and the
-four isolated databases to Compose and Kind. In that topology browsers call
-Gateway only; they never call internal endpoints or receive the internal JWT.
+Gateway runtime path. `scripts/dev/microservices.ps1` is the supported local
+Compose entry point and `scripts/ci/kind-local.ps1` is the local Kind acceptance
+entry point. In both topologies browsers call Gateway only; they never call
+internal endpoints or receive the internal JWT.

@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: campus-mysql-init}
+data:
+  01-databases.sh: |
+    #!/bin/sh
+    set -eu
+    mysql -uroot -p"$MYSQL_ROOT_PASSWORD" <<SQL
+    CREATE DATABASE IF NOT EXISTS campus_account CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE DATABASE IF NOT EXISTS campus_marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE DATABASE IF NOT EXISTS campus_trading CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE DATABASE IF NOT EXISTS campus_governance CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE USER IF NOT EXISTS 'account_user'@'%' IDENTIFIED BY '$ACCOUNT_DB_PASSWORD';
+    CREATE USER IF NOT EXISTS 'marketplace_user'@'%' IDENTIFIED BY '$MARKETPLACE_DB_PASSWORD';
+    CREATE USER IF NOT EXISTS 'trading_user'@'%' IDENTIFIED BY '$TRADING_DB_PASSWORD';
+    CREATE USER IF NOT EXISTS 'governance_user'@'%' IDENTIFIED BY '$GOVERNANCE_DB_PASSWORD';
+    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES ON campus_account.* TO 'account_user'@'%';
+    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES ON campus_marketplace.* TO 'marketplace_user'@'%';
+    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES ON campus_trading.* TO 'trading_user'@'%';
+    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP, REFERENCES ON campus_governance.* TO 'governance_user'@'%';
+    FLUSH PRIVILEGES;
+    SQL
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: campus-mysql}
+spec:
+  serviceName: campus-mysql
+  replicas: 1
+  selector: {matchLabels: {app: campus-mysql}}
+  template:
+    metadata: {labels: {app: campus-mysql}}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          env:
+            - {name: MYSQL_DATABASE, value: campus_account}
+            - {name: MYSQL_ROOT_PASSWORD, valueFrom: {secretKeyRef: {name: campus-secrets, key: MYSQL_ROOT_PASSWORD}}}
+            - {name: ACCOUNT_DB_PASSWORD, valueFrom: {secretKeyRef: {name: campus-secrets, key: ACCOUNT_DB_PASSWORD}}}
+            - {name: MARKETPLACE_DB_PASSWORD, valueFrom: {secretKeyRef: {name: campus-secrets, key: MARKETPLACE_DB_PASSWORD}}}
+            - {name: TRADING_DB_PASSWORD, valueFrom: {secretKeyRef: {name: campus-secrets, key: TRADING_DB_PASSWORD}}}
+            - {name: GOVERNANCE_DB_PASSWORD, valueFrom: {secretKeyRef: {name: campus-secrets, key: GOVERNANCE_DB_PASSWORD}}}
+          ports: [{name: mysql, containerPort: 3306}]
+          volumeMounts: [{name: db, mountPath: /var/lib/mysql}, {name: init, mountPath: /docker-entrypoint-initdb.d/01-databases.sh, subPath: 01-databases.sh}]
+          startupProbe: {exec: {command: [sh, -c, 'mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent']}, periodSeconds: 5, failureThreshold: 30}
+          readinessProbe: {exec: {command: [sh, -c, 'mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent']}, periodSeconds: 5}
+          livenessProbe: {exec: {command: [sh, -c, 'mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent']}, periodSeconds: 15}
+      volumes:
+        - {name: init, configMap: {name: campus-mysql-init, defaultMode: 493}}
+        - {name: db, persistentVolumeClaim: {claimName: campus-mysql-data}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: campus-mysql}
+spec: {clusterIP: None, selector: {app: campus-mysql}, ports: [{name: mysql, port: 3306, targetPort: mysql}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: redis}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: redis}}
+  template:
+    metadata: {labels: {app: redis}}
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.4
+          command: [redis-server, --requirepass]
+          args: ["$(REDIS_PASSWORD)"]
+          env: [{name: REDIS_PASSWORD, valueFrom: {secretKeyRef: {name: campus-secrets, key: REDIS_PASSWORD}}}]
+          ports: [{name: redis, containerPort: 6379}]
+          volumeMounts: [{name: data, mountPath: /data}]
+          readinessProbe: {exec: {command: [sh, -c, 'redis-cli -a "$REDIS_PASSWORD" ping']}, periodSeconds: 5}
+          livenessProbe: {exec: {command: [sh, -c, 'redis-cli -a "$REDIS_PASSWORD" ping']}, periodSeconds: 15}
+      volumes: [{name: data, persistentVolumeClaim: {claimName: campus-redis-data}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: redis}
+spec: {selector: {app: redis}, ports: [{name: redis, port: 6379, targetPort: redis}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: rabbitmq}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: rabbitmq}}
+  template:
+    metadata: {labels: {app: rabbitmq}}
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:4.1-management-alpine
+          env: [{name: RABBITMQ_DEFAULT_USER, value: campus}, {name: RABBITMQ_DEFAULT_PASS, valueFrom: {secretKeyRef: {name: campus-secrets, key: RABBITMQ_PASSWORD}}}]
+          ports: [{name: amqp, containerPort: 5672}, {name: management, containerPort: 15672}]
+          volumeMounts: [{name: data, mountPath: /var/lib/rabbitmq}]
+          startupProbe: {exec: {command: [rabbitmq-diagnostics, -q, ping]}, timeoutSeconds: 5, periodSeconds: 5, failureThreshold: 36}
+          readinessProbe: {exec: {command: [rabbitmq-diagnostics, -q, ping]}, timeoutSeconds: 5, periodSeconds: 10, failureThreshold: 6}
+          livenessProbe: {exec: {command: [rabbitmq-diagnostics, -q, ping]}, timeoutSeconds: 5, periodSeconds: 20, failureThreshold: 6}
+      volumes: [{name: data, persistentVolumeClaim: {claimName: campus-rabbitmq-data}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: rabbitmq}
+spec: {selector: {app: rabbitmq}, ports: [{name: amqp, port: 5672, targetPort: amqp}, {name: management, port: 15672, targetPort: management}]}

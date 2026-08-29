@@ -279,6 +279,16 @@
 - 提交：`8c8d21a docs: establish refactor baseline and UI direction`
 - 确认角色、模块、视觉方向和重构计划。
 
+### 微服务工作项 6：四库隔离与完整运行拓扑（2026-08-29）
+
+- 默认 Compose 已切换为 API Gateway、Account、Marketplace、Trading、Governance、MySQL 四库四账号、Redis、RabbitMQ 和 Web；旧 `backend` 不再参与运行。
+- 五个 Java 工程分别拥有 Dockerfile，可独立构建；浏览器只访问 Web/Gateway，内部服务保持私网可见。
+- `scripts/dev/microservices.ps1` 统一启动、状态、验收和停止操作；验收会检查全部容器健康、四个 Flyway schema、跨库访问拒绝及 Gateway/Web。
+- Kubernetes Base 与 CI Overlay 已同步相同拓扑，每个服务有独立 Deployment、Service、Secret 配置和三类探针；本地 Kind 脚本构建并加载六个镜像后执行 rollout 与冒烟。
+- Compose 实测全部服务健康，四个账号只能读取自身数据库；Kind 实测全部 Pod 1/1 Running、PVC Bound、同源 liveness 与首页通过。
+- 本地 JDK 24 兼容回归入口为 `scripts/ci/verify-services.ps1 -JavaVersion 24`；发布镜像仍使用 Docker 内的 Java 25。
+- 下一工作项：补齐微服务 API、事件、基础设施集成和 UC01—UC18 追溯测试；现有旧单体 CI 自动部署脚本将在工作项 8 替换。
+
 ## 接手检查清单
 
 1. `git status --short` 确认没有覆盖其他人的未提交修改。

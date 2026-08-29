@@ -16,6 +16,20 @@ spring:
   mail:
     host: ${MAIL_HOST:localhost}
     port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          connectiontimeout: ${MAIL_CONNECTION_TIMEOUT_MS:5000}
+          timeout: ${MAIL_READ_TIMEOUT_MS:10000}
+          writetimeout: ${MAIL_WRITE_TIMEOUT_MS:10000}
+          starttls:
+            enable: ${MAIL_STARTTLS_ENABLED:false}
+            required: ${MAIL_STARTTLS_REQUIRED:false}
+          ssl:
+            enable: ${MAIL_SSL_ENABLED:false}
 app:
   verification:
     pepper: ${VERIFICATION_PEPPER}
@@ -38,3 +52,6 @@ management:
     health:
       probes:
         enabled: true
+  health:
+    mail:
+      enabled: ${MAIL_ENABLED:false}

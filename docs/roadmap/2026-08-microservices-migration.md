@@ -10,7 +10,7 @@
 
 - Account、Marketplace、Trading 与 Governance 四个业务服务均已提取，Gateway 已删除单体兜底路由。
 - 单体版已经具备单元测试、API/MySQL 集成测试、Playwright E2E、版本化镜像、Kind 部署、健康检查和失败证据收集。
-- 业务微服务代码完成度目前为 `4/4`；完整微服务部署拓扑、HPA、故障实验和性能对比尚未开始。
+- 业务微服务代码完成度为 `4/4`；Compose 与 Kind 微服务运行拓扑已经完成，HPA、故障实验和性能对比尚未开始。
 - `monolith-start` 是不可移动的改造前版本标记；微服务工作项 1—8 全绿后创建 `microservices-end`。
 
 ## 2. 最终服务划分
@@ -120,12 +120,14 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 验收结果：Gateway 6/6、Account 13/13、Marketplace 19/19、Trading 16/16、Governance 12/12，共 66/66 通过；前端契约 3/3 与全部 JS 语法通过。
 - 提交：`refactor: extract governance service and retire monolith`（使用 `git log -1` 查看提交号）。
 
-### 工作项 6：独立数据库与部署环境 — 未开始
+### 工作项 6：独立数据库与部署环境 — 已完成
 
 - Compose/Kind 加入 Gateway、Redis、RabbitMQ 和四个业务服务。
 - 每服务拥有独立数据库账号、Flyway、Dockerfile、Deployment、Service 和 probes。
 - 项目没有生产数据迁移负担，本地旧 volume 可重建，不设计历史库升级路径。
-- 计划提交：`ops: deploy isolated microservice data and messaging infrastructure`
+- 本地入口：`scripts/dev/microservices.ps1`；Kind 入口：`scripts/ci/kind-local.ps1`。
+- 验收证据：Compose 全部服务健康、四库 Flyway 可读且跨库访问被拒；Kind 中全部 Pod Running、PVC Bound、Gateway/Web 冒烟通过。
+- 提交：`ops: deploy isolated microservice data and messaging infrastructure`
 
 ### 工作项 7：微服务测试闭环 — 未开始
 
