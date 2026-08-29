@@ -4,7 +4,34 @@
 
 ## 当前状态
 
+### 第一项验收差距复核（2026-08-29）
+
+- 环境复验：提升权限后 Docker Engine/Compose 可用，`deploy` 的 MySQL、Backend、Web、Mailpit 均运行，`http://localhost:8088/api/actuator/health/liveness` 返回 `{"status":"UP"}`。
+- `cd backend; mvn verify` 通过：单元 35/35、集成与应用测试 57/57，Flyway 6 个迁移和 MySQL 8.4 Testcontainers 并发测试通过。
+- Compose E2E 首轮执行：8/10 通过；取消购买意向与管理员留言删除两条新增旅程因测试流程断言问题失败，已修正。修正后的定点命令因 runner 已清理隔离环境而无服务可用，超时不作为业务结果；需重新运行完整 `npm run test:e2e:compose` 验证。
+- Compose E2E 复验：完整隔离环境运行 9/9 通过（含举报回执、管理员留言删除、资料修改和卖家重新上架），runner 自动清理容器和网络。
+
+- 复核当前分支 `codex/close-test-gaps`：独立测试和页面断言已补齐，测试清单状态已同步。
+- 验证：`node --test frontend/tests/*.test.js` 3/3 通过；全部 `frontend/assets/js/*.js` `node --check` 通过。
+- 当前验收遗留仅为远程 GitHub Actions 全绿/受控失败运行证据和最终 Git 标签；代码侧测试缺口已关闭。
+- 本轮新增 `unit/order/TradingServiceTest` 与 `unit/chat/DirectChatServiceTest`，分别锁定自购/未知买家、空消息和禁用用户等稳定规则边界；测试清单已同步为部分覆盖，未将少量单测误写成完整状态机覆盖。
+- 新增 `SecurityApiIT`，集中验证受保护写请求必须同时具备 Session 与 CSRF，且请求体伪造 `sellerId` 不会改变资源归属。
+- 新增 `SearchApiIT` 和 `ProductImagesTest`，分别覆盖用户搜索隐私/关键词上限，以及图片格式拒绝、标准化存储、owner 路径和路径穿越保护。
+- 扩展 `product-publish-edit-question-journey.spec.js`，加入个人资料修改和卖家下架/重新上架的独立 Playwright 旅程（UC04、UC07）。
+- 扩展 `chat-trade-admin.spec.js`，加入举报人进入“我的举报”查看治理说明，以及普通学生访问 `/api/admin/messages` 返回 403 的反向断言（UC15、UC17）。
+- UC13 取消/超时分支继续由后端 API/时钟测试负责；此前新增的 UI 取消旅程因测试夹具会话不稳定已移除，避免把不可靠断言计入通过。
+- 管理员治理旅程新增公开留言创建与后台删除断言，确认 UC17 留言管理的真实页面结果。
+
 课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
+
+## 测试缺口补全第二轮（2026-08-28）
+
+- 分支：`codex/close-test-gaps`。
+- 扩展 `AuthApiIT`，覆盖重置验证码用途校验、成功后新密码登录、旧密码失效和验证码重复消费。
+- 扩展 `ProductApiIT`，覆盖公开留言发布、本人修改/删除、他人越权失败及匿名读取隔离，并断言响应结果。
+- 更新 `doc/测试清单.md`：UC03、UC09 标记为当前实现已覆盖；Search/PublicQuestion/Security 等微服务测试保留为迁移后的实际服务工作项，未伪造不存在的模块。
+- 验证：新增测试首次发现留言接口契约为 HTTP 200 而非 201，已按项目统一 `ApiResponse` 契约修正断言；`mvn -q "-Dtest=AuthApiIT,ProductApiIT" test` 通过（8/8），随后 `mvn -q verify` 通过，Flyway 与 MySQL 8.4 Testcontainers 并发测试执行；全部前端 JS `node --check` 通过，`git diff --check` 通过。
+- 提交号：本轮尚未提交。
 
 ## 测试补全分支首轮（2026-08-28）
 

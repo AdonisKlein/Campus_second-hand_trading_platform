@@ -58,4 +58,33 @@ class ProductApiIT extends AbstractApiIntegrationTest {
             .andExpect(status().isOk()).andExpect(jsonPath("$.data.title").value("修改后的台灯"));
         org.junit.jupiter.api.Assertions.assertEquals("修改后的台灯", items.findById(itemId).orElseThrow().getTitle());
     }
+
+    @Test
+    void publicQuestionSupportsOwnerUpdateDeleteAndRejectsOtherOwner() throws Exception {
+        User seller = createUser("question-seller", "question-seller@example.com", "STUDENT");
+        User buyer = createUser("question-buyer", "question-buyer@example.com", "STUDENT");
+        var item = sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "问答 CRUD 商品", "生活用品", BigDecimal.TEN, "公开问答", ""));
+        MockCookie buyerSession = login(buyer.getEmail());
+        MockCookie sellerSession = login(seller.getEmail());
+        var created = mvc.perform(post("/messages").cookie(buyerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"itemId\":%d,\"content\":\"请问可以当面验货吗？\"}".formatted(item.id())))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.senderId").value(buyer.getId())).andReturn();
+        long messageId = com.fasterxml.jackson.databind.json.JsonMapper.builder().build()
+            .readTree(created.getResponse().getContentAsString()).at("/data/id").asLong();
+
+        mvc.perform(put("/messages/{id}", messageId).cookie(sellerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"content\":\"越权修改\"}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.success").value(false));
+        mvc.perform(put("/messages/{id}", messageId).cookie(buyerSession).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"content\":\"已更新问题\"}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.content").value("已更新问题"));
+        mvc.perform(delete("/messages/{id}", messageId).cookie(sellerSession).with(csrf()))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.success").value(false));
+        mvc.perform(delete("/messages/{id}", messageId).cookie(buyerSession).with(csrf()))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data").value("删除成功"));
+        mvc.perform(get("/messages/item/{id}", item.id()))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data", hasSize(0)));
+    }
 }
