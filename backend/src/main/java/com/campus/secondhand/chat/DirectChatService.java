@@ -180,9 +180,11 @@ public class DirectChatService implements DirectChat {
     private ConversationView view(ChatConversation c, Long actorId) {
         Long otherId = other(c, actorId);
         User other = users.findById(otherId).orElse(null);
+        Item item = items.findById(c.getItemId()).orElse(null);
         String name = other == null ? "已注销用户" : (other.getNickname() == null || other.getNickname().isBlank() ? other.getUsername() : other.getNickname());
         boolean byMe = blocks.existsByBlockerIdAndBlockedId(actorId, otherId);
-        return new ConversationView(c.getPublicId(), c.getItemId(), c.getItemTitleSnapshot(), c.getItemImageSnapshot(), otherId, name,
+        return new ConversationView(c.getPublicId(), c.getItemId(), c.getItemTitleSnapshot(), c.getItemImageSnapshot(),
+            item == null ? null : item.getPrice(), item == null ? "UNAVAILABLE" : item.getStatus().name(), otherId, name,
             c.getLastMessagePreview(), c.getLastMessageAt(), c.getNextSequence() - 1, unread(c, actorId), byMe, blocks.existsEitherDirection(actorId, otherId));
     }
     private MessageView view(ChatMessage m) { return new MessageView(m.getSequenceNumber(), m.getSenderId(), m.getBody(), m.getCreatedAt()); }

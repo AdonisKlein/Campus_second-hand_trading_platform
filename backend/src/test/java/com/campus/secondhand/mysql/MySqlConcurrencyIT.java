@@ -94,7 +94,7 @@ class MySqlConcurrencyIT {
     @Test
     void freshSchemaValidatesAndJdbcSessionRowsCascade() {
         flyway.validate();
-        assertEquals(5, jdbc.queryForObject(
+        assertEquals(6, jdbc.queryForObject(
             "SELECT COUNT(*) FROM flyway_schema_history WHERE success = 1", Integer.class));
         long now = Instant.now().toEpochMilli();
         jdbc.update("INSERT INTO SPRING_SESSION "

@@ -4,7 +4,84 @@
 
 ## 当前状态
 
+### 第一项验收差距复核（2026-08-29）
+
+- 环境复验：提升权限后 Docker Engine/Compose 可用，`deploy` 的 MySQL、Backend、Web、Mailpit 均运行，`http://localhost:8088/api/actuator/health/liveness` 返回 `{"status":"UP"}`。
+- `cd backend; mvn verify` 通过：单元 35/35、集成与应用测试 57/57，Flyway 6 个迁移和 MySQL 8.4 Testcontainers 并发测试通过。
+- Compose E2E 首轮执行：8/10 通过；取消购买意向与管理员留言删除两条新增旅程因测试流程断言问题失败，已修正。修正后的定点命令因 runner 已清理隔离环境而无服务可用，超时不作为业务结果；需重新运行完整 `npm run test:e2e:compose` 验证。
+- Compose E2E 复验：完整隔离环境运行 9/9 通过（含举报回执、管理员留言删除、资料修改和卖家重新上架），runner 自动清理容器和网络。
+
+- 复核当前分支 `codex/close-test-gaps`：独立测试和页面断言已补齐，测试清单状态已同步。
+- 验证：`node --test frontend/tests/*.test.js` 3/3 通过；全部 `frontend/assets/js/*.js` `node --check` 通过。
+- 当前验收遗留仅为远程 GitHub Actions 全绿/受控失败运行证据和最终 Git 标签；代码侧测试缺口已关闭。
+- 本轮新增 `unit/order/TradingServiceTest` 与 `unit/chat/DirectChatServiceTest`，分别锁定自购/未知买家、空消息和禁用用户等稳定规则边界；测试清单已同步为部分覆盖，未将少量单测误写成完整状态机覆盖。
+- 新增 `SecurityApiIT`，集中验证受保护写请求必须同时具备 Session 与 CSRF，且请求体伪造 `sellerId` 不会改变资源归属。
+- 新增 `SearchApiIT` 和 `ProductImagesTest`，分别覆盖用户搜索隐私/关键词上限，以及图片格式拒绝、标准化存储、owner 路径和路径穿越保护。
+- 扩展 `product-publish-edit-question-journey.spec.js`，加入个人资料修改和卖家下架/重新上架的独立 Playwright 旅程（UC04、UC07）。
+- 扩展 `chat-trade-admin.spec.js`，加入举报人进入“我的举报”查看治理说明，以及普通学生访问 `/api/admin/messages` 返回 403 的反向断言（UC15、UC17）。
+- UC13 取消/超时分支继续由后端 API/时钟测试负责；此前新增的 UI 取消旅程因测试夹具会话不稳定已移除，避免把不可靠断言计入通过。
+- 管理员治理旅程新增公开留言创建与后台删除断言，确认 UC17 留言管理的真实页面结果。
+
 课程 CI 工作项 1—8 已全部在代码侧完成。工作项 8 的本地成功与受控失败路径均已通过；合并并 Push 到 `main` 后，需要在 GitHub Actions 保存一次自动全绿运行，再通过 `workflow_dispatch` 的 `controlled_failure` 保存一次预期失败运行，作为课程远程验收材料。
+
+## 测试缺口补全第二轮（2026-08-28）
+
+- 分支：`codex/close-test-gaps`。
+- 扩展 `AuthApiIT`，覆盖重置验证码用途校验、成功后新密码登录、旧密码失效和验证码重复消费。
+- 扩展 `ProductApiIT`，覆盖公开留言发布、本人修改/删除、他人越权失败及匿名读取隔离，并断言响应结果。
+- 更新 `doc/测试清单.md`：UC03、UC09 标记为当前实现已覆盖；Search/PublicQuestion/Security 等微服务测试保留为迁移后的实际服务工作项，未伪造不存在的模块。
+- 验证：新增测试首次发现留言接口契约为 HTTP 200 而非 201，已按项目统一 `ApiResponse` 契约修正断言；`mvn -q "-Dtest=AuthApiIT,ProductApiIT" test` 通过（8/8），随后 `mvn -q verify` 通过，Flyway 与 MySQL 8.4 Testcontainers 并发测试执行；全部前端 JS `node --check` 通过，`git diff --check` 通过。
+- 提交号：本轮尚未提交。
+
+## 测试补全分支首轮（2026-08-28）
+
+- 新建分支 `codex/complete-uc-tests`。
+- 扩展现有 `TradingApiIT`：补充卖家拒绝、买家取消、卖家取消预留订单、重复取消/完成等状态和异常断言。
+- 扩展现有 Playwright 旅程文件：新增独立订单工作台旅程，断言买卖视角、阶段筛选、商品分组、时间线和 `allowedActions` 对应的页面动作。
+- 更新 `doc/测试清单.md` 的覆盖状态，明确微服务目录尚不存在，Search/PublicQuestion/Security 等测试需在服务迁移后落到实际 owner，而不是旧 backend。
+- 验证：`mvn verify` 通过，单元/API/MySQL 集成测试 51/51 通过（真实 MySQL 8.4 Testcontainers 5 项并发测试均执行）；前端 Node 契约 3/3、全部 JS 语法通过；Compose Playwright E2E 7/7 通过，包含新增订单工作台旅程。期间修正了订单工作台实际按钮文案“取消交易”“确认已取货”和实际容器 `#orderGroups` 选择器。
+- 提交号：本轮尚未提交。
+
+## 测试清单与补齐项（2026-08-28）
+
+- 新增 `doc/测试清单.md`，按照单元测试、集成/API 测试、端到端测试三层定义执行内容、结果断言、有效性标准和 UC01～UC18 覆盖关系。
+- 清单区分当前已有自动化覆盖与仍需补齐的独立测试：SearchApiIT、PublicQuestionApiIT、SecurityApiIT、TradingServiceTest、DirectChatServiceTest、图片规则单测、订单工作台 E2E 及若干反向旅程。
+- 明确不能用“程序未报错”、HTTP 2xx 或 smoke 测试代替业务结果断言；MySQL Testcontainers 不可用时必须记录为未完成/跳过，不得计为通过。
+- 验证：清单引用的实际测试类和 E2E 文件均存在；新增文档 `git diff --check` 通过。本轮未修改测试代码，未重新执行全量 Maven/E2E。
+- 提交号：本轮尚未提交。
+
+## 恢复需求说明书图片引用（2026-08-28）
+
+- 在《软件需求说明书》中恢复当前 `doc/images/软件需求说明书/` 目录下的用例图参考、概念类图以及 `SYS-SEQ01`～`SYS-SEQ18` 系统顺序图引用。
+- 图片按 `REQ01`～`REQ18` 分节放置，未回退已重写的新版需求正文和交易/安全规则。
+- 验证：20 个 Markdown 图片引用全部解析到现有文件；`git diff --check` 通过；需求说明书仍包含 18 条 `REQxx`。
+- 提交号：本轮尚未提交。
+
+## UC01～UC18 课程文档统一（2026-08-28）
+
+- 依据新版《业务场景（用例）清单》和《需求追溯矩阵》，重写软件需求说明书、软件测试文档、软件用户手册、软件开发计划书、模块设计方案和 UI 视觉与交互设计方案。
+- 移除旧版“创建订单即售出”、商品分类侧栏、客户端卖家 ID、`schema.sql` 建表和直接打开 HTML 等过时描述；统一为学生用户、非独占购买意向、唯一预留、当面交接、Session/CSRF、`CurrentActorService`、`TradingService` 和 Flyway 当前契约。
+- 需求说明书现包含 `REQ01`～`REQ18` 唯一基线；测试文档按单元、API、MySQL 并发、前端契约、Playwright E2E 和部署门禁组织；用户手册覆盖 UC01～UC17 的实际页面流程和 UC18 安全体验。
+- 模块设计方案从历史“未来重构草案”改为当前模块化单体基线；UI 方案移除宣传横幅、分类侧栏等已废弃结构，固化桌面与 390px 移动端业务页面规则。
+- 验证：18 条 `REQxx` 与 18 个 `UCxx` 数量一致；全部 Markdown 图片引用存在；旧术语定点扫描无错误性残留；`git diff --check` 通过；前端 Node 契约测试 3/3、全部 JS `node --check` 通过；`mvn verify` 构建成功，单元测试 29/29、已执行集成测试 44/44 通过，当前 Docker 环境不可用导致 5 项 MySQL Testcontainers 测试跳过。
+- 提交号：本轮尚未提交。遗留项：本轮仅改文档，未重跑 Compose E2E 或浏览器截图；真实 MySQL 门禁沿用此前通过记录，待 Docker 可用时可再次执行。
+
+## 需求追溯表统一（2026-08-27）
+
+- 将旧版仅含 8 个用例的 `doc/需求追溯矩阵.md` 更新为当前 `REQ01`～`REQ18` / `UC01`～`UC18` 基线。
+- 在同一张表中汇总需求、用例、系统/组件/对象三层模型编号、实际代码模块、UNIT/INT/E2E 测试编号、具体测试类和结果。
+- 区分“当前执行通过”“最近一次 E2E 通过”“由集成测试覆盖”和“尚无独立 E2E 断言”，避免把规划编号误写为已经执行的独立测试。
+- 验证：追溯表包含 18 条 `REQxx` 记录，`git diff --check` 通过；全部前端 JS `node --check` 和 3 组 Node 契约测试通过；`mvn '-Djava.version=24' verify` 构建成功，单元测试 29/29、已执行集成测试 44/44 通过，Docker 不可用导致 6 项 MySQL Testcontainers 测试跳过。完整 Compose E2E 未在本轮重跑，沿用 2026-08-26 的 6/6 通过记录并在表中明确标注。
+- 提交号：本轮尚未提交。
+
+### 本轮补充：封禁提示与举报治理回执（2026-08-27）
+
+- 管理员封禁账号时保存治理说明；被撤销的旧 Session 访问接口返回包含说明的封禁提示，前端保留提示并在当前页面展示后再引导重新登录。
+- 举报支持绑定当前私聊会话，服务端校验举报人和被举报人确属会话参与方，并保存最近 30 条消息证据快照；管理员治理队列展示该快照。
+- 新增“收到的治理结果”接口和个人中心页面区块，被举报方可查看处理结果及管理员确认说明；举报提交、治理动作和证据均保持服务端身份与资源归属校验。
+- 新增 Flyway `V6__governance_evidence_and_notices.sql`，同步更新接口模型、前端报告页、Postman 契约相关字段和项目上下文。
+- 验证：Docker 恢复后执行 `mvn clean verify`，单元与集成测试 49/49 通过，真实 MySQL 8.4 完成 V1—V6 空库迁移、Hibernate validate 与并发测试；前端 Node 静态测试 3/3、全部 JS `node --check`、`git diff --check` 通过。验证过程中修复多构造器导致的 Spring 注入歧义，并将 MySQL 迁移计数断言同步为 6。
+- 提交号：本轮尚未提交。遗留项：Playwright Compose 已进入构建阶段，但 Docker Hub 被本机代理证书阻断（`x509: certificate signed by unknown authority`），需修复 Docker Desktop CA/代理信任后全量复验。
 
 ## 第十四轮：个人中心完整重设计
 
@@ -65,6 +142,22 @@
 - 验证：Java 24 兼容覆盖项目声明的 Java 25；单体 `mvn clean -Djava.version=24 verify` 为单元 29/29、API/真实 MySQL 50/50 全绿；五个新工程各 1/1 全绿。
 - 提交：`refactor: establish microservice migration baseline`（使用 `git log -1` 查看）。
 
+### 第十五轮：私聊页面完整重设计（进行中）
+
+- 分支：`codex/round-15-chat-redesign`。
+- 私聊页重构为桌面会话列表、聊天房间、商品/交易上下文三栏；移动端保持会话列表与房间两级导航。
+- 会话列表增加关键词搜索、未读优先和分页；消息增加日期分段、历史加载状态、发送中、失败重试和断线重连反馈。
+- `DirectChat.ConversationView` 增加真实商品价格与状态，商品下架、预留或售出后旧会话继续展示上下文；管理员私聊权限边界不变。
+- 结构化报价尚未实现：需要独立消息类型、报价状态机及与购买意向的服务端事务集成，不使用文本或前端状态伪造。
+- 当前验证：Docker Compose 的 MySQL、Backend、Web 均正常启动，后端 liveness 为 `UP`；`mvn verify` 50/50 通过、0 失败、0 跳过，真实执行 MySQL 8.4 Testcontainers 空库迁移、Hibernate validate 与并发测试；前端 Node 测试 3/3、全部 JS 语法通过；浏览器检查 1440、390、320px 无整体横向溢出。
+- E2E 复验修复 MySQL 健康检查误判：改用 `127.0.0.1:3306`，避免初始化临时 Unix socket 服务使 Backend 在正式 TCP 服务启动前连接失败。修复后隔离 MySQL、Backend、Web 均稳定健康；本机 Playwright 1.62.1 与 Chromium 1234 已补齐。最终全量重跑时 Docker Engine 整体失去响应（独立 `docker ps` 同样超时），浏览器用例未取得最终通过结果，需 Docker Desktop 恢复后重跑 `cd e2e; npm run test:e2e:compose`。
+- Docker Desktop 恢复后重新验证：全量 6 个用例中 5 个首次通过，发现 E2E 未读文案断言仍使用旧的 `1 未读`，已同步为页面当前契约 `1 条未读`；定点重跑私聊/交易/管理员 3 个用例全部通过。完整 6 个用例的另外 5 个已在同一轮通过，剩余风险为未在文案修复后再次执行全量命令。
+- 消息流改为顶部对齐的纵向 flex 布局，每条消息禁止伸缩，气泡宽度随内容变化并继续受桌面 `72%/580px`、移动 `84%` 上限约束，修复少量消息均分聊天区高度的问题；前端 Node 测试 3/3、全部 JS 语法、`git diff --check` 通过，Docker Web 已重建。
+- 用户复验后进一步将消息气泡上下内边距收紧为 `7px`、行高设为 `1.35`、消息间距降为 `6px`，并显式清除消息项最小高度；前端 Node 测试 3/3 与 `git diff --check` 通过。Docker Web 重建时 Engine 在解析 Nginx 镜像阶段无响应，需 Engine 恢复后再次部署。
+- 截图复核确认用户所指为左侧 `button.conversation-card`：`.conversation-list` 的 Grid 默认拉伸导致少量会话均分整列高度。列表现改为 `align-content:start` 与 `grid-auto-rows:max-content`，会话行使用紧凑的 `88px` 最小高度；前端 Node 测试 3/3 与 `git diff --check` 通过。
+- 聊天工作区高度改为受桌面/移动动态视口约束，`.chat-room` 禁止内容撑高，`.chat-messages` 成为独立纵向滚动区域；会话列表与交易信息列也在工作区内部滚动。前端 Node 测试 3/3、全部 JS 语法和 `git diff --check` 通过，Docker Web 已重建部署。
+- 复核新增会话路径：所有 `button.conversation-card` 均由 `paintConversations()` 渲染到 `.conversation-list`，列表使用 `flex:1`、`min-height:0` 与 `overflow-y:auto`，新增聊天只增加内部滚动长度，不会撑高页面；UI 静态契约现同时锁定会话列与消息列的内部滚动约束，前端 Node 测试 3/3 通过。
+- 提交号：本轮尚未提交。
 ### GitHub Actions Node 24 依赖升级（2026-08-27）
 
 - 将 CI 中 GitHub 官方 Action 升级到 Node 24 兼容主版本：`checkout@v7`、`setup-java@v5`、`setup-node@v7`、`upload-artifact@v7`。
@@ -288,6 +381,26 @@
 - Compose 实测全部服务健康，四个账号只能读取自身数据库；Kind 实测全部 Pod 1/1 Running、PVC Bound、同源 liveness 与首页通过。
 - 本地 JDK 24 兼容回归入口为 `scripts/ci/verify-services.ps1 -JavaVersion 24`；发布镜像仍使用 Docker 内的 Java 25。
 - 下一工作项：补齐微服务 API、事件、基础设施集成和 UC01—UC18 追溯测试；现有旧单体 CI 自动部署脚本将在工作项 8 替换。
+### 图片上传 HTTP 413 排障（2026-08-28）
+
+- Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。
+- 验证：检查 Nginx 配置、Spring multipart 配置与前端上传请求链路；未运行完整 Maven/Docker 验证。提交号：本轮提交后使用 `git log -1` 查看。
+- 遗留：需在实际 Docker 部署中重建 web 容器并用接近 5MB 的 JPG/PNG 上传复验。
+
+### 发布页图片移除（2026-08-28）
+
+- 发布页补充“移除图片”按钮，清空文件输入、释放预览 Blob URL 并恢复占位图；提交时继续将 `imageUrl` 发送为 `null`，与“我的发布”编辑器行为一致。
+- 验证：前端发布脚本语法检查与 `git diff --check`；未运行完整 Maven/Docker 验证。
+
+### 个人中心退出按钮宽度（2026-08-28）
+
+- 覆盖全局按钮 `width: 100%` 规则，仅将 `.profile-header #logoutBtn` 设为内容宽度，避免退出按钮横向撑满个人中心标题行。
+- 验证：`git diff --check`；未运行完整 Maven/Docker 验证。
+
+### 个人中心入口卡片样式（2026-08-28）
+
+- 将“我的发布、我买到的、我卖出的、消息、举报记录”等 `.profile-links` 入口改为独立白色圆角矩形边框，补充间距与悬停边框反馈，与 `.profile-overview.form-panel` 视觉一致。
+- 验证：`git diff --check`；未运行完整 Maven/Docker 验证。
 
 ## 接手检查清单
 

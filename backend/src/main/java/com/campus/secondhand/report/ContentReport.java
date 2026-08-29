@@ -14,6 +14,8 @@ public class ContentReport {
     @Column(name = "target_id", nullable = false) private Long targetId;
     @Column(name = "reported_user_id", nullable = false) private Long reportedUserId;
     @Column(name = "target_summary", nullable = false, length = 500) private String targetSummary;
+    @Column(name = "context_conversation_id") private Long contextConversationId;
+    @Column(name = "evidence_snapshot", columnDefinition = "TEXT") private String evidenceSnapshot;
     @Enumerated(EnumType.STRING) @Column(name = "reason_code", nullable = false, length = 40) private ReportReason reasonCode;
     @Column(nullable = false, length = 1000) private String description;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 20) private ReportStatus status = ReportStatus.OPEN;
@@ -36,6 +38,10 @@ public class ContentReport {
     public void setReportedUserId(Long value) { reportedUserId = value; }
     public String getTargetSummary() { return targetSummary; }
     public void setTargetSummary(String value) { targetSummary = value; }
+    public Long getContextConversationId() { return contextConversationId; }
+    public void setContextConversationId(Long value) { contextConversationId = value; }
+    public String getEvidenceSnapshot() { return evidenceSnapshot; }
+    public void setEvidenceSnapshot(String value) { evidenceSnapshot = value; }
     public ReportReason getReasonCode() { return reasonCode; }
     public void setReasonCode(ReportReason value) { reasonCode = value; }
     public String getDescription() { return description; }

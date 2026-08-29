@@ -43,7 +43,9 @@ class ChatApiIT extends AbstractApiIntegrationTest {
         MvcResult opened = mvc.perform(post("/chat/conversations").cookie(buyerSession).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"itemId\":%d}".formatted(item.id())))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.data.otherUserId").value(seller.getId())).andReturn();
+            .andExpect(status().isOk()).andExpect(jsonPath("$.data.otherUserId").value(seller.getId()))
+            .andExpect(jsonPath("$.data.itemPrice").value(18))
+            .andExpect(jsonPath("$.data.itemStatus").value("ON_SALE")).andReturn();
         String conversationId = objectMapper.readTree(opened.getResponse().getContentAsString()).at("/data/id").asText();
         assertTrue(conversationId.matches("[0-9a-f-]{36}"));
 

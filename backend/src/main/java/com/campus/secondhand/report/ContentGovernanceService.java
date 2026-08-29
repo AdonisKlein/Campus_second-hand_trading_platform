@@ -3,12 +3,14 @@ package com.campus.secondhand.report;
 import com.campus.secondhand.item.*;
 import com.campus.secondhand.message.*;
 import com.campus.secondhand.user.*;
+import com.campus.secondhand.chat.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +21,20 @@ public class ContentGovernanceService implements ContentGovernance {
     private final ItemRepository items;
     private final MessageRepository messages;
     private final UserRepository users;
+    private final ChatConversationRepository conversations;
+    private final ChatMessageRepository chatMessages;
 
     public ContentGovernanceService(ContentReportRepository reports, ReportActionRepository actions,
                                     ItemRepository items, MessageRepository messages, UserRepository users) {
+        this(reports, actions, items, messages, users, null, null);
+    }
+
+    @Autowired
+    public ContentGovernanceService(ContentReportRepository reports, ReportActionRepository actions,
+                                    ItemRepository items, MessageRepository messages, UserRepository users,
+                                    ChatConversationRepository conversations, ChatMessageRepository chatMessages) {
         this.reports = reports; this.actions = actions; this.items = items; this.messages = messages; this.users = users;
+        this.conversations = conversations; this.chatMessages = chatMessages;
     }
 
     @Override @Transactional
@@ -42,6 +54,8 @@ public class ContentGovernanceService implements ContentGovernance {
         ContentReport report = new ContentReport();
         report.setReporterId(reporterId); report.setTargetType(draft.targetType()); report.setTargetId(draft.targetId());
         report.setReportedUserId(target.reportedUserId()); report.setTargetSummary(target.summary());
+        ChatEvidence evidence = chatEvidence(reporterId, target.reportedUserId(), draft.contextConversationId());
+        report.setContextConversationId(evidence.conversationId()); report.setEvidenceSnapshot(evidence.snapshot());
         report.setReasonCode(draft.reasonCode()); report.setDescription(description);
         return view(reports.saveAndFlush(report), Map.of(), List.of());
     }
@@ -50,6 +64,17 @@ public class ContentGovernanceService implements ContentGovernance {
     public ReportPage listMine(Long reporterId, int page, int size) {
         requireStudent(reporterId);
         return page(reports.findByReporterIdOrderByCreatedAtDesc(reporterId, pageable(page, size)));
+    }
+
+    @Override @Transactional(readOnly = true)
+    public ReceivedReportPage listReceived(Long reportedUserId, int page, int size) {
+        requireStudent(reportedUserId);
+        var result = reports.findByReportedUserIdAndStatusNotOrderByCreatedAtDesc(
+            reportedUserId, ReportStatus.OPEN, pageable(page, size));
+        return new ReceivedReportPage(result.getContent().stream().map(report -> new ReceivedReportView(
+            report.getId(), report.getTargetType(), report.getTargetSummary(), report.getReasonCode(), report.getStatus(),
+            report.getDecisionAction(), report.getResolutionNote(), report.getCreatedAt(), report.getResolvedAt())).toList(),
+            result.getNumber(), result.getSize(), result.hasNext());
     }
 
     @Override @Transactional(readOnly = true)
@@ -70,7 +95,7 @@ public class ContentGovernanceService implements ContentGovernance {
         }
         String note = normalizeText(decision.note(), 2, 1000, "请填写处理说明");
         GovernanceAction action = decision.status() == ReportStatus.DISMISSED ? GovernanceAction.NONE : decision.action();
-        if (decision.status() == ReportStatus.RESOLVED) applyAction(report, action);
+        if (decision.status() == ReportStatus.RESOLVED) applyAction(report, action, note);
         else if (decision.action() != null && decision.action() != GovernanceAction.NONE) throw new GovernanceRuleException("驳回举报不能执行治理措施");
         report.setStatus(decision.status()); report.setDecisionAction(action); report.setResolutionNote(note);
         report.setHandledBy(adminId); report.setResolvedAt(LocalDateTime.now()); report.setUpdatedAt(LocalDateTime.now());
@@ -80,7 +105,7 @@ public class ContentGovernanceService implements ContentGovernance {
         return view(report, userMap(List.of(report)), List.of(audit));
     }
 
-    private void applyAction(ContentReport report, GovernanceAction action) {
+    private void applyAction(ContentReport report, GovernanceAction action, String note) {
         GovernanceAction expected = switch (report.getTargetType()) {
             case ITEM -> GovernanceAction.REMOVE_ITEM;
             case MESSAGE -> GovernanceAction.REMOVE_MESSAGE;
@@ -99,7 +124,8 @@ public class ContentGovernanceService implements ContentGovernance {
             case DISABLE_USER -> {
                 User user = users.findById(report.getTargetId()).orElseThrow(() -> new GovernanceRuleException("用户已经不存在"));
                 if ("ADMIN".equals(user.getRole())) throw new GovernanceRuleException("不能通过举报禁用管理员");
-                user.setStatus("DISABLED"); user.setAuthVersion(user.getAuthVersion() + 1); users.save(user);
+                user.setStatus("DISABLED"); user.setStatusReason(note);
+                user.setAuthVersion(user.getAuthVersion() + 1); users.save(user);
             }
             default -> throw new GovernanceRuleException("请选择治理措施");
         }
@@ -143,7 +169,7 @@ public class ContentGovernanceService implements ContentGovernance {
         User reporter = userMap.get(report.getReporterId());
         return new ReportView(report.getId(), report.getReporterId(), reporter == null ? "学生用户" : displayName(reporter),
             report.getTargetType(), report.getTargetId(), report.getReportedUserId(), report.getTargetSummary(),
-            report.getReasonCode(), report.getDescription(), report.getStatus(), report.getDecisionAction(),
+            report.getReasonCode(), report.getDescription(), report.getEvidenceSnapshot(), report.getStatus(), report.getDecisionAction(),
             report.getResolutionNote(), report.getCreatedAt(), report.getResolvedAt(), history.stream().map(a ->
                 new AuditView(a.getAdminId(), a.getResultStatus(), a.getActionType(), a.getNote(), a.getCreatedAt())).toList());
     }
@@ -156,5 +182,28 @@ public class ContentGovernanceService implements ContentGovernance {
     private String normalizeText(String value, int min, int max, String message) { String text = value == null ? "" : value.trim(); if (text.length() < min || text.length() > max) throw new GovernanceRuleException(message); return text; }
     private String trimSummary(String value) { String text = value == null ? "" : value.trim(); return text.length() <= 500 ? text : text.substring(0, 500); }
     private String displayName(User user) { return user.getNickname() == null || user.getNickname().isBlank() ? user.getUsername() : user.getNickname(); }
+    private ChatEvidence chatEvidence(Long reporterId, Long reportedUserId, String publicId) {
+        if (publicId == null || publicId.isBlank()) return new ChatEvidence(null, null);
+        if (conversations == null || chatMessages == null) {
+            throw new GovernanceRuleException("举报聊天证据服务不可用");
+        }
+        ChatConversation conversation = conversations.findByPublicId(publicId)
+            .orElseThrow(() -> new GovernanceRuleException("无法核验举报所关联的私聊会话"));
+        boolean reporterIsBuyer = reporterId.equals(conversation.getBuyerId());
+        boolean reporterIsSeller = reporterId.equals(conversation.getSellerId());
+        Long other = reporterIsBuyer ? conversation.getSellerId() : reporterIsSeller ? conversation.getBuyerId() : null;
+        if (other == null || !other.equals(reportedUserId)) {
+            throw new GovernanceRuleException("举报人与被举报人不属于该私聊会话");
+        }
+        List<ChatMessage> recent = chatMessages.findPage(conversation.getId(), Long.MAX_VALUE, PageRequest.of(0, 30));
+        Collections.reverse(recent);
+        String snapshot = recent.stream().map(message -> {
+            String speaker = message.getSenderId().equals(reporterId) ? "举报人" : "被举报人";
+            return "[%s] %s：%s".formatted(message.getCreatedAt(), speaker, message.getBody());
+        }).collect(Collectors.joining("\n"));
+        if (snapshot.isBlank()) snapshot = "该会话尚无消息";
+        return new ChatEvidence(conversation.getId(), snapshot);
+    }
     private record TargetSnapshot(Long reportedUserId, String summary) {}
+    private record ChatEvidence(Long conversationId, String snapshot) {}
 }

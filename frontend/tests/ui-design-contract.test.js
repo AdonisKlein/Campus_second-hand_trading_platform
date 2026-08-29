@@ -64,8 +64,21 @@ if (!admin.includes("adminReportsPanel")) failures.push("admin.html: 缺少管�
 
 const chat = fs.readFileSync(path.join(frontend, "messages.html"), "utf8");
 const chatJs = fs.readFileSync(path.join(frontend, "assets/js/chat.js"), "utf8");
+const styles = fs.readFileSync(path.join(frontend, "assets/css/styles.css"), "utf8");
 for (const selector of ["chat-shell", "conversationList", "chatMessages", "chatForm"]) {
     if (!chat.includes(selector)) failures.push(`messages.html: 缺少私聊结构 ${selector}`);
+}
+for (const selector of ["conversationSearch", "unreadFirst", "chatContext", "chatItemState", "historyStatus"]) {
+    if (!chat.includes(selector)) failures.push(`messages.html: 第十五轮私聊工作台缺少 ${selector}`);
+}
+for (const contract of ["itemPrice", "itemStatus", "retryMessage", "preserveReadingPosition", "loadMoreConversations"]) {
+    if (!chatJs.includes(contract)) failures.push(`chat.js: 第十五轮私聊投影或交互缺少 ${contract}`);
+}
+if (!/\.conversation-list\s*\{[^}]*min-height:0[^}]*overflow-y:auto/s.test(styles)) {
+    failures.push("styles.css: 左侧会话列表必须在固定工作区内独立滚动");
+}
+if (!/\.chat-messages\s*\{[^}]*min-height:0[^}]*overflow-y:auto/s.test(styles)) {
+    failures.push("styles.css: 聊天消息必须在固定工作区内独立滚动");
 }
 
 const ordersHtml = fs.readFileSync(path.join(frontend, "orders.html"), "utf8");

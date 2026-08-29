@@ -142,6 +142,9 @@ async function loadReports() {
             <h3>${adminTargetLabel(report.targetType)} #${report.targetId}：${escapeHtml(report.targetSummary)}</h3>
             <p><strong>${escapeHtml(report.reporterName)}</strong> 举报为“${adminReportLabel(report.reasonCode)}”</p><p>${escapeHtml(report.description)}</p>
             ${report.actionState && report.actionState !== "NONE" ? `<div class="report-resolution"><strong>${adminActionStateLabel(report.actionState)}</strong>${report.actionError ? `<p>${escapeHtml(report.actionError)}</p>` : ""}</div>` : ""}
+            ${report.evidenceSnapshot
+                ? `<section class="report-evidence"><strong>举报关联聊天证据</strong><pre>${escapeHtml(report.evidenceSnapshot)}</pre></section>`
+                : report.targetType === "USER" ? '<p class="report-evidence-missing">该举报未关联聊天会话，无法展示聊天证据。</p>' : ""}
             ${report.resolutionNote ? `<div class="report-resolution"><strong>处理说明</strong><p>${escapeHtml(report.resolutionNote)}</p></div>` : ""}
             ${report.status === "OPEN" ? `<div class="admin-row-actions"><button type="button" data-action="resolve-report" data-report-id="${report.id}" data-target-type="${report.targetType}">确认并治理</button><button type="button" class="secondary" data-action="dismiss-report" data-report-id="${report.id}">驳回举报</button></div>` : ""}
             ${report.actionState === "FAILED" && report.status === "RESOLVED" ? `<div class="admin-row-actions"><button type="button" class="secondary" data-action="retry-report" data-report-id="${report.id}" data-report-action="${report.decisionAction || ""}" data-report-note="${escapeHtml(report.resolutionNote || "")}">重试治理</button></div>` : ""}

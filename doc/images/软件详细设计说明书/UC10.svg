@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1176" height="1156" viewBox="0 0 1176 1156">
+  <defs>
+    <marker id="uml-filled-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#141414"/>
+    </marker>
+    <marker id="uml-open-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#141414" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1176" height="1156" fill="#FFFFFF"/>
+  <g>
+<g>
+    <circle cx="132" cy="22" r="9" fill="none" stroke="#141414" stroke-width="1.5"/>
+    <line x1="132" y1="31" x2="132" y2="45" stroke="#141414" stroke-width="1.5"/>
+    <line x1="121" y1="38" x2="143" y2="38" stroke="#141414" stroke-width="1.5"/>
+    <line x1="132" y1="45" x2="123" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <line x1="132" y1="45" x2="141" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <text x="132" y="56" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline">buyer:Buyer</text>
+  </g>
+<line x1="132" y1="78" x2="132" y2="1136" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <circle cx="284" cy="22" r="9" fill="none" stroke="#141414" stroke-width="1.5"/>
+    <line x1="284" y1="31" x2="284" y2="45" stroke="#141414" stroke-width="1.5"/>
+    <line x1="273" y1="38" x2="295" y2="38" stroke="#141414" stroke-width="1.5"/>
+    <line x1="284" y1="45" x2="275" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <line x1="284" y1="45" x2="293" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <text x="284" y="56" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline">seller:Seller</text>
+  </g>
+<line x1="284" y1="78" x2="284" y2="1136" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="369" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="436" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="436" dy="0">chatSvc :</tspan><tspan x="436" dy="14">ChatService</tspan></text>
+  </g>
+<line x1="436" y1="78" x2="436" y2="1136" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="521" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="588" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="588" dy="0">chatRepo :</tspan><tspan x="588" dy="14">ChatRepository</tspan></text>
+  </g>
+<line x1="588" y1="78" x2="588" y2="1136" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="673" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="740" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="740" dy="0">msgRepo :</tspan><tspan x="740" dy="14">MessageRepository</tspan></text>
+  </g>
+<line x1="740" y1="78" x2="740" y2="1136" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="825" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="892" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="892" dy="0">session :</tspan><tspan x="892" dy="14">ChatSession</tspan></text>
+  </g>
+<line x1="892" y1="78" x2="892" y2="1136" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="977" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="1044" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="1044" dy="0">msg :</tspan><tspan x="1044" dy="14">ChatMessage</tspan></text>
+  </g>
+<line x1="1044" y1="78" x2="1044" y2="1136" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<rect x="130" y="102" width="8" height="58.599999999999994" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="430" y="102" width="12" height="201.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="586" y="170" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="130" y="306" width="8" height="58.60000000000002" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="430" y="306" width="12" height="473.4000000000001" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="890" y="374" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="1042" y="510" width="8" height="85.79999999999995" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="738" y="578" width="8" height="133.4000000000001" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="130" y="714" width="8" height="58.59999999999991" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="282" y="782" width="8" height="58.59999999999991" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="430" y="782" width="12" height="337.4000000000001" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="738" y="850" width="8" height="133.4000000000001" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="890" y="986" width="8" height="65.40000000000009" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="282" y="1054" width="8" height="58.59999999999991" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<g>
+    <line x1="142" y1="130" x2="426" y2="130" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="186.8" y="98" width="194.39999999999995" height="16" fill="#FFFFFF"/>
+    <text x="284" y="110" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">发起聊天(买家ID, 卖家ID, 商品ID)</text>
+  </g>
+<g>
+    <line x1="446" y1="198" x2="578" y2="198" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="447" y="166" width="130" height="16" fill="#FFFFFF"/>
+    <text x="512" y="178" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">查找或创建会话(买家ID, 卖家ID, 商品ID)</text>
+  </g>
+<g>
+    <line x1="578" y1="266" x2="446" y2="266" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="496" y="278" width="32" height="16" fill="#FFFFFF"/>
+    <text x="512" y="290" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">会话</text>
+  </g>
+<g>
+    <line x1="142" y1="334" x2="426" y2="334" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="216.39999999999998" y="302" width="135.20000000000002" height="16" fill="#FFFFFF"/>
+    <text x="284" y="314" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">发送消息(会话ID, 内容)</text>
+  </g>
+<g>
+    <line x1="446" y1="402" x2="882" y2="402" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="608.1" y="370" width="111.80000000000001" height="16" fill="#FFFFFF"/>
+    <text x="664" y="382" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">验证参与者(用户ID)</text>
+  </g>
+<g>
+    <line x1="882" y1="470" x2="446" y2="470" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="646.6" y="482" width="34.8" height="16" fill="#FFFFFF"/>
+    <text x="664" y="494" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">true</text>
+  </g>
+<g>
+    <line x1="446" y1="538" x2="1034" y2="538" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="649" y="506" width="181.99999999999997" height="16" fill="#FFFFFF"/>
+    <text x="740" y="518" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">新建消息(会话ID, 用户ID, 内容)</text>
+  </g>
+<g>
+    <line x1="446" y1="606" x2="730" y2="606" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="554.8" y="574" width="66.4" height="16" fill="#FFFFFF"/>
+    <text x="588" y="586" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">保存(消息)</text>
+  </g>
+<g>
+    <line x1="730" y1="674" x2="446" y2="674" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="550" y="686" width="76" height="16" fill="#FFFFFF"/>
+    <text x="588" y="698" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">保存后的消息</text>
+  </g>
+<g>
+    <line x1="426" y1="742" x2="142" y2="742" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="251.5" y="754" width="65" height="16" fill="#FFFFFF"/>
+    <text x="284" y="766" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">消息已发送</text>
+  </g>
+<g>
+    <line x1="294" y1="810" x2="426" y2="810" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="298.6" y="778" width="122.80000000000001" height="16" fill="#FFFFFF"/>
+    <text x="360" y="790" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">获取消息历史(会话ID)</text>
+  </g>
+<g>
+    <line x1="446" y1="878" x2="730" y2="878" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="509.4" y="846" width="157.2" height="16" fill="#FFFFFF"/>
+    <text x="588" y="858" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据会话ID查找消息(会话ID)</text>
+  </g>
+<g>
+    <line x1="730" y1="946" x2="446" y2="946" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="561" y="958" width="54" height="16" fill="#FFFFFF"/>
+    <text x="588" y="970" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">消息列表</text>
+  </g>
+<g>
+    <line x1="446" y1="1014" x2="882" y2="1014" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="613.6" y="982" width="100.80000000000001" height="16" fill="#FFFFFF"/>
+    <text x="664" y="994" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">标记已读(卖家ID)</text>
+  </g>
+<g>
+    <line x1="426" y1="1082" x2="294" y2="1082" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="322" y="1094" width="76" height="16" fill="#FFFFFF"/>
+    <text x="360" y="1106" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">返回消息历史</text>
+  </g>
+</g></svg>

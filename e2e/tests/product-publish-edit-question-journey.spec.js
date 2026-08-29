@@ -68,3 +68,30 @@ test('搜索→上传图片→发布→编辑→问答', async ({ page }) => {
   await page.getByRole('button', { name: '发布', exact: false }).filter({ hasText: '发布' }).last().click();
   await expect(page.locator('#messageList')).toContainText(question);
 });
+
+test('个人资料修改后公开资料更新', async ({ page }) => {
+  await login(page, 'buyer');
+  await page.locator('#profileSection #editProfileBtn').first().click();
+  await page.locator('#profileForm input[name="nickname"]').fill(`新昵称${Date.now()}`);
+  await page.locator('#profileForm select[name="campusRegion"]').selectOption('沙河校区');
+  await page.locator('#profileForm button[type="submit"]').click();
+  await expect(page.locator('#profileMessage')).toHaveText('资料已保存');
+  await expect(page.locator('#viewRegion')).toHaveText('沙河校区');
+});
+
+test('卖家下架后可以重新上架', async ({ page }) => {
+  await login(page, 'seller');
+  const title = `E2E上下架商品${Date.now()}`;
+  await page.goto('/publish.html');
+  await page.getByLabel('标题').fill(title);
+  await page.getByLabel('价格（元）').fill('12');
+  await page.getByRole('button', { name: '立即发布' }).click();
+  await expect(page).toHaveURL(/my-items\.html$/);
+  const card = page.locator('.inventory-card').filter({ hasText: title }).first();
+  page.once('dialog', dialog => dialog.accept());
+  await card.locator('[data-inventory-action="WITHDRAW"]').click();
+  await expect(page.locator('#inventoryMessage')).toHaveText('商品已下架');
+  page.once('dialog', dialog => dialog.accept());
+  await page.locator('.inventory-card').filter({ hasText: title }).first().locator('[data-inventory-action="RELIST"]').click();
+  await expect(page.locator('#inventoryMessage')).toHaveText('商品已重新上架');
+});

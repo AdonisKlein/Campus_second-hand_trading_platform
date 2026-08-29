@@ -45,7 +45,7 @@
                 <label for="publishImage">商品图片</label>
                 <input id="publishImage" name="imageFile" type="file" accept="image/jpeg,image/png">
                 <input name="imageUrl" type="hidden">
-                <div class="image-upload-preview"><img id="publishImagePreview" src="assets/images/placeholder.svg" alt="商品图片预览"><div><strong>上传 JPG 或 PNG</strong><small>不超过 5MB，平台会自动移除照片定位等元数据。</small></div></div>
+                <div class="image-upload-preview"><img id="publishImagePreview" src="assets/images/placeholder.svg" alt="商品图片预览"><div><strong>上传 JPG 或 PNG</strong><small>不超过 5MB，平台会自动移除照片定位等元数据。</small><button id="removePublishImage" class="text-button" type="button">移除图片</button></div></div>
             </div>
             <!-- The server derives the seller from the current Session. -->
             <label>描述<textarea name="description" rows="5" maxlength="1000"></textarea></label>

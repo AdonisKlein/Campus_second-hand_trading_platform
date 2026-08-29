@@ -37,7 +37,10 @@ public class CurrentActorService {
         User user = users.findByEmailIgnoreCase(authentication.getName())
             .orElseThrow(() -> new AccessDeniedException("登录状态已失效"));
         if (!"ACTIVE".equals(user.getStatus())) {
-            throw new AccessDeniedException("账号不可用");
+            String reason = user.getStatusReason();
+            throw new AccessDeniedException(reason == null || reason.isBlank()
+                ? "账号已被管理员封禁，请联系平台管理员"
+                : "账号已被管理员封禁：" + reason);
         }
         Object sessionVersion = request.getSession(false) == null ? null
             : request.getSession(false).getAttribute("AUTH_VERSION");

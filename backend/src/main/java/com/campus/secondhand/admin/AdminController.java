@@ -73,6 +73,7 @@ public class AdminController {
                     return ApiResponse.<UserView>fail("不能修改管理员账号");
                 }
                 user.setStatus(request.status());
+                user.setStatusReason("DISABLED".equals(request.status()) ? "账号已由管理员停用" : null);
                 user.setAuthVersion(user.getAuthVersion() + 1);
                 return ApiResponse.ok(UserView.from(userRepository.save(user)));
             })

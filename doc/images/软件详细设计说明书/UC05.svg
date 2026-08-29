@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1136" height="748" viewBox="0 0 1136 748">
+  <defs>
+    <marker id="uml-filled-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#141414"/>
+    </marker>
+    <marker id="uml-open-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#141414" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1136" height="748" fill="#FFFFFF"/>
+  <g transform="translate(0, 0)">
+<g>
+    <circle cx="148" cy="22" r="9" fill="none" stroke="#141414" stroke-width="1.5"/>
+    <line x1="148" y1="31" x2="148" y2="45" stroke="#141414" stroke-width="1.5"/>
+    <line x1="137" y1="38" x2="159" y2="38" stroke="#141414" stroke-width="1.5"/>
+    <line x1="148" y1="45" x2="139" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <line x1="148" y1="45" x2="157" y2="57" stroke="#141414" stroke-width="1.5"/>
+    <text x="148" y="56" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline">user:User</text>
+  </g>
+<line x1="148" y1="78" x2="148" y2="728" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="242" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="316" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="316" dy="0">searchSvc :</tspan><tspan x="316" dy="14">SearchService</tspan></text>
+  </g>
+<line x1="316" y1="78" x2="316" y2="728" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="410" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="484" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="484" dy="0">itemRepo :</tspan><tspan x="484" dy="14">ItemRepository</tspan></text>
+  </g>
+<line x1="484" y1="78" x2="484" y2="728" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="578" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="652" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="652" dy="0">userRepo :</tspan><tspan x="652" dy="14">UserRepository</tspan></text>
+  </g>
+<line x1="652" y1="78" x2="652" y2="728" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="746" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="820" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="820" dy="0">criteria :</tspan><tspan x="820" dy="14">SearchCriteria</tspan></text>
+  </g>
+<line x1="820" y1="78" x2="820" y2="728" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="914" y="16" width="148" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="988" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="988" dy="0">pageResult :</tspan><tspan x="988" dy="14">PageResult</tspan></text>
+  </g>
+<line x1="988" y1="78" x2="988" y2="728" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+<g>
+    <rect x="48" y="294" width="1064" height="284" fill="none" stroke="#141414" stroke-width="1"/>
+    <rect x="48" y="294" width="28" height="18" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+    <text x="53" y="307" fill="#141414" font-size="11" font-weight="600" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">alt</text>
+    <line x1="48" y1="436" x2="1112" y2="436" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
+    <text x="84" y="369" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">[搜索商品]</text>
+    <text x="84" y="511" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">[搜索用户]</text>
+  </g>
+<rect x="146" y="102" width="8" height="58.599999999999994" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="310" y="102" width="12" height="612.8" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="818" y="170" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="482" y="306" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="650" y="442" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="986" y="578" width="8" height="85.79999999999995" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<rect x="146" y="646" width="8" height="58.59999999999991" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
+<g>
+    <line x1="158" y1="130" x2="306" y2="130" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="159" y="98" width="146" height="16" fill="#FFFFFF"/>
+    <text x="232" y="110" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">搜索(关键词, 筛选条件, 排序)</text>
+  </g>
+<g>
+    <line x1="326" y1="198" x2="810" y2="198" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="461.9" y="166" width="212.2" height="16" fill="#FFFFFF"/>
+    <text x="568" y="178" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">构建搜索条件(关键词, 筛选条件, 排序)</text>
+  </g>
+<g>
+    <line x1="810" y1="266" x2="326" y2="266" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="541" y="278" width="54" height="16" fill="#FFFFFF"/>
+    <text x="568" y="290" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">搜索条件</text>
+  </g>
+<g>
+    <line x1="326" y1="334" x2="474" y2="334" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="327" y="302" width="146" height="16" fill="#FFFFFF"/>
+    <text x="400" y="314" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据条件查找商品(搜索条件)</text>
+  </g>
+<g>
+    <line x1="474" y1="402" x2="326" y2="402" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="373" y="414" width="54" height="16" fill="#FFFFFF"/>
+    <text x="400" y="426" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">商品列表</text>
+  </g>
+<g>
+    <line x1="326" y1="470" x2="642" y2="470" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
+    <rect x="406.8" y="438" width="154.39999999999998" height="16" fill="#FFFFFF"/>
+    <text x="484" y="450" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据条件查找用户(搜索条件)</text>
+  </g>
+<g>
+    <line x1="642" y1="538" x2="326" y2="538" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="457" y="550" width="54" height="16" fill="#FFFFFF"/>
+    <text x="484" y="562" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">用户列表</text>
+  </g>
+<g>
+    <line x1="326" y1="606" x2="978" y2="606" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="579.6" y="574" width="144.8" height="16" fill="#FFFFFF"/>
+    <text x="652" y="586" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">新建分页结果(列表, 总数)</text>
+  </g>
+<g>
+    <line x1="306" y1="674" x2="158" y2="674" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
+    <rect x="194" y="686" width="76" height="16" fill="#FFFFFF"/>
+    <text x="232" y="698" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">返回分页结果</text>
+  </g>
+</g></svg>

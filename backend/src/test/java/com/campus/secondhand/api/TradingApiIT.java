@@ -108,4 +108,45 @@ class TradingApiIT extends AbstractApiIntegrationTest {
         assertEquals(OrderStatus.EXPIRED, expired.status());
         assertEquals(ItemStatus.ON_SALE, items.findById(item.id()).orElseThrow().getStatus());
     }
+
+    @Test
+    void sellerCanDeclineRequestAndBuyerCanCancelOwnPendingRequest() {
+        User seller = saveUser("decision-seller", "STUDENT");
+        User buyer = saveUser("decision-buyer", "STUDENT");
+        User buyerTwo = saveUser("decision-buyer-two", "STUDENT");
+        var item = sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "拒绝和取消测试", "书籍", BigDecimal.valueOf(12), "", ""));
+
+        var declined = tradingService.requestPurchase(buyer.getId(), item.id());
+        var cancelled = tradingService.requestPurchase(buyerTwo.getId(), item.id());
+        var declinedResult = tradingService.perform(seller.getId(), declined.id(), OrderAction.DECLINE);
+        assertEquals(OrderStatus.DECLINED, declinedResult.status());
+        assertEquals(ItemStatus.ON_SALE, items.findById(item.id()).orElseThrow().getStatus());
+
+        var cancelledResult = tradingService.perform(buyerTwo.getId(), cancelled.id(), OrderAction.CANCEL);
+        assertEquals(OrderStatus.CANCELLED, cancelledResult.status());
+        assertEquals(ItemStatus.ON_SALE, items.findById(item.id()).orElseThrow().getStatus());
+        assertThrows(TradingRuleException.class,
+            () -> tradingService.perform(buyerTwo.getId(), cancelled.id(), OrderAction.CANCEL));
+    }
+
+    @Test
+    void sellerCanCancelReservedOrderButCannotCompleteOrCancelTwice() {
+        User seller = saveUser("reserved-seller", "STUDENT");
+        User buyer = saveUser("reserved-buyer", "STUDENT");
+        var item = sellerInventory.publish(seller.getId(), new SellerInventory.ItemDraft(
+            "预留取消测试", "生活用品", BigDecimal.valueOf(15), "", ""));
+        var request = tradingService.requestPurchase(buyer.getId(), item.id());
+        var accepted = tradingService.perform(seller.getId(), request.id(), OrderAction.ACCEPT);
+        assertEquals(OrderStatus.WAITING_HANDOVER, accepted.status());
+        assertEquals(ItemStatus.RESERVED, items.findById(item.id()).orElseThrow().getStatus());
+
+        var cancelled = tradingService.perform(seller.getId(), request.id(), OrderAction.CANCEL);
+        assertEquals(OrderStatus.CANCELLED, cancelled.status());
+        assertEquals(ItemStatus.ON_SALE, items.findById(item.id()).orElseThrow().getStatus());
+        assertThrows(TradingRuleException.class,
+            () -> tradingService.perform(seller.getId(), request.id(), OrderAction.COMPLETE));
+        assertThrows(TradingRuleException.class,
+            () -> tradingService.perform(seller.getId(), request.id(), OrderAction.CANCEL));
+    }
 }
