@@ -31,6 +31,8 @@ k8s/            Kubernetes Base、CI Kind Overlay 与部署说明
 scripts/ci/     测试报告、Compose E2E 和 Kind 本地部署入口
 ```
 
+服务接口与数据表的正式对照基线见 `doc/服务接口清单与数据表归属方案.md`。该文档以当前 Controller、核心 interface 和 Flyway `V1`～`V6` 为准，明确模块 owner、跨模块读取方式和写入边界。
+
 ## 业务页面信息架构规则
 
 - `doc/ui-style-preview.html` 是视觉方向与组件预览，不是实际页面模板。

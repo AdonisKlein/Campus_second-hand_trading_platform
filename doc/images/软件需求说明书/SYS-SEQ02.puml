@@ -1,0 +1,64 @@
+@startuml
+title SYS-SEQ02  UC02 浏览和搜索校园商品及用户
+skinparam backgroundColor white
+hide footbox
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #111111
+    LifeLineBorderColor #777777
+    LifeLineBackgroundColor white
+    ParticipantBorderColor #7A8796
+    ParticipantBackgroundColor #E7EEF8
+    ParticipantFontColor #222222
+    ActorBorderColor #7A8796
+    ActorBackgroundColor #E7EEF8
+    ActorFontColor #222222
+    GroupBorderColor #F0A060
+    GroupHeaderFontColor #333333
+    GroupFontColor #333333
+    ActivationBorderColor #5E6A78
+    ActivationBackgroundColor #DCE8F8
+    DividerBackgroundColor white
+    DividerBorderColor #999999
+}
+
+actor 游客 as Guest
+actor 学生用户 as Student
+participant 校园二手交易平台 as System
+
+group 游客浏览和搜索商品
+    Guest -> System : 输入关键词/筛选条件/排序方式
+    activate System
+    System -> System : 按商品可见性规则检索
+    System --> Guest : 返回可见商品列表
+    Guest -> System : 查看某商品详情
+    System -> System : 校验商品当前可见状态
+    alt 商品允许公开查看
+        System --> Guest : 返回商品详情
+    else 商品不可见
+        System --> Guest : 返回不可查看提示
+    end
+    deactivate System
+end
+
+group 学生搜索商品或用户
+    Student -> System : 搜索商品或用户
+    activate System
+    System -> System : 应用关键词、筛选和排序条件
+    System -> System : 校验可见性与隐私规则
+    alt 搜索商品
+        System --> Student : 返回符合条件的商品结果
+    else 搜索用户
+        System --> Student : 返回允许展示的用户信息
+    end
+    deactivate System
+end
+
+group 查看搜索结果详情
+    Student -> System : 打开商品详情
+    activate System
+    System -> System : 根据当前身份再次校验可见范围
+    System --> Student : 返回允许查看的商品与卖家公开信息
+    deactivate System
+end
+@enduml

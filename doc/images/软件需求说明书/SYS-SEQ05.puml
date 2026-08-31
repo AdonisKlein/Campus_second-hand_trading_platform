@@ -1,0 +1,89 @@
+@startuml
+title SYS-SEQ05  UC05 买卖双方发起并完成商品交易
+skinparam backgroundColor white
+hide footbox
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #111111
+    LifeLineBorderColor #777777
+    LifeLineBackgroundColor white
+    ParticipantBorderColor #7A8796
+    ParticipantBackgroundColor #E7EEF8
+    ParticipantFontColor #222222
+    ActorBorderColor #7A8796
+    ActorBackgroundColor #E7EEF8
+    ActorFontColor #222222
+    GroupBorderColor #F0A060
+    GroupHeaderFontColor #333333
+    GroupFontColor #333333
+    ActivationBorderColor #5E6A78
+    ActivationBackgroundColor #DCE8F8
+    DividerBackgroundColor white
+    DividerBorderColor #999999
+}
+
+actor 买家 as Buyer
+actor 卖家 as Seller
+participant 校园二手交易平台 as System
+participant 交易超时任务 as Timeout
+
+group 买家提交购买意向
+    Buyer -> System : 提交商品购买意向
+    activate System
+    System -> System : 校验买家身份、商品状态和交易条件
+    alt 商品可交易
+        System -> System : 记录购买意向
+        System --> Buyer : 返回意向提交成功
+    else 商品不可交易
+        System --> Buyer : 返回不能提交的原因
+    end
+    deactivate System
+end
+
+group 卖家选择买家并预留商品
+    Seller -> System : 查看购买意向并选择买家
+    activate System
+    System -> System : 校验卖家为商品发布者及商品当前状态
+    alt 可以预留
+        System -> System : 建立/更新交易并预留商品
+        System --> Seller : 返回预留成功
+        System --> Buyer : 通知已被卖家选择
+    else 不能预留
+        System --> Seller : 返回预留失败原因
+    end
+    deactivate System
+end
+
+group 交易完成或取消
+    alt 正常完成
+        Buyer -> System : 提交完成交易操作
+        activate System
+        System -> System : 校验当前订单阶段和操作权限
+        System -> System : 更新订单完成状态及商品状态
+        System --> Buyer : 返回交易完成结果
+        deactivate System
+    else 买家取消
+        Buyer -> System : 请求取消交易
+        activate System
+        System -> System : 校验订单阶段和买家权限
+        System -> System : 关闭订单并恢复商品可交易状态
+        System --> Buyer : 返回取消结果
+        deactivate System
+    else 卖家取消
+        Seller -> System : 请求取消交易
+        activate System
+        System -> System : 校验订单阶段和卖家权限
+        System -> System : 关闭订单并恢复商品可交易状态
+        System --> Seller : 返回取消结果
+        deactivate System
+    end
+end
+
+group 超时关闭
+    Timeout -> System : 检查达到超时条件的交易
+    activate System
+    System -> System : 关闭超时订单并释放对应商品
+    System --> Timeout : 返回超时处理结果
+    deactivate System
+end
+@enduml

@@ -4,6 +4,32 @@
 
 ## 当前状态
 
+### 追溯表与需求文档基线同步（2026-08-29）
+
+- 将 `doc/需求追溯矩阵.md` 的用例和系统顺序模型从旧的 `UC01～UC18` / `SYS-SEQ01～SYS-SEQ18` 统一为当前 8 个业务场景 `UC01～UC08` / `SYS-SEQ01～SYS-SEQ08`，并按需求组完成映射。
+- 修正《软件需求说明书》中的 Flyway、商品字段和私聊旧描述。
+- 清理本轮文档行尾空格和多余 EOF 空行。
+- 验证：`git diff --check` 通过；追溯表仅包含 `UC01～UC08` 和 `SYS-SEQ01～SYS-SEQ08`。
+- 提交号：本轮尚未提交。
+
+### 测试用例与测试报告整理（2026-08-29）
+
+- 统一《测试清单》与《校园二手交易平台测试文档》的职责：前者用于执行勾选，后者作为正式测试报告，《全量测试文档》保留环境和命令说明。
+- 将清单口径同步为当前 8 个业务场景；已完成的 `SecurityApiIT`、交易/私聊/图片单元测试和 Playwright 主旅程不再列为待补齐事项。
+- 正式报告补充本轮证据：后端单元 35/35、API/应用 57/57、前端 3/3、Compose E2E 9/9，合计 104 项通过，0 失败，0 跳过；Docker liveness 为 `UP`。
+- 修正前端 Session 竞态测试入口文件名为 `frontend/tests/session-navigation-race.test.js`。
+- 遗留项：接近 5MB 图片的 Docker 重建上传复验、远程 GitHub Actions 全绿证据和最终 Git 标签。
+- 验证：待执行 `node --test frontend/tests/*.test.js`、全部 JS `node --check` 和 `git diff --check`；本轮未修改代码、接口或 Postman 契约。
+- 提交号：本轮尚未提交。
+
+### 服务接口清单与数据表归属方案（2026-08-29）
+
+- 新增 `doc/服务接口清单与数据表归属方案.md`，汇总当前 11 组 HTTP 入口、9 个核心业务 interface、Flyway `V1`～`V6` 全部业务/Session 表及其模块 owner。
+- 明确外键不等于跨模块写权限；交易状态统一由 `TradingService` 修改，当前身份统一由 `CurrentActorService` 取得，Spring Session 表由 adapter 管理。
+- 同步 `docs/ai/PROJECT_CONTEXT.md` 文档入口；未修改用户本轮正在调整的课程文档、图片和 Postman 契约。
+- 验证：依据 Controller、Java interface 和 Flyway 迁移逐项核对；待落盘后执行 `git diff --check`。本轮无代码或接口行为变更。
+- 提交号：本轮尚未提交。
+
 ### 第一项验收差距复核（2026-08-29）
 
 - 环境复验：提升权限后 Docker Engine/Compose 可用，`deploy` 的 MySQL、Backend、Web、Mailpit 均运行，`http://localhost:8088/api/actuator/health/liveness` 返回 `{"status":"UP"}`。

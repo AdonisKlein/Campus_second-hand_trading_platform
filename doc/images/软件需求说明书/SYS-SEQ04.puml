@@ -1,0 +1,81 @@
+@startuml
+title SYS-SEQ04  UC04 用户围绕商品进行公开问答和私聊
+skinparam backgroundColor white
+hide footbox
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #111111
+    LifeLineBorderColor #777777
+    LifeLineBackgroundColor white
+    ParticipantBorderColor #7A8796
+    ParticipantBackgroundColor #E7EEF8
+    ParticipantFontColor #222222
+    ActorBorderColor #7A8796
+    ActorBackgroundColor #E7EEF8
+    ActorFontColor #222222
+    GroupBorderColor #F0A060
+    GroupHeaderFontColor #333333
+    GroupFontColor #333333
+    ActivationBorderColor #5E6A78
+    ActivationBackgroundColor #DCE8F8
+    DividerBackgroundColor white
+    DividerBorderColor #999999
+}
+
+actor 游客 as Guest
+actor 学生用户 as Student
+actor 买家 as Buyer
+actor 卖家 as Seller
+participant 校园二手交易平台 as System
+
+group 查看公开问答
+    Guest -> System : 打开商品公开问答
+    activate System
+    System -> System : 按公开可见规则读取留言
+    System --> Guest : 返回公开留言列表
+    deactivate System
+end
+
+group 学生发布公开留言
+    Student -> System : 提交商品公开留言
+    activate System
+    System -> System : 识别当前用户并校验留言权限
+    alt 允许发布
+        System -> System : 保存公开留言
+        System --> Student : 返回留言发布成功
+    else 不允许发布
+        System --> Student : 返回拒绝原因
+    end
+    deactivate System
+end
+
+group 买卖双方私聊
+    Buyer -> System : 向卖家发送私聊消息
+    activate System
+    System -> System : 校验会话参与者是否为对应买卖双方
+    alt 身份和会话关系有效
+        System -> System : 保存私聊消息
+        System --> Buyer : 返回发送成功
+        Seller -> System : 获取私聊消息
+        System -> System : 校验卖家为该私聊参与者
+        System --> Seller : 返回双方可见的私聊内容
+    else 无权参与该私聊
+        System --> Buyer : 拒绝访问/发送
+    end
+    deactivate System
+end
+
+group 卖家回复私聊
+    Seller -> System : 回复买家
+    activate System
+    System -> System : 校验卖家与该私聊的参与关系
+    alt 校验通过
+        System --> Seller : 返回发送成功
+        Buyer -> System : 获取最新私聊消息
+        System --> Buyer : 返回双方私聊内容
+    else 校验失败
+        System --> Seller : 拒绝发送
+    end
+    deactivate System
+end
+@enduml
