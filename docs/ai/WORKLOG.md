@@ -440,6 +440,13 @@
 - CI 聚合 Maven 与 Playwright JUnit 为统一 JSON/Markdown 报告；报告、截图、trace、Compose 日志和 Kubernetes 诊断均在失败时上传，任何失败仍以非零退出并阻止镜像/部署。
 - 本地验收：五个服务完整 `mvn verify` 全绿（含真实 MySQL 8.4、Redis、RabbitMQ Testcontainers）；前端 3/3；最终 Compose Playwright 15/15、UC01—UC08 运行证据 8/8；事件/CI 静态门禁、Bash 语法和 `git diff --check` 通过。三方只读复验无剩余 P0/P1。
 - 提交：`ci: build test and deploy independent microservices`（使用 `git log -1` 查看提交号）。主分支 CI 全绿后再创建 `microservices-end`，本地提交阶段不提前打标记。
+
+### 工作项 8：分支 CI E2E 假失败修复（2026-08-31）
+
+- GitHub Actions 运行 `33369355285` 的五个服务测试和契约门禁均通过，失败集中在 `Run isolated microservice environment`。
+- 本地用相同 Compose 命令复现：`私聊→未读→屏蔽` 在详情页用默认 5 秒等待 Session 恢复，冷启动时商品/消息接口单次约 3.3 秒，`/users/me` 尚未完成便被测试取消；trace 证明登录已设置 `SESSION` Cookie，不是会话丢失。
+- 私聊旅程总预算调整为 120 秒，两个详情页 Session 断言改为 30 秒分段轮询，仍严格断言买家 ID，不删除安全断言，也不把失败步骤设为可忽略。
+- 最小回归 `1/1` 通过（50.9 秒）；完整隔离 Compose 回归 `15/15` 通过（3.6 分钟），UC01—UC08 运行证据 `8/8`。
 ### 图片上传 HTTP 413 排障（2026-08-28）
 
 - Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。

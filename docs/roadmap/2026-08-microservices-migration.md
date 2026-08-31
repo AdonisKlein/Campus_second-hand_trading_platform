@@ -143,6 +143,7 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - Gateway 生成或校验 `X-Correlation-Id`，REST 调用继续传递；交易/治理 Outbox envelope 保存 correlationId。失败诊断总是上传资源、事件、Pod 描述、当前与上一容器日志、镜像和健康结果。
 - 5 类 RabbitMQ v1 事件已有 JSON Schema 和 CI 门禁；业务命令使用独立 `commandEventId` 做结果匹配，`correlationId` 只做跨 REST/消息日志追踪，消费者允许增加未知元数据以支持滚动升级。
 - 本地完整 Compose 回归 15/15 通过，UC01—UC08 运行证据 8/8；三方安全、CI/追溯和整体审查指出的问题已经收口，无剩余 P0/P1。统一报告在失败时也会上传已有测试统计和失败摘要。
+- 分支首次运行暴露私聊旅程仍使用 5 秒默认断言超时；trace 确认 Session Cookie 正常、请求只是受冷启动负载影响尚未完成。现已改为该旅程 120 秒总预算和 30 秒 Session 恢复断言，最小回归 1/1、完整 Compose 15/15 再次通过，等待新提交的 GitHub Actions 复验。
 - 主分支全绿后再创建 `microservices-end`，当前不得提前移动或创建该标记。
 - 提交：`ci: build test and deploy independent microservices`（使用 `git log -1` 查看提交号）
 

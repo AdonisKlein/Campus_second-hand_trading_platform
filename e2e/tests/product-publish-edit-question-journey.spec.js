@@ -64,7 +64,9 @@ test('搜索→上传图片→发布→编辑→问答', async ({ page }) => {
     message: '商品详情脚本应完成初始化'
   }).toBe(Number(itemId));
   await expect.poll(() => page.evaluate(async () => (await session.current({ refresh: true }))?.id ?? null), {
-    message: '买家 Session 应在详情页恢复'
+    message: '买家 Session 应在详情页恢复',
+    timeout: 30_000,
+    intervals: [500, 1_000, 2_000]
   }).toBe(2);
   const question = `请问这件商品可以在校内当面验货吗？${suffix}`;
   await page.locator('#publicQuestion').fill(question);

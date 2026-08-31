@@ -28,6 +28,7 @@ async function submitOrderAction(page, order, orderId, action) {
 }
 
 test('私聊→未读→屏蔽', async ({ page: buyer, browser }) => {
+  test.setTimeout(120_000);
   const sellerContext = await browser.newContext();
   const seller = await sellerContext.newPage();
   const message = `E2E 私聊未读消息 ${Date.now()}`;
@@ -37,7 +38,9 @@ test('私聊→未读→屏蔽', async ({ page: buyer, browser }) => {
     await login(buyer, 'buyer');
     await buyer.goto(`/detail.html?id=${item.id}`);
     await expect.poll(() => buyer.evaluate(async () => (await session.current({ refresh: true }))?.id ?? null), {
-      message: '买家 Session 应在商品详情页恢复'
+      message: '买家 Session 应在商品详情页恢复',
+      timeout: 30_000,
+      intervals: [500, 1_000, 2_000]
     }).toBe(2);
     const chatButton = buyer.locator('button[data-product-action="chat"]').first();
     await expect(chatButton).toBeEnabled();
