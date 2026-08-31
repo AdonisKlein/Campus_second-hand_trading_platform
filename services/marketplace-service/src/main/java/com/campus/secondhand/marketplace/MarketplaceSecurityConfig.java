@@ -43,6 +43,7 @@ public class MarketplaceSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.GET,
                                 "/actuator/health", "/actuator/health/liveness", "/actuator/health/readiness",
+                                "/actuator/info",
                                 "/api/items", "/api/search").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/internal/items/**", "/internal/messages/**").permitAll()

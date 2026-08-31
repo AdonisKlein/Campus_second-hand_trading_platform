@@ -18,7 +18,7 @@ class TradingEventStore {
     void append(String type,long orderId,long itemId){
         String eventId=UUID.randomUUID().toString();
         Map<String,Object> event=new LinkedHashMap<>();
-        event.put("eventId",eventId);event.put("correlationId",eventId);event.put("version",1);event.put("occurredAt",LocalDateTime.now(clock).toString());
+        event.put("eventId",eventId);event.put("correlationId",CorrelationIdFilter.current());event.put("version",1);event.put("occurredAt",LocalDateTime.now(clock).toString());
         event.put("producer","trading-service");event.put("type",type);event.put("orderId",orderId);event.put("itemId",itemId);
         try{outbox.save(new OutboxEvent(eventId,type,mapper.writeValueAsString(event),LocalDateTime.now(clock)));}
         catch(JsonProcessingException error){throw new IllegalStateException("交易事件序列化失败",error);}

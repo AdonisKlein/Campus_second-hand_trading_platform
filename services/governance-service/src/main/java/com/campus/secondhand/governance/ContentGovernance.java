@@ -12,7 +12,7 @@ public interface ContentGovernance {
 
     record ReportDraft(ReportTargetType targetType,Long targetId,ReportReason reasonCode,String description) {}
     record Decision(ReportStatus status,GovernanceAction action,String note) {}
-    record ActionResult(String eventId,String correlationId,String type,long reportId,String reason) {}
+    record ActionResult(String eventId,String commandEventId,String correlationId,String type,long reportId,String reason) {}
     record ReportPage(List<ReportView> reports,int page,int size,boolean hasNext) {}
     record AuditView(Long adminId,ReportStatus resultStatus,GovernanceAction action,ActionState actionState,String note,LocalDateTime createdAt) {}
     record ReportView(Long id,Long reporterId,String reporterName,ReportTargetType targetType,Long targetId,

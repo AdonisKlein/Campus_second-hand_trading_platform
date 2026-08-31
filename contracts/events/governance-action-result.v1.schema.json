@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://campus-market.example/contracts/events/governance-action-result.v1.schema.json",
+  "title": "Governance action result v1",
+  "type": "object",
+  "required": ["eventId", "commandEventId", "correlationId", "version", "occurredAt", "producer", "type", "reportId", "targetId"],
+  "properties": {
+    "eventId": {"type": "string", "minLength": 1},
+    "commandEventId": {"type": "string", "minLength": 1},
+    "correlationId": {"type": "string", "minLength": 1},
+    "version": {"const": 1},
+    "occurredAt": {"type": "string"},
+    "producer": {"enum": ["account-service", "marketplace-service"]},
+    "type": {"enum": ["GovernanceActionApplied", "GovernanceActionFailed"]},
+    "reportId": {"type": "integer", "minimum": 1},
+    "targetId": {"type": ["integer", "null"]},
+    "action": {"type": "string"},
+    "reason": {"type": "string"}
+  },
+  "additionalProperties": true
+}

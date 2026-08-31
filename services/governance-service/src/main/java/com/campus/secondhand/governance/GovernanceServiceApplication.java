@@ -18,5 +18,5 @@ public class GovernanceServiceApplication {
     }
 
     @Bean Clock clock() { return Clock.systemDefaultZone(); }
-    @Bean WebClient.Builder webClientBuilder() { return WebClient.builder(); }
+    @Bean WebClient.Builder webClientBuilder() { return WebClient.builder().filter(CorrelationIdFilter.propagate()); }
 }

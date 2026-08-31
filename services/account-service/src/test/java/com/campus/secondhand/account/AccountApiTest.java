@@ -3,6 +3,7 @@ package com.campus.secondhand.account;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -24,8 +25,9 @@ class AccountApiTest {
 
     @Test
     void protectedEndpointRejectsMissingGatewayJwt() throws Exception {
-        mvc.perform(get("/api/users/me"))
+        mvc.perform(get("/api/users/me").header("X-Correlation-Id", "account-check-7"))
                 .andExpect(status().isUnauthorized())
+                .andExpect(header().string("X-Correlation-Id", "account-check-7"))
                 .andExpect(jsonPath("$.success").value(false));
     }
 

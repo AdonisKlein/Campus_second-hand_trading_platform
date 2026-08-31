@@ -95,9 +95,15 @@ test('卖家下架后可以重新上架', async ({ page }) => {
   await expect(page).toHaveURL(/my-items\.html$/);
   const card = page.locator('.inventory-card').filter({ hasText: title }).first();
   page.once('dialog', dialog => dialog.accept());
+  const withdrawn = page.waitForResponse(response => response.url().includes('/seller-actions')
+    && response.request().method() === 'POST', { timeout: 30_000 });
   await card.locator('[data-inventory-action="WITHDRAW"]').click();
-  await expect(page.locator('#inventoryMessage')).toHaveText('商品已下架');
+  expect((await withdrawn).ok()).toBeTruthy();
+  await expect(page.locator('#inventoryMessage')).toHaveText('商品已下架', { timeout: 15_000 });
   page.once('dialog', dialog => dialog.accept());
+  const relisted = page.waitForResponse(response => response.url().includes('/seller-actions')
+    && response.request().method() === 'POST', { timeout: 30_000 });
   await page.locator('.inventory-card').filter({ hasText: title }).first().locator('[data-inventory-action="RELIST"]').click();
-  await expect(page.locator('#inventoryMessage')).toHaveText('商品已重新上架');
+  expect((await relisted).ok()).toBeTruthy();
+  await expect(page.locator('#inventoryMessage')).toHaveText('商品已重新上架', { timeout: 15_000 });
 });

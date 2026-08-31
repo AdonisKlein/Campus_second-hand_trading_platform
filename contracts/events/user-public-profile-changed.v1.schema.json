@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://campus-market.example/contracts/events/user-public-profile-changed.v1.schema.json",
+  "title": "UserPublicProfileChanged v1",
+  "type": "object",
+  "required": ["eventId", "correlationId", "version", "occurredAt", "producer", "type", "userId", "username", "status", "role"],
+  "properties": {
+    "eventId": {"type": "string", "minLength": 1},
+    "correlationId": {"type": "string", "minLength": 1},
+    "version": {"const": 1},
+    "occurredAt": {"type": "string"},
+    "producer": {"const": "account-service"},
+    "type": {"const": "UserPublicProfileChanged"},
+    "userId": {"type": "integer", "minimum": 1},
+    "username": {"type": "string"},
+    "nickname": {"type": ["string", "null"]},
+    "region": {"type": ["string", "null"]},
+    "creditScore": {"type": ["integer", "null"]},
+    "lastActiveAt": {"type": ["string", "null"]},
+    "status": {"type": "string"},
+    "role": {"type": "string"},
+    "createdAt": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}

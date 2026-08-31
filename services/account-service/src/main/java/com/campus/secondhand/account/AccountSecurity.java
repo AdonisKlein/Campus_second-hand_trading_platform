@@ -56,7 +56,7 @@ public class AccountSecurity {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/liveness",
-                                "/actuator/health/readiness").permitAll()
+                                "/actuator/health/readiness", "/actuator/info").permitAll()
                         .requestMatchers("/api/auth/verification/**", "/api/auth/register",
                                 "/api/auth/password/reset", "/internal/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

@@ -166,10 +166,11 @@ test('管理员举报治理及用户管理', async ({ page: admin, browser }) =>
     await buyer.locator('button[data-product-action="report"]').click();
     const reportDialog = buyer.locator('#contentReportDialog');
     await expect(reportDialog).toBeVisible();
+    await reportDialog.locator('select[name="reasonCode"]').selectOption('FRAUD');
     await reportDialog.locator('textarea[name="description"]').fill('该商品信息存在明显虚假内容，请管理员核查处理。');
     const reportCreated = buyer.waitForResponse(response => response.url().endsWith('/api/reports')
       && response.request().method() === 'POST', { timeout: 30_000 });
-    await reportDialog.locator('button[type="submit"]').click();
+    await reportDialog.locator('form').evaluate(form => form.requestSubmit());
     expect((await reportCreated).ok()).toBeTruthy();
     await expect(reportDialog).toBeHidden({ timeout: 15_000 });
 

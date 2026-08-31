@@ -380,7 +380,26 @@
 - Kubernetes Base 与 CI Overlay 已同步相同拓扑，每个服务有独立 Deployment、Service、Secret 配置和三类探针；本地 Kind 脚本构建并加载六个镜像后执行 rollout 与冒烟。
 - Compose 实测全部服务健康，四个账号只能读取自身数据库；Kind 实测全部 Pod 1/1 Running、PVC Bound、同源 liveness 与首页通过。
 - 本地 JDK 24 兼容回归入口为 `scripts/ci/verify-services.ps1 -JavaVersion 24`；发布镜像仍使用 Docker 内的 Java 25。
-- 下一工作项：补齐微服务 API、事件、基础设施集成和 UC01—UC18 追溯测试；现有旧单体 CI 自动部署脚本将在工作项 8 替换。
+- 下一工作项：补齐微服务 API、事件、基础设施集成和最新版 UC01—UC08 追溯测试；现有旧单体 CI 自动部署脚本将在工作项 8 替换。
+
+### 微服务工作项 7：测试与业务用例闭环（2026-08-31）
+
+- 提交：`7e71804 test: cover microservice contracts and all business journeys`。
+- Gateway 与四个业务服务的单元、API、MySQL、Redis、RabbitMQ 测试可独立执行；公开 API 清单共 45 个 method + path，已建立反向权限/参数/成功路径追溯。
+- 按最新版业务清单 UC01—UC08 建立机器可读静态映射和 Playwright 运行证据门禁，不再沿用旧 UC01—UC18 编号。
+- 最终统一报告 92/92：单元 44、API/集成 33、E2E 15；三轮只读验收无剩余 P0/P1。
+
+### 微服务工作项 8：独立 CI/CD 与可观测性（2026-08-31）
+
+- `.github/workflows/ci.yml` 不再构建退役单体，改为五个服务独立 `mvn verify`、契约/前端门禁、Compose 微服务 E2E、六个 GHCR SHA 镜像、main 分支 Kind 部署和冒烟。
+- 新增改动范围分类器与工作项 8 静态契约检查。基础设施、契约或 E2E 变化标记全部服务受影响；当前为保证发布一致性仍执行全量测试和同一 SHA 的整套镜像。
+- `scripts/ci/deploy-kind.sh` 改为部署 Gateway、Account、Marketplace、Trading、Governance 和 Web；检查每个 Java 服务的 readiness 与版本信息。
+- 失败证据固定包含 Pod/Service/PVC、Events、Pod describe、当前和上一次容器日志、实际部署镜像、健康/版本响应和总结；保留受控失败入口供课程现场演示。
+- 五个 Java 服务公开 liveness/readiness/info，镜像含 OCI version/revision，日志为 ECS JSON；Gateway 建立 `X-Correlation-Id`，内部 REST 与交易/治理事件继续传递。治理结果另用 `commandEventId` 匹配原命令，避免把日志追踪号误作业务关联键。
+- 新增 5 份 `contracts/events/*.v1.schema.json` 和可执行兼容门禁：v1 必填字段不能删除，消费者允许新增元数据。修复 Account 资料事件新增 `correlationId/producer` 后 Marketplace 消费失败，以及治理回执因关联键复用而长期停在 PENDING 的真实 E2E 故障。
+- CI 聚合 Maven 与 Playwright JUnit 为统一 JSON/Markdown 报告；报告、截图、trace、Compose 日志和 Kubernetes 诊断均在失败时上传，任何失败仍以非零退出并阻止镜像/部署。
+- 本地验收：五个服务完整 `mvn verify` 全绿（含真实 MySQL 8.4、Redis、RabbitMQ Testcontainers）；前端 3/3；最终 Compose Playwright 15/15、UC01—UC08 运行证据 8/8；事件/CI 静态门禁、Bash 语法和 `git diff --check` 通过。三方只读复验无剩余 P0/P1。
+- 提交：`ci: build test and deploy independent microservices`（使用 `git log -1` 查看提交号）。主分支 CI 全绿后再创建 `microservices-end`，本地提交阶段不提前打标记。
 ### 图片上传 HTTP 413 排障（2026-08-28）
 
 - Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。

@@ -1,6 +1,6 @@
 # AI 项目上下文
 
-更新日期：2026-08-28
+更新日期：2026-08-31
 
 ## 微服务迁移工作区
 
@@ -14,8 +14,11 @@
 - Trading 独占 `trade_orders`、`chat_conversations`、`chat_messages`、`chat_blocks` 及自己的 Inbox/Outbox。`TradingWorkflow` 负责购买意向与 Saga 状态机，`DirectChat` 负责会话、未读、屏蔽和消息；Account/Marketplace 通过 REST port 查询安全快照，商品预留、释放和售出通过 RabbitMQ 事件完成。
 - Governance 独占 `content_reports`、`report_actions` 及自己的 Inbox/Outbox。`ContentGovernance` 区分管理员决定和动作交付状态；举报对象通过 Account/Marketplace 快照 port 读取，治理动作通过 RabbitMQ 交给数据所有者幂等执行。
 - 工作项 6 已完成默认微服务运行拓扑：Compose/Kind 均包含 Gateway、四个业务服务、MySQL 四库四账号、Redis、RabbitMQ 和 Web。`scripts/dev/microservices.ps1` 会验证容器健康、Flyway、跨库拒绝和同源入口；`scripts/ci/kind-local.ps1` 负责本地 Kind 构建、部署与冒烟。
-- `contracts/http/public-api-v1.tsv` 冻结当前公开 method + path，并标记未来 owner；`PublicApiContractIT` 会在 Controller 映射意外增删时失败。
+- `contracts/http/public-api-v1.tsv` 冻结当前公开 method + path；`contracts/events/*.v1.schema.json` 冻结 5 类 RabbitMQ 事件。事件必填字段不能在 v1 删除，消费者必须忽略新增元数据；`verify-event-contracts.mjs` 是对应门禁。
 - `scripts/ci/verify-services.ps1` 是逐个验证五个工程独立构建的入口。任一工程失败立即返回非零。
+- `.github/workflows/ci.yml` 已切换为微服务发布 seam：五服务独立 `mvn verify` → 契约/前端 → Compose Playwright → 统一 JSON/Markdown 测试报告 → 六个 `sha-xxxxxxx` GHCR 镜像 → main 分支 Kind 部署与冒烟。PR 只测试不发布，任一前置失败都会阻止镜像和部署。
+- `scripts/ci/deploy-kind.sh` 是 CI 部署与诊断 seam：部署 Gateway、四服务和 Web，验证 readiness、liveness 与 `/actuator/info` 的不可变版本；无论成功失败都收集资源、Events、Pod describe、当前/上一容器日志和实际镜像。
+- 所有 Java 服务使用 ECS JSON 控制台日志并公开 `APP_VERSION`/`GIT_COMMIT`。Gateway 负责建立 `X-Correlation-Id`，内部 REST 继续传递，交易和治理事件 envelope 保存同一关联标识。
 - 完整实施顺序、数据库归属和通信规则见 `docs/roadmap/2026-08-microservices-migration.md`。
 
 ## 产品边界
@@ -148,7 +151,7 @@ scripts/ci/                    服务验证、测试报告和 Kind 本地部署�
 - 同一个 MySQL 服务器包含 `campus_account`、`campus_marketplace`、`campus_trading`、`campus_governance`；四个账号经 GRANT 限制不能跨库访问。
 - Kubernetes Base 使用同一拓扑，每个 Java 服务都有独立 Deployment、ClusterIP Service 与三类探针；MySQL、Redis、RabbitMQ 和图片分别使用 PVC，CI Overlay 增加 Mailpit。
 - 本地 Compose seam 是 `scripts/dev/microservices.ps1`；本地 Kind seam 是 `scripts/ci/kind-local.ps1`。后者通过 `kubectl port-forward` 做同源冒烟，避免 Windows NodePort 差异。
-- 当前 `.github/workflows/ci.yml` 与 `scripts/ci/deploy-kind.sh` 仍是旧单体 CI 接口，只作为工作项 8 的改造输入；不得用它们宣称微服务已经自动发布。
+- 当前 `.github/workflows/ci.yml` 与 `scripts/ci/deploy-kind.sh` 已是微服务接口；只有 main 分支全绿的 GitHub Actions 运行记录，才能作为自动发布验收证据。
 - Nginx 同源代理 `/api/` 到 Gateway；生产 TLS 需把 Session Cookie Secure 设为 true。
 - Flyway 分别从四个空库建表；本项目没有历史生产库升级负担。旧 `database/seed.sql` 不兼容微服务四库，不能导入。
 
@@ -157,4 +160,4 @@ scripts/ci/                    服务验证、测试报告和 Kind 本地部署�
 - 未被商品引用的上传图片暂未自动回收；后续可增加临时上传记录与定时清理。
 - 文件系统 adapter 适合当前单机部署；多实例部署前应替换为 MinIO/S3 adapter。
 - Windows/移动原生客户端的短 access token + rotation refresh token 尚未实现。
-- 微服务业务代码已完成 4/4 提取；完整 Compose 与 Kubernetes 运行拓扑已在工作项 6 落地。下一项是补齐微服务测试追溯和跨服务测试。
+- 微服务工作项 1—8 的代码已完成；`microservices-end` 只能在 main 分支 CI 的 Kind 部署与冒烟全绿后创建。下一阶段是暂缓的 HPA、依赖故障隔离和单体/微服务性能对比实验。

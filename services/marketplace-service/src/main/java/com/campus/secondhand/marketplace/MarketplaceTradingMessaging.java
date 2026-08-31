@@ -25,7 +25,7 @@ class MarketplaceGovernanceRabbitConfiguration {
 @Component @ConditionalOnProperty(prefix="campus.trading-events",name="enabled",havingValue="true")
 class MarketplaceCommandListener {
     private final TradingEventHandler handler;private final ObjectMapper mapper=new ObjectMapper();MarketplaceCommandListener(TradingEventHandler handler){this.handler=handler;}
-    @RabbitListener(queues=MarketplaceTradingRabbitConfiguration.COMMAND_QUEUE)void receive(Message payload)throws Exception{JsonNode n=mapper.readTree(payload.getBody());handler.handle(n.path("eventId").asText(),n.path("type").asText(),n.path("itemId").asLong(),n.path("orderId").asLong());}
+    @RabbitListener(queues=MarketplaceTradingRabbitConfiguration.COMMAND_QUEUE)void receive(Message payload)throws Exception{JsonNode n=mapper.readTree(payload.getBody());String eventId=n.path("eventId").asText();handler.handle(eventId,n.path("type").asText(),n.path("itemId").asLong(),n.path("orderId").asLong(),n.path("correlationId").asText(eventId));}
 }
 @Component @ConditionalOnProperty(prefix="campus.governance-events",name="enabled",havingValue="true")
 class MarketplaceGovernanceCommandListener {

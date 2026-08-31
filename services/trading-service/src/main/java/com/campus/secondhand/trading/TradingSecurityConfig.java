@@ -44,7 +44,7 @@ class TradingSecurityConfig {
                 .addFilterBefore(internal, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/actuator/health/liveness",
-                                "/actuator/health/readiness", "/internal/**").permitAll()
+                                "/actuator/health/readiness", "/actuator/info", "/internal/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((request, response, cause) -> {

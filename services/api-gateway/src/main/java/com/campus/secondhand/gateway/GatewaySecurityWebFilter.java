@@ -29,8 +29,10 @@ public class GatewaySecurityWebFilter implements WebFilter {
             "/actuator/health",
             "/actuator/health/liveness",
             "/actuator/health/readiness",
+            "/actuator/info",
             "/api/actuator/health/liveness",
             "/api/actuator/health/readiness",
+            "/api/actuator/info",
             "/api/search");
 
     private final AccountClient accounts;

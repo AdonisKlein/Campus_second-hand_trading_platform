@@ -4,6 +4,10 @@ COPY pom.xml .
 COPY src src
 RUN --mount=type=cache,target=/root/.m2 mvn -B -DskipTests package
 FROM eclipse-temurin:25-jre-jammy
+ARG APP_VERSION=dev
+ARG GIT_COMMIT=local
+LABEL org.opencontainers.image.version=$APP_VERSION org.opencontainers.image.revision=$GIT_COMMIT
+ENV APP_VERSION=$APP_VERSION GIT_COMMIT=$GIT_COMMIT
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/* && useradd --system --uid 10001 campus
 COPY --from=build /workspace/target/*.jar app.jar

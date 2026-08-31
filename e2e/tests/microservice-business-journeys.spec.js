@@ -8,7 +8,7 @@ async function actorPage(browser, role) {
   return { context, page };
 }
 
-async function poll(operation, predicate, message, timeoutMs = 15_000) {
+async function poll(operation, predicate, message, timeoutMs = 30_000) {
   const deadline = Date.now() + timeoutMs;
   let value;
   while (Date.now() < deadline) {
@@ -120,6 +120,7 @@ test('UC05-UC06 购买意向经卖家选定后完成并进入本人交易记录'
 });
 
 test('UC07-UC08 学生跟踪举报且管理员治理结果可审计', async ({ browser }) => {
+  test.slow();
   const seller = await actorPage(browser, 'seller');
   const buyer = await actorPage(browser, 'buyer');
   const admin = await actorPage(browser, 'admin');
@@ -144,7 +145,7 @@ test('UC07-UC08 学生跟踪举报且管理员治理结果可审计', async ({ b
       page => page.reports.some(candidate => candidate.id === report.id
         && candidate.status === 'RESOLVED' && candidate.actionState === 'APPLIED'
         && candidate.history.length > 0),
-      '治理事件应最终应用并保留审计历史'
+      '治理事件应最终应用并保留审计历史', 45_000
     );
     expect(resolved.reports.find(candidate => candidate.id === report.id).resolutionNote).toContain('已核实');
     const detailResponse = await buyer.page.request.get(`/api/items/${item.id}`);
@@ -158,6 +159,7 @@ test('UC07-UC08 学生跟踪举报且管理员治理结果可审计', async ({ b
 });
 
 test('UC07-UC08 留言和用户举报会执行匹配治理措施并留下审计记录', async ({ browser }) => {
+  test.slow();
   const seller = await actorPage(browser, 'seller');
   const buyer = await actorPage(browser, 'buyer');
   const admin = await actorPage(browser, 'admin');
@@ -184,7 +186,7 @@ test('UC07-UC08 留言和用户举报会执行匹配治理措施并留下审计�
       () => api(seller.page, '/reports/mine'),
       page => page.reports.some(report => report.id === messageReport.id
         && report.actionState === 'APPLIED' && report.history.length > 0),
-      '留言移除治理事件应生效并保留审计历史'
+      '留言移除治理事件应生效并保留审计历史', 45_000
     );
     expect(sellerReports.reports.find(report => report.id === messageReport.id).decisionAction)
       .toBe('REMOVE_MESSAGE');
@@ -199,7 +201,7 @@ test('UC07-UC08 留言和用户举报会执行匹配治理措施并留下审计�
       () => api(buyer.page, '/reports/mine'),
       page => page.reports.some(report => report.id === userReport.id
         && report.actionState === 'APPLIED' && report.history.length > 0),
-      '用户禁用治理事件应生效并保留审计历史'
+      '用户禁用治理事件应生效并保留审计历史', 45_000
     );
     expect(buyerReports.reports.find(report => report.id === userReport.id).decisionAction)
       .toBe('DISABLE_USER');

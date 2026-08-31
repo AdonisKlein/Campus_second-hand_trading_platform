@@ -71,7 +71,7 @@ class GovernanceActionHandler {
    else if ("DISABLED".equals(user.getStatus())) result = "GovernanceActionApplied";
    else { user.setStatus("DISABLED"); user.setAuthVersion(user.getAuthVersion() + 1); profiles.record(user); users.save(user); result = "GovernanceActionApplied"; }
   }
-  Map<String,Object> body = new LinkedHashMap<>(); body.put("eventId", eventId + ":result"); body.put("correlationId", eventId);
+  Map<String,Object> body = new LinkedHashMap<>(); body.put("eventId", eventId + ":result"); body.put("commandEventId", eventId); body.put("correlationId", payload == null ? eventId : payload.path("correlationId").asText(eventId));
   body.put("version", 1); body.put("occurredAt", LocalDateTime.now().toString()); body.put("producer", "account-service");
   body.put("type", result); body.put("reportId", payload == null ? null : payload.path("reportId").asLong()); body.put("targetId", targetId);
   if (reason != null) body.put("reason", reason);

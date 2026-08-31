@@ -11,7 +11,8 @@ interface MarketplaceOutboxRepository extends JpaRepository<MarketplaceOutboxEve
 @Service class TradingEventHandler{
  private final ItemRepository items;private final MessageRepository messages;private final MarketplaceInboxRepository inbox;private final MarketplaceOutboxRepository outbox;private final ObjectMapper mapper=new ObjectMapper();
  TradingEventHandler(ItemRepository items,MessageRepository messages,MarketplaceInboxRepository inbox,MarketplaceOutboxRepository outbox){this.items=items;this.messages=messages;this.inbox=inbox;this.outbox=outbox;}
- @Transactional public void handle(String eventId,String type,Long itemId,Long orderId){if(inbox.existsById(eventId))return;Item item=items.findLockedById(itemId).orElse(null);String result;String reason=null;
+ @Transactional public void handle(String eventId,String type,Long itemId,Long orderId){handle(eventId,type,itemId,orderId,eventId);}
+ @Transactional public void handle(String eventId,String type,Long itemId,Long orderId,String correlationId){if(inbox.existsById(eventId))return;Item item=items.findLockedById(itemId).orElse(null);String result;String reason=null;
   if(item==null){result="ItemCommandRejected";reason="商品不存在";}
   else switch(type){
    case "ItemReservationRequested"->{if(item.getStatus()==ItemStatus.ON_SALE&&item.getModerationStatus()==ItemModerationStatus.VISIBLE){item.setStatus(ItemStatus.RESERVED);item.setReservedOrderId(orderId);result="ItemReserved";}else if(item.getStatus()==ItemStatus.RESERVED&&orderId.equals(item.getReservedOrderId()))result="ItemReserved";else{result="ItemReservationRejected";reason="商品已经不可预留";}}
@@ -19,7 +20,7 @@ interface MarketplaceOutboxRepository extends JpaRepository<MarketplaceOutboxEve
    case "ItemSoldRequested"->{if(item.getStatus()==ItemStatus.RESERVED&&orderId.equals(item.getReservedOrderId())){item.setStatus(ItemStatus.SOLD);item.setReservedOrderId(null);result="ItemSold";}else{result="ItemCommandRejected";reason="预留关系不匹配";}}
    default->throw new IllegalArgumentException("未知交易事件");
   }
-  inbox.save(new MarketplaceInboxEvent(eventId,type));String resultId=eventId+":result";Map<String,Object> payload=new LinkedHashMap<>();payload.put("eventId",resultId);payload.put("correlationId",eventId);payload.put("version",1);payload.put("occurredAt",LocalDateTime.now().toString());payload.put("producer","marketplace-service");payload.put("type",result);payload.put("orderId",orderId);payload.put("itemId",itemId);if(reason!=null)payload.put("reason",reason);
+  inbox.save(new MarketplaceInboxEvent(eventId,type));String resultId=eventId+":result";Map<String,Object> payload=new LinkedHashMap<>();payload.put("eventId",resultId);payload.put("correlationId",correlationId);payload.put("version",1);payload.put("occurredAt",LocalDateTime.now().toString());payload.put("producer","marketplace-service");payload.put("type",result);payload.put("orderId",orderId);payload.put("itemId",itemId);if(reason!=null)payload.put("reason",reason);
   try{outbox.save(new MarketplaceOutboxEvent(resultId,result,mapper.writeValueAsString(payload)));}catch(Exception error){throw new IllegalStateException("商品交易结果序列化失败",error);}
  }
  @Transactional public void handleGovernance(com.fasterxml.jackson.databind.JsonNode n){
@@ -29,7 +30,7 @@ interface MarketplaceOutboxRepository extends JpaRepository<MarketplaceOutboxEve
   else if("REMOVE_MESSAGE".equals(action)){if(messages.existsById(targetId)){messages.deleteById(targetId);result="GovernanceActionApplied";}else{result="GovernanceActionFailed";reason="留言不存在";}}
   else {result="GovernanceActionFailed";reason="Marketplace 不支持该治理动作";}
   inbox.saveAndFlush(new MarketplaceInboxEvent(eventId,n.path("type").asText()));
-  Map<String,Object> p=new LinkedHashMap<>();p.put("eventId",eventId+":result");p.put("correlationId",n.path("correlationId").asText(eventId));p.put("version",1);p.put("occurredAt",LocalDateTime.now().toString());p.put("producer","marketplace-service");p.put("type",result);p.put("action",action);p.put("reportId",n.path("reportId").asLong());p.put("targetId",targetId);if(reason!=null)p.put("reason",reason);
+  Map<String,Object> p=new LinkedHashMap<>();p.put("eventId",eventId+":result");p.put("commandEventId",eventId);p.put("correlationId",n.path("correlationId").asText(eventId));p.put("version",1);p.put("occurredAt",LocalDateTime.now().toString());p.put("producer","marketplace-service");p.put("type",result);p.put("action",action);p.put("reportId",n.path("reportId").asLong());p.put("targetId",targetId);if(reason!=null)p.put("reason",reason);
   try{outbox.save(new MarketplaceOutboxEvent(eventId+":result",result,mapper.writeValueAsString(p)));}catch(Exception e){throw new IllegalStateException("治理结果序列化失败",e);}
  }
  boolean processed(String eventId){return eventId!=null&&inbox.existsById(eventId);}

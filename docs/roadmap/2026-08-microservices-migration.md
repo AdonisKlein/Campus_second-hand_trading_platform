@@ -1,6 +1,6 @@
 # 校园二手平台微服务改造路线图
 
-更新日期：2026-08-26  
+更新日期：2026-08-31
 实施分支：`codex/microservices-refactor`  
 单体基线：`monolith-start` → `9be9e6502af2642235049698b1f2a8f55da9611b`
 
@@ -9,8 +9,8 @@
 ## 1. 当前状态
 
 - Account、Marketplace、Trading 与 Governance 四个业务服务均已提取，Gateway 已删除单体兜底路由。
-- 单体版已经具备单元测试、API/MySQL 集成测试、Playwright E2E、版本化镜像、Kind 部署、健康检查和失败证据收集。
-- 业务微服务代码完成度为 `4/4`；Compose 与 Kind 微服务运行拓扑已经完成，HPA、故障实验和性能对比尚未开始。
+- 微服务版已经具备独立 Maven 验证、API/MySQL/Redis/RabbitMQ 集成测试、8 个用例追溯、Playwright E2E、版本化事件契约、统一测试报告、版本化镜像、Kind 部署、健康检查和失败证据收集。
+- 业务微服务代码完成度为 `4/4`；工作项 1—8 的代码已落地。HPA、故障实验和性能对比尚未开始。
 - `monolith-start` 是不可移动的改造前版本标记；微服务工作项 1—8 全绿后创建 `microservices-end`。
 
 ## 2. 最终服务划分
@@ -129,20 +129,22 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 验收证据：Compose 全部服务健康、四库 Flyway 可读且跨库访问被拒；Kind 中全部 Pod Running、PVC Bound、Gateway/Web 冒烟通过。
 - 提交：`ops: deploy isolated microservice data and messaging infrastructure`
 
-### 工作项 7：微服务测试闭环 — 未开始
+### 工作项 7：微服务测试闭环 — 已完成
 
-- 每服务补齐单元、API、MySQL/RabbitMQ/Redis Testcontainers 与跨服务契约测试。
-- 所有公开 method + path 至少覆盖成功、参数错误、未登录或越权。
-- 五条 E2E 旅程必须明确覆盖 UC01—UC18；缺少任一追溯项时 CI 失败。
-- 计划提交：`test: cover microservice contracts and all business journeys`
+- 每服务已补齐单元、API、MySQL/RabbitMQ/Redis Testcontainers 与跨服务契约测试。
+- 45 个公开 method + path 已建立成功、参数错误、未登录或越权覆盖追溯。
+- 按最新版 `doc/业务场景用例清单` 的 UC01—UC08 建立机器可读映射和运行证据门禁；本地最终报告 92/92（单元 44、API/集成 33、E2E 15）。
+- 提交：`7e71804 test: cover microservice contracts and all business journeys`
 
-### 工作项 8：独立 CI/CD 与可观测性 — 未开始
+### 工作项 8：独立 CI/CD 与可观测性 — 实现完成，待主分支 CI 验收
 
-- 流水线顺序：单元 → 服务 API → 跨服务集成 → E2E → SHA 镜像 → Kind 部署 → 冒烟。
-- Gateway 和四个业务服务分别构建镜像、部署和展示 liveness、readiness、版本号及结构化日志。
-- correlationId 贯穿 Gateway、REST、事件和日志；失败时总是上传资源、事件、Pod 描述和日志。
-- 全绿后创建 `microservices-end`。
-- 计划提交：`ci: build test and deploy independent microservices`
+- 流水线已经按五个独立 Maven 工程 → 契约/前端 → 微服务 E2E → 六个 SHA 镜像 → Kind 全拓扑 → 健康/版本冒烟建立严格 `needs` 门禁。
+- Gateway、Account、Marketplace、Trading、Governance 分别发布 `health/info`，镜像和运行环境暴露提交 SHA，控制台使用 ECS JSON 结构化日志。
+- Gateway 生成或校验 `X-Correlation-Id`，REST 调用继续传递；交易/治理 Outbox envelope 保存 correlationId。失败诊断总是上传资源、事件、Pod 描述、当前与上一容器日志、镜像和健康结果。
+- 5 类 RabbitMQ v1 事件已有 JSON Schema 和 CI 门禁；业务命令使用独立 `commandEventId` 做结果匹配，`correlationId` 只做跨 REST/消息日志追踪，消费者允许增加未知元数据以支持滚动升级。
+- 本地完整 Compose 回归 15/15 通过，UC01—UC08 运行证据 8/8；三方安全、CI/追溯和整体审查指出的问题已经收口，无剩余 P0/P1。统一报告在失败时也会上传已有测试统计和失败摘要。
+- 主分支全绿后再创建 `microservices-end`，当前不得提前移动或创建该标记。
+- 提交：`ci: build test and deploy independent microservices`（使用 `git log -1` 查看提交号）
 
 ## 5. 暂缓的实验工作项
 

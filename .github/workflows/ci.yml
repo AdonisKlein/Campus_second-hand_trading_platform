@@ -1,4 +1,4 @@
-name: CI
+name: Microservices CI/CD
 
 on:
   push:
@@ -17,65 +17,77 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: microservices-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
-  unit-tests:
-    name: Unit tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-      - name: Set up JDK 25
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "25"
-          cache: maven
-      - name: Run Maven unit tests
-        working-directory: backend
-        run: mvn --batch-mode --no-transfer-progress test
-      - name: Upload unit test reports
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: unit-test-reports-${{ github.run_id }}
-          if-no-files-found: warn
-          path: backend/target/surefire-reports/**
+env:
+  JAVA_VERSION: "25"
+  NODE_VERSION: "22"
+  REGISTRY: ghcr.io
+  IMAGE_NAMESPACE: ghcr.io/adonisklein
 
-  api-integration-tests:
-    name: API and MySQL integration tests
-    needs: unit-tests
+jobs:
+  detect-changes:
+    name: Detect affected services
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    outputs:
+      summary: ${{ steps.changes.outputs.summary }}
+    steps:
+      - name: Checkout with comparison history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+      - name: Classify changed services
+        id: changes
+        shell: bash
+        run: |
+          node scripts/ci/detect-service-changes.mjs \
+            --event "${GITHUB_EVENT_NAME}" \
+            --before "${{ github.event.before }}" \
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --output test-results/changed-services.json
+          summary="$(node -e "const x=require('./test-results/changed-services.json'); process.stdout.write(x.affected.join(','))")"
+          echo "summary=${summary}" >> "$GITHUB_OUTPUT"
+      - name: Upload change classification
+        uses: actions/upload-artifact@v7
+        with:
+          name: changed-services-${{ github.run_id }}
+          path: test-results/changed-services.json
+
+  service-tests:
+    name: Verify ${{ matrix.service }}
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [api-gateway, account-service, marketplace-service, trading-service, governance-service]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-      - name: Set up JDK 25
+      - name: Set up JDK
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "25"
+          java-version: ${{ env.JAVA_VERSION }}
           cache: maven
-      - name: Run Maven verification
-        working-directory: backend
+      - name: Run unit, API and integration tests
+        working-directory: services/${{ matrix.service }}
         run: mvn --batch-mode --no-transfer-progress verify
-      - name: Upload API and MySQL reports
+      - name: Upload Maven reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
         with:
-          name: integration-test-reports-${{ github.run_id }}
+          name: maven-${{ matrix.service }}-${{ github.run_id }}
           if-no-files-found: warn
           path: |
-            backend/target/failsafe-reports/**
-            backend/target/reports/**
-            backend/target/site/**
+            services/${{ matrix.service }}/target/surefire-reports/**
+            services/${{ matrix.service }}/target/failsafe-reports/**
 
-  frontend-static-tests:
-    name: Frontend static tests
-    needs: api-integration-tests
+  contract-and-frontend-tests:
+    name: Contract and frontend tests
+    needs: service-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -84,35 +96,43 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Verify UC and public API traceability
+        working-directory: e2e
+        run: |
+          npm ci
+          npm run test:e2e:routing
+          npm run test:e2e:traceability
+      - name: Verify versioned event contracts
+        run: node scripts/ci/verify-event-contracts.mjs
       - name: Run frontend contract tests
-        shell: bash
         run: node --test frontend/tests/*.test.js
       - name: Check frontend JavaScript syntax
         shell: bash
         run: find frontend/assets/js -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Verify CI/CD and observability contracts
+        run: node scripts/ci/verify-work-item-8.mjs
 
   e2e-tests:
-    name: Playwright E2E journeys
-    needs: frontend-static-tests
+    name: Cross-service Playwright journeys
+    needs: contract-and-frontend-tests
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: e2e/package-lock.json
-      - name: Install E2E dependencies
+      - name: Install Playwright
         working-directory: e2e
-        run: npm ci
-      - name: Install Chromium
-        working-directory: e2e
-        run: npx playwright install --with-deps chromium
-      - name: Run isolated Compose E2E environment
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Run isolated microservice environment
         working-directory: e2e
         run: npm run test:e2e:compose
       - name: Upload Playwright evidence
@@ -123,17 +143,74 @@ jobs:
           if-no-files-found: warn
           path: e2e/test-results/**
 
+  test-summary:
+    name: Publish unified test report
+    needs: [service-tests, contract-and-frontend-tests, e2e-tests]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Download Maven test evidence
+        uses: actions/download-artifact@v8
+        with:
+          pattern: maven-*
+          path: collected-test-results/maven
+          merge-multiple: false
+      - name: Download Playwright test evidence
+        uses: actions/download-artifact@v8
+        with:
+          pattern: playwright-evidence-*
+          path: collected-test-results/playwright
+          merge-multiple: false
+      - name: Merge JUnit reports
+        shell: bash
+        run: |
+          mapfile -d '' reports < <(find collected-test-results -type f -name '*.xml' -print0)
+          inputs=()
+          for report in "${reports[@]}"; do inputs+=(--input "${report}"); done
+          node scripts/ci/test-report.mjs "${inputs[@]}" \
+            --output test-results/summary \
+            --commit "${GITHUB_SHA}" \
+            --branch "${GITHUB_REF_NAME}" \
+            --environment "GitHub Actions / Java ${JAVA_VERSION} / Docker Compose"
+      - name: Add report to job summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          if [[ -f test-results/summary/test-report.md ]]; then
+            cat test-results/summary/test-report.md >> "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "No unified report was generated; inspect upstream jobs." >> "${GITHUB_STEP_SUMMARY}"
+          fi
+      - name: Upload unified test report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: unified-test-report-${{ github.run_id }}
+          if-no-files-found: warn
+          path: test-results/summary/**
+
   build-images:
-    name: Build and push versioned images
-    needs: e2e-tests
+    name: Build ${{ matrix.image }} image
+    needs: [e2e-tests, test-summary]
     if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     permissions:
       contents: read
       packages: write
-    outputs:
-      image-tag: ${{ steps.version.outputs.tag }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {image: campus-gateway, context: services/api-gateway}
+          - {image: campus-account, context: services/account-service}
+          - {image: campus-marketplace, context: services/marketplace-service}
+          - {image: campus-trading, context: services/trading-service}
+          - {image: campus-governance, context: services/governance-service}
+          - {image: campus-web, context: frontend}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -142,38 +219,32 @@ jobs:
       - name: Sign in to GHCR
         uses: docker/login-action@v4
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Resolve immutable image tag
         id: version
         shell: bash
         run: echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-      - name: Build and push backend image
+      - name: Build and push immutable image
         uses: docker/build-push-action@v7
         with:
-          context: backend
-          file: backend/Dockerfile
+          context: ${{ matrix.context }}
+          file: ${{ matrix.context }}/Dockerfile
           push: true
-          tags: ghcr.io/adonisklein/campus-backend:${{ steps.version.outputs.tag }}
-          cache-from: type=gha,scope=backend
-          cache-to: type=gha,mode=max,scope=backend
-      - name: Build and push web image
-        uses: docker/build-push-action@v7
-        with:
-          context: frontend
-          file: frontend/Dockerfile
-          push: true
-          tags: ghcr.io/adonisklein/campus-web:${{ steps.version.outputs.tag }}
-          cache-from: type=gha,scope=web
-          cache-to: type=gha,mode=max,scope=web
+          tags: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:${{ steps.version.outputs.tag }}
+          build-args: |
+            APP_VERSION=${{ steps.version.outputs.tag }}
+            GIT_COMMIT=${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
 
   deploy-kind:
-    name: Deploy versioned images to Kind
+    name: Deploy microservices to Kind
     needs: build-images
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     permissions:
       contents: read
       packages: read
@@ -187,7 +258,7 @@ jobs:
       - name: Sign in to GHCR
         uses: docker/login-action@v4
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Kind
@@ -198,26 +269,20 @@ jobs:
           sudo mv kind /usr/local/bin/kind
           kind version
           kubectl version --client
-      - name: Deploy and run smoke checks
+      - name: Deploy and run health/version smoke checks
         shell: bash
-        run: |
-          scripts/ci/deploy-kind.sh \
-            "ghcr.io/adonisklein/campus-backend:${{ needs.build-images.outputs.image-tag }}" \
-            "ghcr.io/adonisklein/campus-web:${{ needs.build-images.outputs.image-tag }}"
+        run: scripts/ci/deploy-kind.sh "${IMAGE_NAMESPACE}" "sha-${GITHUB_SHA::7}"
       - name: Add deployment report to job summary
         if: ${{ always() }}
         shell: bash
         run: |
           report="${K8S_EVIDENCE_DIR}/summary.md"
-          if [[ -f "${report}" ]]; then
-            cat "${report}" >> "${GITHUB_STEP_SUMMARY}"
-          else
-            echo "Deployment ended before a report could be generated." >> "${GITHUB_STEP_SUMMARY}"
-          fi
-      - name: Upload Kubernetes deployment evidence
+          if [[ -f "${report}" ]]; then cat "${report}" >> "${GITHUB_STEP_SUMMARY}";
+          else echo "Deployment ended before a report could be generated." >> "${GITHUB_STEP_SUMMARY}"; fi
+      - name: Upload Kubernetes diagnostics
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
         with:
-          name: kubernetes-deployment-evidence-${{ github.run_id }}
+          name: kubernetes-diagnostics-${{ github.run_id }}
           if-no-files-found: warn
           path: test-results/k8s-deploy/**

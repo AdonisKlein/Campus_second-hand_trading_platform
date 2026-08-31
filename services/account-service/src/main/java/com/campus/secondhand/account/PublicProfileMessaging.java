@@ -22,7 +22,8 @@ class PublicProfileEventStore {
     void record(User user) {
         long version=user.getPublicProfileVersion()+1; user.setPublicProfileVersion(version);
         String eventId=UUID.randomUUID().toString(); LocalDateTime now=LocalDateTime.now();
-        Map<String,Object> body=new LinkedHashMap<>(); body.put("eventId",eventId); body.put("userId",user.getId());
+        Map<String,Object> body=new LinkedHashMap<>(); body.put("eventId",eventId); body.put("correlationId",CorrelationIdFilter.current());
+        body.put("producer","account-service"); body.put("type","UserPublicProfileChanged"); body.put("userId",user.getId());
         body.put("version",version); body.put("username",user.getUsername()); body.put("nickname",user.getNickname());
         body.put("region",user.getCampusRegion()); body.put("creditScore",user.getCreditScore());
         body.put("lastActiveAt",user.getLastActiveAt()); body.put("status",user.getStatus()); body.put("role",user.getRole());

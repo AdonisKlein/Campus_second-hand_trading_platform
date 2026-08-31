@@ -46,10 +46,13 @@ app:
   public-profile-events:
     enabled: ${PUBLIC_PROFILE_EVENTS_ENABLED:false}
 management:
+  info:
+    env:
+      enabled: true
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,info
   endpoint:
     health:
       probes:
@@ -57,3 +60,12 @@ management:
   health:
     mail:
       enabled: ${MAIL_ENABLED:false}
+info:
+  app:
+    name: ${spring.application.name}
+    version: ${APP_VERSION:dev}
+    commit: ${GIT_COMMIT:local}
+logging:
+  structured:
+    format:
+      console: ecs

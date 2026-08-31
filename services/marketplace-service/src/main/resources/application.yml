@@ -37,6 +37,9 @@ campus:
     enabled: ${GOVERNANCE_EVENTS_ENABLED:false}
     exchange: ${GOVERNANCE_EVENTS_EXCHANGE:campus.governance}
 management:
+  info:
+    env:
+      enabled: true
   endpoints:
     web:
       exposure:
@@ -45,3 +48,12 @@ management:
     health:
       probes:
         enabled: true
+info:
+  app:
+    name: ${spring.application.name}
+    version: ${APP_VERSION:dev}
+    commit: ${GIT_COMMIT:local}
+logging:
+  structured:
+    format:
+      console: ecs

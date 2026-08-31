@@ -148,7 +148,7 @@ class MarketplaceApiTest {
     }
 
     private Item item(long seller,String title,BigDecimal price){Item value=new Item();value.setSellerId(seller);value.setTitle(title);value.setCategory("教材");value.setPrice(price);value.setRegion("学院路校区");return items.saveAndFlush(value);}
-    private void project(long id,String username,String nickname,String status,int credit,long version){LocalDateTime now=LocalDateTime.of(2026,8,27,12,0);projectionUpdater.accept(new UserPublicProfileChanged("event-"+id+"-"+version,id,version,username,nickname,"学院路校区",credit,now,status,"STUDENT",now,now));}
+    private void project(long id,String username,String nickname,String status,int credit,long version){LocalDateTime now=LocalDateTime.of(2026,8,27,12,0);projectionUpdater.accept(new UserPublicProfileChanged("event-"+id+"-"+version,"test-correlation",id,version,username,nickname,"学院路校区",credit,now,status,"STUDENT",now,now));}
     private void await(CountDownLatch latch){try{latch.await();}catch(InterruptedException error){Thread.currentThread().interrupt();throw new IllegalStateException(error);}}
     private String jwt(long user,String role){Instant now=Instant.now();JwtClaimsSet claims=JwtClaimsSet.builder().issuer("campus-gateway").subject(String.valueOf(user)).claim("role",role).claim("email","u"+user+"@example.com").claim("auth_version",1).issuedAt(now).expiresAt(now.plusSeconds(60)).build();JwtEncoder encoder=NimbusJwtEncoder.withSecretKey(new SecretKeySpec(SECRET.getBytes(java.nio.charset.StandardCharsets.UTF_8),"HmacSHA256")).build();return encoder.encode(JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(),claims)).getTokenValue();}
 }

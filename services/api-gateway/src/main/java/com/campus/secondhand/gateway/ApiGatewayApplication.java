@@ -15,6 +15,6 @@ public class ApiGatewayApplication {
 
     @Bean
     WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
+        return WebClient.builder().filter(CorrelationIdWebFilter.propagate());
     }
 }

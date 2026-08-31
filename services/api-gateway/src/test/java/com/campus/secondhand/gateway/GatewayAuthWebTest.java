@@ -39,6 +39,23 @@ class GatewayAuthWebTest {
     }
 
     @Test
+    void correlationIdAndVersionAreObservableWithoutAuthentication() {
+        client.get().uri("/api/auth/csrf")
+                .header("X-Correlation-Id", "course-check-42")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("X-Correlation-Id", "course-check-42");
+
+        client.get().uri("/actuator/info")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.app.name").isEqualTo("campus-api-gateway")
+                .jsonPath("$.app.version").isEqualTo("dev")
+                .jsonPath("$.app.commit").isEqualTo("local");
+    }
+
+    @Test
     void csrfLoginSessionAndRevocationUseStableJsonContract() {
         AuthenticatedAccount account = account(7);
         when(accounts.authenticate(any(LoginCredentials.class))).thenReturn(Mono.just(account));

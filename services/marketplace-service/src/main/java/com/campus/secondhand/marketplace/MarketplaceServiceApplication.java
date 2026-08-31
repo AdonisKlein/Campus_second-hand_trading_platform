@@ -17,6 +17,6 @@ public class MarketplaceServiceApplication {
 
     @Bean
     WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
+        return WebClient.builder().filter(CorrelationIdFilter.propagate());
     }
 }
