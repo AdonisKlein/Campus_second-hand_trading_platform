@@ -1,0 +1,111 @@
+@startuml
+title SYS-SEQ01  UC01 学生账号注册、使用与资料维护
+skinparam backgroundColor white
+hide footbox
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #111111
+    LifeLineBorderColor #777777
+    LifeLineBackgroundColor white
+    ParticipantBorderColor #7A8796
+    ParticipantBackgroundColor #E7EEF8
+    ParticipantFontColor #222222
+    ActorBorderColor #7A8796
+    ActorBackgroundColor #E7EEF8
+    ActorFontColor #222222
+    GroupBorderColor #F0A060
+    GroupHeaderFontColor #333333
+    GroupFontColor #333333
+    ActivationBorderColor #5E6A78
+    ActivationBackgroundColor #DCE8F8
+    DividerBackgroundColor white
+    DividerBorderColor #999999
+}
+
+actor 学生用户 as Student
+participant 校园二手交易平台 as System
+participant 邮件验证码服务 as Mail
+participant Session服务 as Session
+
+group 注册与邮箱验证
+    Student -> System : 提交注册邮箱
+    activate System
+    System -> System : 校验邮箱是否可注册
+    System -> Mail : 发送注册验证码
+    activate Mail
+    Mail --> Student : 投递注册验证码
+    deactivate Mail
+    Student -> System : 提交验证码、密码和必要资料
+    System -> System : 校验验证码用途、有效期和次数
+    alt 验证通过且资料符合规则
+        System -> System : 创建学生账号并设为可用状态
+        System -> Session : 建立登录Session
+        activate Session
+        Session --> System : Session已建立
+        deactivate Session
+        System --> Student : 返回注册成功和当前用户信息
+    else 验证失败或资料不符合规则
+        System --> Student : 返回注册失败原因
+    end
+    deactivate System
+end
+
+group 登录、会话恢复与退出
+    Student -> System : 提交邮箱和密码
+    activate System
+    System -> System : 校验账号状态和密码
+    alt 校验成功
+        System -> Session : 创建/刷新HttpOnly Session
+        activate Session
+        Session --> System : Session有效
+        deactivate Session
+        System --> Student : 返回登录成功
+    else 校验失败
+        System --> Student : 返回登录失败原因
+    end
+
+    Student -> System : 请求恢复当前身份 /user/me
+    System -> Session : 校验当前Session
+    activate Session
+    Session --> System : 返回Session身份/无有效Session
+    deactivate Session
+    System --> Student : 返回当前用户信息/未登录状态
+
+    Student -> System : 请求退出
+    System -> Session : 销毁当前Session
+    activate Session
+    Session --> System : Session已失效
+    deactivate Session
+    System --> Student : 返回退出成功
+    deactivate System
+end
+
+group 密码找回
+    Student -> System : 请求找回密码
+    activate System
+    System -> Mail : 发送找回密码验证码
+    activate Mail
+    Mail --> Student : 投递找回验证码
+    deactivate Mail
+    Student -> System : 提交验证码和新密码
+    System -> System : 校验验证码并更新密码
+    System -> Session : 使相关旧Session失效
+    activate Session
+    Session --> System : 旧Session已失效
+    deactivate Session
+    System --> Student : 返回密码重置结果
+    deactivate System
+end
+
+group 个人资料维护
+    Student -> System : 提交昵称、校区区域等资料
+    activate System
+    System -> Session : 识别当前学生用户
+    activate Session
+    Session --> System : 返回当前用户身份
+    deactivate Session
+    System -> System : 校验并更新本人资料
+    System --> Student : 返回更新后的个人资料
+    deactivate System
+end
+@enduml

@@ -22,9 +22,10 @@ module.exports = defineConfig({
   use: {
     baseURL: process.env.E2E_BASE_URL || 'http://127.0.0.1',
     headless: true,
+    ...(process.env.E2E_BROWSER === 'chrome' ? { channel: 'chrome' } : {}),
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: process.env.E2E_VIDEO === 'off' ? 'off' : 'retain-on-failure',
     serviceWorkers: 'block'
   },
   projects: [

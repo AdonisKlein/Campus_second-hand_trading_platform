@@ -1,0 +1,64 @@
+@startuml
+title SYS-SEQ06  UC06 学生查看个人交易记录
+skinparam backgroundColor white
+hide footbox
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #111111
+    LifeLineBorderColor #777777
+    LifeLineBackgroundColor white
+    ParticipantBorderColor #7A8796
+    ParticipantBackgroundColor #E7EEF8
+    ParticipantFontColor #222222
+    ActorBorderColor #7A8796
+    ActorBackgroundColor #E7EEF8
+    ActorFontColor #222222
+    GroupBorderColor #F0A060
+    GroupHeaderFontColor #333333
+    GroupFontColor #333333
+    ActivationBorderColor #5E6A78
+    ActivationBackgroundColor #DCE8F8
+    DividerBackgroundColor white
+    DividerBorderColor #999999
+}
+
+actor 学生用户 as Student
+participant 校园二手交易平台 as System
+
+group 打开个人交易工作台
+    Student -> System : 请求查看个人交易记录
+    activate System
+    System -> System : 依据当前Session识别本人
+    System -> System : 查询本人买入和卖出订单
+    System --> Student : 返回本人交易工作台
+    deactivate System
+end
+
+group 查看订单阶段和时间线
+    Student -> System : 打开某笔订单详情
+    activate System
+    System -> System : 校验订单是否与当前用户相关
+    alt 属于本人交易
+        System --> Student : 返回订单阶段、关键时间和交易信息
+    else 不属于本人交易
+        System --> Student : 拒绝查看
+    end
+    deactivate System
+end
+
+group 查看个人待办
+    Student -> System : 请求查看待处理交易
+    activate System
+    System -> System : 根据本人订单阶段整理待办
+    System --> Student : 返回需要本人处理的交易事项
+    deactivate System
+end
+
+group 按买入/卖出或阶段筛选
+    Student -> System : 选择买入/卖出及阶段条件
+    activate System
+    System -> System : 仅在本人交易记录中筛选
+    System --> Student : 返回筛选后的订单列表
+    deactivate System
+end
+@enduml

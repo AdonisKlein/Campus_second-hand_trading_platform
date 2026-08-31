@@ -1,0 +1,81 @@
+@startuml
+title SYS-SEQ08  UC08 管理员治理举报和平台内容
+skinparam backgroundColor white
+hide footbox
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #111111
+    LifeLineBorderColor #777777
+    LifeLineBackgroundColor white
+    ParticipantBorderColor #7A8796
+    ParticipantBackgroundColor #E7EEF8
+    ParticipantFontColor #222222
+    ActorBorderColor #7A8796
+    ActorBackgroundColor #E7EEF8
+    ActorFontColor #222222
+    GroupBorderColor #F0A060
+    GroupHeaderFontColor #333333
+    GroupFontColor #333333
+    ActivationBorderColor #5E6A78
+    ActivationBackgroundColor #DCE8F8
+    DividerBackgroundColor white
+    DividerBorderColor #999999
+}
+
+actor 管理员 as Admin
+participant 校园二手交易平台 as System
+
+group 处理举报
+    Admin -> System : 查看待处理举报
+    activate System
+    System -> System : 校验管理员权限
+    System --> Admin : 返回举报详情和相关内容
+    Admin -> System : 提交处理结果和说明
+    System -> System : 更新举报处理状态
+    System -> System : 记录处理人、时间、原因和结果
+    System --> Admin : 返回处理完成
+    deactivate System
+end
+
+group 禁用用户
+    Admin -> System : 请求禁用违规用户
+    activate System
+    System -> System : 校验管理员权限及治理条件
+    alt 允许禁用
+        System -> System : 更新用户可用状态
+        System -> System : 记录审计信息
+        System --> Admin : 返回禁用成功
+    else 不允许操作
+        System --> Admin : 返回拒绝原因
+    end
+    deactivate System
+end
+
+group 管理商品展示
+    Admin -> System : 请求隐藏/恢复商品展示
+    activate System
+    System -> System : 校验治理操作与当前交易状态
+    alt 不绕过交易规则
+        System -> System : 更新商品展示状态
+        System -> System : 记录审计信息
+        System --> Admin : 返回处理成功
+    else 操作会绕过交易规则
+        System --> Admin : 拒绝操作并说明原因
+    end
+    deactivate System
+end
+
+group 移除公开留言
+    Admin -> System : 请求移除违规公开留言
+    activate System
+    System -> System : 校验管理员权限和留言状态
+    alt 允许移除
+        System -> System : 更新留言可见状态
+        System -> System : 记录审计信息
+        System --> Admin : 返回移除成功
+    else 不允许移除
+        System --> Admin : 返回拒绝原因
+    end
+    deactivate System
+end
+@enduml

@@ -1,0 +1,60 @@
+@startuml
+title SYS-SEQ07  UC07 学生举报并跟踪平台问题
+skinparam backgroundColor white
+hide footbox
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #111111
+    LifeLineBorderColor #777777
+    LifeLineBackgroundColor white
+    ParticipantBorderColor #7A8796
+    ParticipantBackgroundColor #E7EEF8
+    ParticipantFontColor #222222
+    ActorBorderColor #7A8796
+    ActorBackgroundColor #E7EEF8
+    ActorFontColor #222222
+    GroupBorderColor #F0A060
+    GroupHeaderFontColor #333333
+    GroupFontColor #333333
+    ActivationBorderColor #5E6A78
+    ActivationBackgroundColor #DCE8F8
+    DividerBackgroundColor white
+    DividerBorderColor #999999
+}
+
+actor 学生用户 as Student
+participant 校园二手交易平台 as System
+
+group 提交举报
+    Student -> System : 选择商品、留言或用户并提交举报
+    activate System
+    System -> System : 识别当前学生并校验举报对象
+    alt 举报信息有效
+        System -> System : 保存举报内容并生成举报记录
+        System --> Student : 返回举报提交成功和记录信息
+    else 举报信息无效
+        System --> Student : 返回提交失败原因
+    end
+    deactivate System
+end
+
+group 查看本人举报列表
+    Student -> System : 请求查看我的举报
+    activate System
+    System -> System : 仅查询当前用户提交的举报
+    System --> Student : 返回本人举报列表及处理状态
+    deactivate System
+end
+
+group 跟踪举报处理结果
+    Student -> System : 打开某条举报详情
+    activate System
+    System -> System : 校验举报记录归属
+    alt 属于当前用户
+        System --> Student : 返回处理状态和处理说明
+    else 不属于当前用户
+        System --> Student : 拒绝查看
+    end
+    deactivate System
+end
+@enduml

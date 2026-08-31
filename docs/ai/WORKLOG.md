@@ -4,6 +4,41 @@
 
 ## 当前状态
 
+### 文档去重与用例口径收敛（2026-08-31）
+
+- 将旧《测试文档》从重复的测试建设规划压缩为历史索引，明确《软件测试文档》《测试清单》《校园二手交易平台测试文档》《全量测试文档》和《需求追溯矩阵》的唯一职责。
+- 将测试策略与清单中的 18 条细粒度检查统一标为 `REQ01～REQ18`，业务场景统一为 `UC01～UC08`；REQ18 作为所有场景的共同安全约束，不再误列为独立业务用例。
+- 重写《从顺序图生成测试用例》，由旧 18 套重复展开收敛为转换规则、8 场景映射、交易示例和共同安全约束。
+- 同步用户手册、UI 方案、开发计划和模块设计中的用例编号；概要、详细和实现说明书增加职责边界与权威文档引用，并将 Flyway 当前基线修正为 V1～V6。
+- 验证：`doc/*.md` 中无旧 `UC09～UC18`、`SYS-SEQ09～SYS-SEQ18` 或 Flyway V1～V5 现行口径残留；`git diff --check` 通过。本轮只修改文档，未运行 Maven、前端或 Docker 测试。
+- 提交号：本轮尚未提交。
+
+### 追溯表与需求文档基线同步（2026-08-29）
+
+- 将 `doc/需求追溯矩阵.md` 的用例和系统顺序模型从旧的 `UC01～UC18` / `SYS-SEQ01～SYS-SEQ18` 统一为当前 8 个业务场景 `UC01～UC08` / `SYS-SEQ01～SYS-SEQ08`，并按需求组完成映射。
+- 修正《软件需求说明书》中的 Flyway、商品字段和私聊旧描述。
+- 清理本轮文档行尾空格和多余 EOF 空行。
+- 验证：`git diff --check` 通过；追溯表仅包含 `UC01～UC08` 和 `SYS-SEQ01～SYS-SEQ08`。
+- 提交号：本轮尚未提交。
+
+### 测试用例与测试报告整理（2026-08-29）
+
+- 统一《测试清单》与《校园二手交易平台测试文档》的职责：前者用于执行勾选，后者作为正式测试报告，《全量测试文档》保留环境和命令说明。
+- 将清单口径同步为当前 8 个业务场景；已完成的 `SecurityApiIT`、交易/私聊/图片单元测试和 Playwright 主旅程不再列为待补齐事项。
+- 正式报告补充本轮证据：后端单元 35/35、API/应用 57/57、前端 3/3、Compose E2E 9/9，合计 104 项通过，0 失败，0 跳过；Docker liveness 为 `UP`。
+- 修正前端 Session 竞态测试入口文件名为 `frontend/tests/session-navigation-race.test.js`。
+- 遗留项：接近 5MB 图片的 Docker 重建上传复验、远程 GitHub Actions 全绿证据和最终 Git 标签。
+- 验证：待执行 `node --test frontend/tests/*.test.js`、全部 JS `node --check` 和 `git diff --check`；本轮未修改代码、接口或 Postman 契约。
+- 提交号：本轮尚未提交。
+
+### 服务接口清单与数据表归属方案（2026-08-29）
+
+- 新增 `doc/服务接口清单与数据表归属方案.md`，汇总当前 11 组 HTTP 入口、9 个核心业务 interface、Flyway `V1`～`V6` 全部业务/Session 表及其模块 owner。
+- 明确外键不等于跨模块写权限；交易状态统一由 `TradingService` 修改，当前身份统一由 `CurrentActorService` 取得，Spring Session 表由 adapter 管理。
+- 同步 `docs/ai/PROJECT_CONTEXT.md` 文档入口；未修改用户本轮正在调整的课程文档、图片和 Postman 契约。
+- 验证：依据 Controller、Java interface 和 Flyway 迁移逐项核对；待落盘后执行 `git diff --check`。本轮无代码或接口行为变更。
+- 提交号：本轮尚未提交。
+
 ### 第一项验收差距复核（2026-08-29）
 
 - 环境复验：提升权限后 Docker Engine/Compose 可用，`deploy` 的 MySQL、Backend、Web、Mailpit 均运行，`http://localhost:8088/api/actuator/health/liveness` 返回 `{"status":"UP"}`。
@@ -14,6 +49,11 @@
 - 复核当前分支 `codex/close-test-gaps`：独立测试和页面断言已补齐，测试清单状态已同步。
 - 验证：`node --test frontend/tests/*.test.js` 3/3 通过；全部 `frontend/assets/js/*.js` `node --check` 通过。
 - 当前验收遗留仅为远程 GitHub Actions 全绿/受控失败运行证据和最终 Git 标签；代码侧测试缺口已关闭。
+- 新增《从系统顺序图生成 API 集成测试用例说明》，明确系统图元素到 MockMvc/数据库/反向权限断言的转换规则，并给出 SYS-SEQ11、SYS-SEQ16、SYS-SEQ18 的完整示例和 UC01～UC18 测试映射，补齐建模到代码验收的答辩材料。
+- 根据最新课程要求修订测试分层口径：对象级顺序图对应单元测试；模块化单体阶段不单列组件级集成测试；系统顺序图对应后端容器系统测试；GUI 端到端测试归入增强项验收测试。同步调整《软件测试文档》和模型到测试说明标题/术语。
+- 统一测试文档格式：模型到测试说明改为“对象级/系统级”术语，章节编号连续，系统测试入口与后端容器口径一致；原有组件级集成测试表述改为当前单体阶段不单列。
+- 曾新增后删除 `scripts/run-local.ps1` 一键本地入口；当前统一使用 `deploy/README.md` 中的直接 Compose 命令，避免维护重复入口。
+- 扩展《从对象级顺序图和系统顺序图生成测试用例》，新增 UC01～UC10、UC12～UC15、UC17 的基本流程、扩展/异常流程和建模验证点，连同原有 UC11、UC16、UC18 示例覆盖全部 UC01～UC18。
 - 本轮新增 `unit/order/TradingServiceTest` 与 `unit/chat/DirectChatServiceTest`，分别锁定自购/未知买家、空消息和禁用用户等稳定规则边界；测试清单已同步为部分覆盖，未将少量单测误写成完整状态机覆盖。
 - 新增 `SecurityApiIT`，集中验证受保护写请求必须同时具备 Session 与 CSRF，且请求体伪造 `sellerId` 不会改变资源归属。
 - 新增 `SearchApiIT` 和 `ProductImagesTest`，分别覆盖用户搜索隐私/关键词上限，以及图片格式拒绝、标准化存储、owner 路径和路径穿越保护。
@@ -420,6 +460,17 @@
 
 - 将“我的发布、我买到的、我卖出的、消息、举报记录”等 `.profile-links` 入口改为独立白色圆角矩形边框，补充间距与悬停边框反馈，与 `.profile-overview.form-panel` 视觉一致。
 - 验证：`git diff --check`；未运行完整 Maven/Docker 验证。
+
+### 用例清单合并修订（2026-08-29）
+
+- 根据反馈，将用例清单由 33 条动作级条目进一步合并为 13 条业务目标级场景，避免把登录、商品维护、交易关闭等流程步骤误列为独立用例。
+- 验证：`git diff --check`；未运行 Maven/Docker（本轮仅修改文档）。
+
+### 用例清单再次精简（2026-08-29）
+
+- 将 13 条业务目标进一步归并为 8 条核心场景：账号、内容浏览、商品管理、商品沟通、交易闭环、交易记录、学生举报、管理员治理。
+- 将安全校验明确为所有场景的共同约束，不再单列安全用例。
+- 验证：`git diff --check`；未运行 Maven/Docker（本轮仅修改文档）。
 
 ## 接手检查清单
 

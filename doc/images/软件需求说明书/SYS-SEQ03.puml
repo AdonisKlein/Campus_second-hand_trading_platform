@@ -1,0 +1,85 @@
+@startuml
+title SYS-SEQ03  UC03 学生发布和管理二手商品
+skinparam backgroundColor white
+hide footbox
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #111111
+    LifeLineBorderColor #777777
+    LifeLineBackgroundColor white
+    ParticipantBorderColor #7A8796
+    ParticipantBackgroundColor #E7EEF8
+    ParticipantFontColor #222222
+    ActorBorderColor #7A8796
+    ActorBackgroundColor #E7EEF8
+    ActorFontColor #222222
+    GroupBorderColor #F0A060
+    GroupHeaderFontColor #333333
+    GroupFontColor #333333
+    ActivationBorderColor #5E6A78
+    ActivationBackgroundColor #DCE8F8
+    DividerBackgroundColor white
+    DividerBorderColor #999999
+}
+
+actor 学生用户 as Student
+participant 校园二手交易平台 as System
+participant 图片存储服务 as ImageStore
+
+group 发布商品
+    Student -> System : 提交商品标题、价格、描述等信息
+    activate System
+    System -> System : 识别当前学生并校验发布权限
+    Student -> ImageStore : 上传商品图片
+    activate ImageStore
+    ImageStore --> Student : 返回图片地址/上传结果
+    deactivate ImageStore
+    Student -> System : 提交图片信息并确认发布
+    System -> System : 校验商品资料、图片和初始状态
+    alt 信息符合规则
+        System --> Student : 返回发布成功和商品信息
+    else 信息不符合规则
+        System --> Student : 返回发布失败原因
+    end
+    deactivate System
+end
+
+group 编辑本人商品
+    Student -> System : 提交商品修改内容
+    activate System
+    System -> System : 校验当前用户是否为商品发布者
+    alt 有权编辑
+        System -> System : 更新商品资料和图片引用
+        System --> Student : 返回更新后的商品
+    else 无权编辑
+        System --> Student : 拒绝修改
+    end
+    deactivate System
+end
+
+group 下架商品
+    Student -> System : 请求下架本人商品
+    activate System
+    System -> System : 校验资源归属和当前商品状态
+    alt 允许下架
+        System -> System : 将商品状态更新为下架
+        System --> Student : 返回下架成功
+    else 当前状态不允许操作
+        System --> Student : 返回不能下架的原因
+    end
+    deactivate System
+end
+
+group 重新上架商品
+    Student -> System : 请求重新上架
+    activate System
+    System -> System : 校验资源归属、资料和当前状态
+    alt 满足重新上架条件
+        System -> System : 将商品恢复为可展示状态
+        System --> Student : 返回重新上架成功
+    else 不满足条件
+        System --> Student : 返回重新上架失败原因
+    end
+    deactivate System
+end
+@enduml

@@ -1,0 +1,1448 @@
+
+---PAGE 1---
+测试⽂档
+[toc]
+测试⽤例编号⽅式及对照表
+⾸字⺟为测试⽤例所属模块，后跟 3 位⼗进制数。最后⼀位为 0 代表成功测试，为 1-9 代表失败测试。⾼两位代表序号。
+模块对照表：
+字⺟对应模块
+S 资源模块⽅法测试
+P 帖⼦模块⽅法测试
+U ⽤⼾模块⽅法测试
+D 统计模块⽅法测试
+O ⾮功能测试
+C ⽤例测试
+模块⽅法测试
+帖⼦模块⽅法测试
+测试名称上传图⽚成功
+测试编号P000
+测试函数public ResponseEntity uploadImage(@RequestPart("file") MultipartFile image,HttpServletRequest request)
+输⼊数据form-data:{key: file[file 类型 ], value: ava1.webp}
+前置条件图⽚已经在本地加载成功
+预期输出⼀个云端图⽚存储的路径
+实际输出{"status":201,"success":true,"message":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/0/e72d815d-c29e-4231-8beb-3113c171fef0"}
+测试名称上传图⽚失败
+测试编号P001
+测试函数public ResponseEntity uploadImage(@RequestPart("file") MultipartFile image,HttpServletRequest request)
+输⼊数据form-data:{key: image[file 类型 ], value: ava1.webp}
+前置条件图⽚已经在本地加载成功
+预期输出上传图⽚失败的报错
+实际输出{"status":400,"success":false,"message":" 未上传资源 "}
+测试名称上传帖⼦成功
+测试编号P010
+测试函数public ResponseEntity uploadPost(@RequestBody AddPostRequest addPostRequest, HttpServletRequest request)
+输⼊数据{"title": " 测试 upload","content": "upload 成功 ","authority": 0,"images": []}
+前置条件⽤⼾已经获得了登录权限
+预期输出返回上传成功的信息
+实际输出{"status":200,"success":true,"message":" 上传成功 "}
+测试名称上传帖⼦失败 ( ⾝份 )
+测试编号P011
+测试函数public ResponseEntity uploadPost(@RequestBody AddPostRequest addPostRequest, HttpServletRequest request)
+输⼊数据{"title": " 测试 upload","content": "upload 失败 ","authority": 0,"images": []} (Headers 为⼀个没有注册过的 token)
+前置条件⽤⼾已经获得了登录权限
+预期输出拒绝上传并返回 token 问题
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试名称上传帖⼦失败 ( 权限 )
+测试编号P012
+测试⽂档 .md 2026-06-16
+1 / 63
+---PAGE 2---
+测试名称上传帖⼦失败 ( 权限 )
+测试函数public ResponseEntity uploadPost(@RequestBody AddPostRequest addPostRequest, HttpServletRequest request)
+输⼊数据{"title": " 测试 upload","content": "upload 失败 ","authority": 1,"images": []}
+前置条件⽤⼾已经获得了登录权限
+预期输出拒绝上传并返回设置权限问题
+实际输出{"status":403,"success":false,"message":" 权限等级不⾜ "}
+测试名称上传帖⼦失败 ( 敏感词汇 )
+测试编号P013
+测试函数public ResponseEntity uploadPost(@RequestBody AddPostRequest addPostRequest, HttpServletRequest request)
+输⼊数据{"title": " 傻逼 ","content": "upload 失败 ","authority": 1,"images": []}
+前置条件⽤⼾已经获得了登录权限
+预期输出拒绝上传并返回设置权限问题
+实际输出{"status":422,"success":false,"message":" 存在低俗辱骂不合规 "}
+测试名称
+查看帖⼦详细信息成功
+测试编号
+P020
+测试函数
+public ResponseEntity openPost(@RequestBody GetPostDetailRequest getPostDetailRequest, HttpServletRequest request)
+输⼊数据
+{"postId": 37}
+前置条件
+⽤⼾已经成功登录并获取 token
+预期输出
+返回对应序号帖⼦及其内容、评论、回复
+实际输出
+{"status":200,"success":true,"message":{"id":37,"userId":10000071,"userName":" 我是傻逼 ","userLevel":4,"userLevelName":"LV.4 探索能⼿ ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/cfe05cdb-90ab-468c-a542-345fe0b3890a","title":" 我是撒谎 ","content":"12121212","likeCount":0,"browseCount":5,"imageurls":null,"imageUrlList":null,"postTime":"2023-06-03 22:27:05","updateTime":"2023-06-0323:22:27","commentList":{"currPage":1,"prePage":1,"nextPage":1,"count":1,"list":[{"userId":10000071,"userName":" 我是傻逼 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/cfe05cdb-90ab-468c-a542-345fe0b3890a","userLevel":4,"userLevelName":"LV.4 探索能⼿ ","postId":37,"id":113,"content":"aaaa","imageUrl":null,"publishTime":"2023-06-0323:22:27","floor":1,"canDelete":false,"replyList":null}],"pageSize":10,"pageCount":1,"filterCount":0},"authority":1,"hotPoint":5,"canDelete":false,"like":false,"canOperate":t
+测试名称查看帖⼦详细信息失败 ( 帖⼦不存在 )
+测试编号P021
+测试函数public ResponseEntity openPost(@RequestBody GetPostDetailRequest getPostDetailRequest, HttpServletRequest request)
+输⼊数据{"postId": 3}
+前置条件⽤⼾已经成功登录并获取 token
+预期输出⽆法显⽰帖⼦并返回错误
+实际输出{"timestamp":"2023-06-06T12:31:25.886+00:00","status":500,"error":"Internal Server Error","path":"/post/postDetail"}
+测试⽂档 .md 2026-06-16
+2 / 63
+---PAGE 3---
+测试名称
+查看帖⼦详细信息失败 ( 权限不⾜ )
+测试编号
+P022
+测试函数
+public ResponseEntity openPost(@RequestBody GetPostDetailRequest getPostDetailRequest, HttpServletRequest request)
+输⼊数据
+{"postId": 49}
+前置条件
+⽤⼾已经成功登录并获取 token
+预期输出
+会返回帖⼦，但是会隐藏帖⼦内容
+实际输出
+{"status":200,"success":true,"message":{"id":49,"userId":10000002,"userName":"PCPA","userLevel":10,"userLevelName":"LV.10 神⼀般的存在 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","title":" 你们都看不了这个帖⼦略略 ","content":" 很抱歉，您的等级暂时不能查看此帖⼦，请努⼒升级后再来查看 ~","likeCount":0,"browseCount":5,"imageurls":null,"imageUrlList":null,"postTime":"20206-06 00:41:45","updateTime":"2023-06-06 00:43:10","commentList":{"currPage":1,"prePage":1,"nextPage":1,"count":1,"list":[{"userId":10000002,"userName":"PCPA","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel":10,"userLevelName":"LV.10 神⼀般的存在 ","postId":49,"id":131,"content":" 但是我是傻宝 ","imageUrl":null,"publishTime":"2023-06-0600:43:10","floor":1,"canDelete":false,"replyList":null}],"pageSize":10,"pageCount":1,"filterCount":0},"authority":8,"hotPoint":5,"canDelete":false,"like":false,"canOperate":fa
+测试名称
+查看帖⼦列表成功
+测试编号
+P030
+测试函数
+public ResponseEntity listPost(@RequestBody ListPostRequest listPostRequest, HttpServletRequest request)
+输⼊数据
+{"pageNum": 1,"cntInPage": 2,"mode": 3}
+前置条件
+⽤⼾已经成功登录并获取权限
+预期输出
+返回当⻚的帖⼦列表及粗略信息
+实际输出
+{"status":200,"success":true,"message":{"currPage":1,"prePage":1,"nextPage":2,"count":7,"list":[{"id":85,"userId":10000003,"userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority":1,"userLevelName":"LV.1 ⼊⻔菜⻦ ","title":" 测试 upload","likeCount":0,"browseCount":0,"hotPoint":0,"updateTime":"2023-06-0620:25:50","canDelete":true},{"id":84,"userId":10000003,"userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority":1,"userLevelName":"LV.1 ⼊⻔菜⻦ ","title":" 测试upload","likeCount":0,"browseCount":0,"hotPoint":0,"updateTime":"2023-06-06 20:21:48","canDelete":true}],"pageSize":2,"pageCount":4,"filterCount":0}}
+测试⽂档 .md 2026-06-16
+3 / 63
+---PAGE 4---
+测试名称查看帖⼦列表失败 ( 输⼊不存在的⻚ )
+测试编号P031
+测试函数public ResponseEntity listPost(@RequestBody ListPostRequest listPostRequest, HttpServletRequest request)
+输⼊数据{"pageNum": 1,"cntInPage": 49,"mode": 3}
+前置条件⽤⼾已经成功登录并获取权限
+预期输出返回置空列表
+实际输出{"status":200,"success":true,"message":{"currPage":50,"prePage":49,"nextPage":51,"count":7,"list":[],"pageSize":2,"pageCount":4,"filterCount":98}}
+测试名称删除帖⼦成功
+测试编号P040
+测试函数public ResponseEntity deletePost(@RequestBody DeletePostRequest deletePostRequest, HttpServletRequest request)
+输⼊数据{"postId": 2,"pageNum": 1}
+前置条件⽤⼾已经登录并且获取 token
+预期输出返回删除帖⼦成功的信息
+实际输出{"status":200,"success":true,"message":1}
+测试名称删除帖⼦失败 ( 没有权限 )
+测试编号P041
+测试函数public ResponseEntity deletePost(@RequestBody DeletePostRequest deletePostRequest, HttpServletRequest request)
+输⼊数据{"postId": 49,"pageNum": 1}
+前置条件⽤⼾已经登录并且获取 token
+预期输出拒绝删除并返回错误信息
+实际输出{"status":400,"success":false,"message":-1}
+测试名称删除帖⼦失败 ( 帖⼦不存在 )
+测试编号P042
+测试函数public ResponseEntity deletePost(@RequestBody DeletePostRequest deletePostRequest, HttpServletRequest request)
+输⼊数据{"postId": 4,"pageNum": 1}
+前置条件⽤⼾已经登录并且获取 token
+预期输出拒绝删除并返回错误信息
+实际输出{"timestamp":"2023-06-06T12:42:38.447+00:00","status":500,"error":"Internal Server Error","path":"/post/postDelete"}
+测试名称点赞帖⼦成功
+测试编号P050
+测试函数ResponseEntity likePost(@RequestBody LikePostRequest likePostRequest ,HttpServletRequest request)
+输⼊数据{"postId": 26,"isLike": false}
+前置条件⽤⼾已经登录并打开帖⼦
+预期输出成功点赞并返回此时的点赞状态
+实际输出{"status":200,"success":true,"message":1}
+测试名称点赞帖⼦失败 ( 帖⼦不存在 )
+测试编号P051
+测试函数ResponseEntity likePost(@RequestBody LikePostRequest likePostRequest ,HttpServletRequest request)
+输⼊数据{"postId": 3,"isLike": false}
+前置条件⽤⼾已经登录并打开帖⼦
+预期输出拒绝点赞操作并返回错误
+实际输出{"timestamp":"2023-06-06T12:48:09.106+00:00","status":500,"error":"Internal Server Error","path":"/post/postLike"}
+测试名称点赞帖⼦失败 ( 权限不⾜ )
+测试编号P052
+测试函数public ResponseEntity deletePost(@RequestBody DeletePostRequest deletePostRequest, HttpServletRequest request)
+输⼊数据{"postId": 7,"isLike": false}
+测试⽂档 .md 2026-06-16
+4 / 63
+---PAGE 5---
+测试名称点赞帖⼦失败 ( 权限不⾜ )
+前置条件⽤⼾已经登录并打开帖⼦
+预期输出拒绝点赞操作并返回错误
+实际输出{"status":400,"success":false,"message":" 权限不够 "}
+测试名称评论帖⼦成功
+测试编号P060
+测试函数public ResponseEntity commentPost(@RequestBody CommentPostRequest commentPostRequest, HttpServletRequest request)
+输⼊数据{"postId": 26,"pageNum": 1,"imageUrl": [],"content": " 评论 4"}
+前置条件⽤⼾已经登录并打开帖⼦
+预期输出评论成功
+实际输出{"status":200,"success":true,"message":" 发帖成功 "}
+测试名称评论帖⼦失败 ( 权限不⾜ )
+测试编号P061
+测试函数public ResponseEntity commentPost(@RequestBody CommentPostRequest commentPostRequest, HttpServletRequest request)
+输⼊数据{"postId": 7,"pageNum": 1,"imageUrl": [],"content": " 评论 4"}
+前置条件⽤⼾已经登录并打开帖⼦
+预期输出中断评论操作并返回错误
+实际输出{"status":403,"success":false,"message":" 权限不够 "}
+测试名称评论帖⼦失败 ( 含有敏感词汇 )
+测试编号P062
+测试函数public ResponseEntity deletePost(@RequestBody DeletePostRequest deletePostRequest, HttpServletRequest request)
+输⼊数据{"postId": 7,"pageNum": 1,"imageUrl": [],"content": " 傻逼 "}
+前置条件⽤⼾已经登录并打开帖⼦
+预期输出中断评论操作并返回错误
+实际输出{"status":422,"success":false,"message":" 存在低俗辱骂不合规 "}
+测试名称
+展⽰评论列表成功
+测试编号
+P070
+测试函数
+public ResponseEntity listComment(@RequestBody ListCommentRequest listCommentRequest, HttpServletRequest request)
+输⼊数据
+{"postId": 7,"pageNum": 1,"cntInPage": 2}
+前置条件
+⽤⼾已经打开帖⼦
+预期输出
+返回当⻚评论列表
+实际输出
+{"status":200,"success":true,"message":{"currPage":1,"prePage":1,"nextPage":2,"count":12,"list":[{"userId":10000058,"userName":"user10000058","profilePhotoUrl":"https://zzq-typora-picgo.oss-cn-beijing.aliyuncs.com/Eric-cartman.webp","userLevel":0,"userLevelName":"LV.0 新⼿⼩⽩ ","postId":7,"id":19,"content":"empty","imageUrl":null,"publishTime":"2023-05-2819:38:24","floor":9,"canDelete":false,"replyList":null},{"userId":10000071,"userName":" 我是评论 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/cfe05cdb-90ab-468c-a542-345fe0b3890a","userLevel":4,"userLevelName":"LV.4 探索能⼿ ","postId":7,"id":109,"content":"
+测试⽂档 .md 2026-06-16
+5 / 63
+---PAGE 6---
+测试名称
+展⽰评论列表成功
+12rergdhgk
+","imageUrl":null,"publishTime":"2023-06-03 19:36:15","floor":100,"canDelete":false,"replyList":null}],"pageSize":2,"pageCount":6,"filterCount":0}}
+测试名称展⽰评论列表失败 ( 不存在的⻚ )
+测试编号P071
+测试函数public ResponseEntity listComment(@RequestBody ListCommentRequest listCommentRequest, HttpServletRequest request)
+输⼊数据{"postId": 4,"pageNum": 1,"cntInPage": 2}
+前置条件⽤⼾已经打开帖⼦
+预期输出返回空列
+实际输出{"status":200,"success":true,"message":{"currPage":1,"prePage":1,"nextPage":2,"count":0,"list":[],"pageSize":2,"pageCount":0,"filterCount":0}}
+测试名称
+展⽰回复列表成功
+测试编号
+P080
+测试函数
+public ResponseEntity listReply(@RequestBody ListReplyRequest listReplyRequest, HttpServletRequest request)
+输⼊数据
+{"commentId": 19,"cntInPage": 2}
+前置条件
+⽤⼾已经打开帖⼦
+预期输出
+返回当前评论的回复集合
+实际输出
+{"status":200,"success":true,"message":[{"id":68,"userId":10000071,"userName":" 我是傻逼 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/cfe05cdb-90ab-468c-a542-345fe0b3890a","userLevel":4,"userLevelName":"LV.4 探索能⼿ ","postId":7,"commentId":19,"content":" 没有更多啦！ ","publishTime":"2023-06-03 12:54:08","canDelete":false},{"id":69,"userId":10000071,"userName":" 我是傻逼 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/cfe05cdb-90ab-468c-a542-345fe0b3890a","userLevel":4,"userLevelName":"LV.4 探索能⼿ ","postId":7,"commentId":19,"content":" ？？？ ","publishTime":"2023-06-0312:55:12","canDelete":false}]}
+测试名称展⽰回复列表失败 ( 不存在的评论 )
+测试编号P081
+测试函数public ResponseEntity listReply(@RequestBody ListReplyRequest listReplyRequest, HttpServletRequest request)
+输⼊数据{"commentId": 7,"cntInPage": 2}
+前置条件⽤⼾已经打开帖⼦
+预期输出返回空值
+实际输出{"status":200,"success":true,"message":[]}
+测试名称
+发表回复成功
+测试 P090
+测试⽂档 .md 2026-06-16
+6 / 63
+---PAGE 7---
+测试名称
+发表回复成功
+编号
+测试函数
+public ResponseEntity replyComment(@RequestBody ReplyCommentRequest replyCommentRequest, HttpServletRequest request)
+输⼊数据
+{"postId": 34,"commentId": 118,"content": " 恢复 1"}
+前置条件
+⽤⼾已经打开帖⼦
+预期输出
+返回新的回复列表
+实际输出
+{"status":200,"success":true,"message":{"id":0,"userId":10000003,"userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","userLevel":0,"userLevelName":null,"postId":34,"commentId":118,"content":" 恢复 1","publishTime":"2023-06-06 21:25:02","canDelete":true}}
+测试名称发表回复失败 ( 帖⼦或评论被删除 )
+测试编号P091
+测试函数public ResponseEntity replyComment(@RequestBody ReplyCommentRequest replyCommentRequest, HttpServletRequest request)
+输⼊数据{"postId": 9,"commentId": 8,"content": " 恢复 1"}
+前置条件⽤⼾已经打开帖⼦
+预期输出拒绝上传回复并返回错误值
+实际输出{"timestamp":"2023-06-06T13:23:20.002+00:00","status":500,"error":"Internal Server Error","path":"/post/commentReply"}
+测试名称删除评论成功
+测试编号P100
+测试函数public ResponseEntity deleteComment(@RequestBody DeleteCommentRequest deleteCommentRequest, HttpServletRequest request)
+输⼊数据{"commentId": 147}
+前置条件⽤⼾选择了存在的评论
+预期输出返回成功信息
+实际输出{"status":200,"success":true,"message":1}
+测试名称删除评论失败 ( 没有权限 )
+测试编号P101
+测试函数public ResponseEntity deleteComment(@RequestBody DeleteCommentRequest deleteCommentRequest, HttpServletRequest request)
+输⼊数据{"commentId": 120}
+前置条件⽤⼾选择了存在的评论
+预期输出拒绝删除并返回错误信息
+实际输出{"status":400,"success":false,"message":-1}
+测试名称删除回复成功
+测试编号P110
+测试函数public ResponseEntity deleteReply(@RequestBody DeleteReplyRequest deleteReplyRequest, HttpServletRequest request)
+输⼊数据{"replyId": 81}
+前置条件⽤⼾选择了存在的回复
+预期输出返回成功删除的信息
+测试⽂档 .md 2026-06-16
+7 / 63
+---PAGE 8---
+测试名称删除回复成功
+实际输出{"status":200,"success":true,"message":1}
+测试名称删除回复失败 ( 没有权限 )
+测试编号P111
+测试函数public ResponseEntity deleteReply(@RequestBody DeleteReplyRequest deleteReplyRequest, HttpServletRequest request)
+输⼊数据{"replyId": 78}
+前置条件⽤⼾选择了存在的回复
+预期输出拒绝删除操作并返回信息
+实际输出{"status":400,"success":false,"message":-1}
+测试名称
+获取热⻔帖成功
+测试编号
+P120
+测试函数
+public ResponseEntity getPostByHot(HttpServletRequest request)
+输⼊数据
+前置条件
+⽤⼾已经登录
+预期输出
+返回当前热⻔帖
+实际输出
+{"status":200,"success":true,"message":[{"id":69,"userId":10000002,"userName":"PCPA","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","authority":10,"userLevelName":"LV.10 神⼀般的存在 ","title":" 原创：数据库和Lucene 扫盲 ","likeCount":1,"browseCount":10040,"hotPoint":10050,"updateTime":"2023-06-06 15:13:54","canDelete":false},{"id":7,"userId":10000003,"userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority":1,"userLevelName":"LV.1 ⼊⻔菜⻦ ","title":" 看看转字符串 ","likeCount":48,"browseCount":519,"hotPoint":999,"updateTime":"2023-06-06 00:03:16","canDelete":false},{"id":47,"userId":10000003,"userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority":1,"userLevelName":"LV.1 ⼊⻔菜⻦ ","title":"WOWOWO","likeCount":2,"browseCount":23,"hotPoint":43,"updateTime":"2023-06-0615:55:52","canDelete":false},{"id":50,"userId":10000003,"userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority":1,"userLevelName":"LV.1 ⼊⻔菜⻦ ","title":" 我为什么是零级 ","likeCount":1,"browseCount":12,"hotPoint":22,"updateTime":"2023-06-06 16:48:48","canDelete":false},{"id":44,"userId":10000072,"userName":" 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","authority":1,"userLevelName":"LV.1 ⼊⻔菜⻦ ","title":" 胖胖张正奇可爱捏 ","likeCount":1,"browseCount":11,"hotPoint":21,"updateTime":"2023-06-06 01:13:59","canDelete":false},{"id":1,"userId":10000003,"userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority":1,"userLevelName":"LV.1 ⼊⻔菜⻦ ","title":" 这是标题 ","likeCount":1,"browseCount":10,"hotPoint":20,"updateTime":null,"canDelete":false},{"id":68,"userId":10000088,"userName":"user10000088","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/test/ava1.webp","authority":0,"userLevelName":"LV.0 新⼿⼩⽩ ","title":"JAVA 详解之注解（⼀） ","likeCount":1,"browseCount":6,"hotPoint":16,"updateTime":"2023-06-06 13:21:00","canDelete":false},{"id":34,"userId":10000071,"userName":" 我是傻逼 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/cfe05cdb-90ab-468c-a542-345fe0b3890a","authority":4,"userLevelName":"LV.4 探索能⼿ ","title":"12121","likeCount":0,"browseCount":14,"hotPoint":14,"updateTime":"2023-06-0621:25:02","canDelete":false},{"id":26,"userId":10000071,"userName":" 我是傻逼 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/cfe05cdb-90ab-468c-a542-345fe0b3890a","authority":4,"userLevelName":"LV.4 探索能⼿ ","title":"11111","likeCount":1,"browseCount":3,"hotPoint":13,"updateTime":"2023-06-06 20:54:25","canDelete":false},{"id":37,"userId":10000071,"userName":" 我是傻逼 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/cfe05cdb-90ab-468c-a542-345fe0b3890a","authority":4,"userLevelName":"LV.4 探索能⼿ ","title":" 我是撒谎 ","likeCount":0,"browseCount":6,"hotPoint":6,"updateTime":"2023-06-03 23:22:27","canDelete":false},{"id":61,"userId":10000089,"userName":" 周公旦 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/b8aef0f9-de8d-4add-924b-89d0281b7ec8","authority":9,"userLevelName":"LV.9 传奇天才 ","title":" ⻓图测试1","likeCount":0,"browseCount":6,"hotPoint":6,"updateTime":"2023-06-06 12:40:19","canDelete":false},{"id":62,"userId":10000089,"userName":" 周公
+测试⽂档 .md 2026-06-16
+8 / 63
+---PAGE 9---
+测试名称
+获取热⻔帖成功
+旦 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/b8aef0f9-de8d-4add-924b-89d0281b7ec8","authority":9,"userLevelName":"LV.9 传奇天才 ","title":" ⻓图测试 2","likeCount":0,"browseCount":6,"hotPoint":6,"updateTime":"2023-06-0612:42:59","canDelete":false}]}
+测试名称获取热⻔帖失败 ( ⽹络问题 )
+测试编号P121
+测试函数public ResponseEntity getPostByHot(HttpServletRequest request)
+输⼊数据
+前置条件⽤⼾已经登录
+预期输出⽆法获取，返回报错
+实际输出Error: connect ECONNREFUSED 127.0.0.1:8080
+测试名称
+获取他⼈发帖记录成功
+测试编号
+P130
+测试函数
+public ResponseEntity getUserPost(@RequestBody ListUserPostRequest listUserPostRequest, HttpServletRequest request)
+输⼊数据
+{"userId": 10000003,"pageNum": 1,"cntInPage": 2}
+前置条件
+他⼈账号存在
+预期输出
+输出他⼈账号对应的发帖记录
+实际输出
+{"status":200,"success":true,"message":{"currPage":1,"prePage":1,"nextPage":2,"count":13,"list":[{"id":92,"userId":10000003,"userName":null,"profilePhotoUrl":null,"authority":0,"userLevelName":null,"title":" 我的号被盗了！！ ","likeCount":0,"browseCount":0,"hotPoint":0,"updateTime":"2023-06-06 21:12:17","canDelete":true},{"id":91,"userId":10000003,"userName":null,"profilePhotoUrl":null,"authority":0,"userLevelName":null,"title":"888元 ","likeCount":0,"browseCount":2,"hotPoint":2,"updateTime":"2023-06-06 21:11:45","canDelete":true}],"pageSize":2,"pageCount":7,"filterCount":0}}
+测试名称获取他⼈发帖记录失败 ( 不存在的⻚ )
+测试编号P131
+测试函数public ResponseEntity getUserPost(@RequestBody ListUserPostRequest listUserPostRequest, HttpServletRequest request)
+输⼊数据{"userId": 10000003,"pageNum": 20,"cntInPage": 2}
+前置条件他⼈账号存在
+预期输出返回空值
+实际输出{"status":200,"success":true,"message":{"currPage":20,"prePage":19,"nextPage":21,"count":13,"list":[],"pageSize":2,"pageCount":7,"filterCount":38}}
+登录 / 注册模块⽅法测试
+测试名称检查 Token 成功
+测试编号U000
+测试函数public ResponseEntity verifyToken(HttpServletRequest request)
+输⼊数据
+测试⽂档 .md 2026-06-16
+9 / 63
+---PAGE 10---
+测试名称检查 Token 成功
+前置条件⽤⼾发送 token 请求
+预期输出返回成功信息
+实际输出{"status":200,"success":true,"message":0}
+测试名称检查 Token 失败
+测试编号U001
+测试函数public ResponseEntity verifyToken(HttpServletRequest request)
+输⼊数据
+前置条件⽤⼾发送 token 请求
+预期输出拦截并返回失败信息
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试名称
+检查管理员登录成功
+测试编号
+U010
+测试函数
+public ResponseEntity verifyAdminLogin(@RequestBody VerifyAdminLoginRequest verifyAdminLoginRequest, HttpServletRequest request)
+输⼊数据
+{"account":"1","password":"4d287b4ee3f25e1c2aafd4475f8ab4c12520bf9f0db98e1c177387a96bad9b14"}
+前置条件
+管理员发送登录请求
+预期输出
+返回成功登录信息并赋值 token
+实际输出
+{"status": 200,"success": true,"message": {"id": "1","name": null,"profilePhotoUrl": null,"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJleHAiOjE2ODYwNjQ4OTJ9.xPmDDwb97zurIiBVg7gY4RDtJC7h2wwOPXK2RwLZ8Mw"}}
+测试名称检查管理员登陆失败
+测试编号U011
+测试函数public ResponseEntity verifyAdminLogin(@RequestBody VerifyAdminLoginRequest verifyAdminLoginRequest, HttpServletRequest request)
+输⼊数据{"account":"1","password":"123456787654"}
+前置条件管理员发送登录请求
+预期输出返回登录失败信息
+实际输出{"status":400,"success":false,"message":" ⽤⼾不存在或密码错误 "}
+测试名称获取前端盐值成功
+测试编号U020
+测试函数public ResponseEntity getSalt(@RequestBody GetSaltRequest getSaltRequest, HttpServletRequest request)
+输⼊数据{"idOrEmail": "111@qq.com"}
+前置条件⽤⼾已经输⼊密码
+预期输出成功信息和⽣成的盐值字符串
+实际输出{"status":200,"success":true,"message":"yisjclyqjshu9742msui"}
+测试⽂档 .md 2026-06-16
+10 / 63
+---PAGE 11---
+测试名称获取前端盐值失败
+测试编号U021
+测试函数public ResponseEntity getSalt(@RequestBody GetSaltRequest getSaltRequest, HttpServletRequest request)
+输⼊数据{"idOrEmail": "14567d@qq.com"}
+前置条件⽤⼾已经输⼊密码
+预期输出失败信息，⼀个随机的字符串
+实际输出{"status":200,"success":true,"message":"0a6a68df41f140bc93e0"}
+测试名称获取⽤⼾等级成功
+测试编号U030
+测试函数public ResponseEntity getLevel( HttpServletRequest request)
+输⼊数据
+前置条件⽤⼾发送登录请求
+预期输出返回⽤⼾等级
+实际输出{"status":200,"success":true,"message":{"userLevel":1}}
+测试名称获取⽤⼾等级失败
+测试编号U031
+测试函数public ResponseEntity getLevel( HttpServletRequest request)
+输⼊数据
+前置条件⽤⼾发送登录请求
+预期输出返回 -1 并报错
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试名称
+检查⽤⼾登录成功
+测试编号
+U040
+测试函数
+public ResponseEntity verifyUserLogin(@RequestBody VerifyUserLoginRequest verifyUserLoginRequest ， HttpServletRequest request)
+输⼊数据
+{"idOrEmail":"10000003","password":"9bc833e9d374e40ce811a17c1fc7bb2a7410636d35dd32fb02b7b57ee6c3a0c1"}
+前置条件
+⽤⼾发送登录请求
+预期输出
+返回⽤⼾个⼈数据
+实际输出
+{"status":200,"success":true,"message":{"id":"10000003","name":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoi5oiR5Lqm5piv5YK75a6dIiwiaWQiOiIxMDAwMDAwMyIsImV4cCI6MTY4NjA2NTI2N30.5i9PMK8PdqVbn1XSCF5e5ac3xEgG-eTN73XYW9217U"}}
+测试名称检查⽤⼾登录失败
+测试编号U041
+测试函数public ResponseEntity verifyUserLogin(@RequestBody VerifyUserLoginRequest verifyUserLoginRequest ， HttpServletRequest request)
+输⼊数据{"idOrEmail":"10000003","password":"7402b7b57ee6c3a0cfd332fb7412ae40c0636d35dd9bc7bbe811a17c1833e9c1"}
+测试⽂档 .md 2026-06-16
+11 / 63
+---PAGE 12---
+测试名称检查⽤⼾登录失败
+前置条件⽤⼾发送登录请求
+预期输出返回报错信息并返回空值
+实际输出{"status":400,"success":false,"message":null}
+测试名称⽤⼾登出操作成功
+测试编号U050
+测试函数public ResponseEntity logout(HttpServletRequest request)
+输⼊数据
+前置条件⽤⼾已经登录
+预期输出返回登出成功的状态码
+实际输出{"status":200,"success":true,"message":"logout success"}
+测试名称⽤⼾登出操作失败
+测试编号U051
+测试函数public ResponseEntity logout(HttpServletRequest request)
+输⼊数据
+前置条件⽤⼾已经登录
+预期输出返回登出失败的状态码
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试名称
+⼼跳检测成功
+测试编号
+U060
+测试函数
+public ResponseEntity handleHeartbeat(HttpServletRequest request)
+输⼊数据
+前置条件
+⽤⼾获取 token 登录
+预期输出
+返回在线成功信息
+实际输出
+{"status":200,"success":true,"message":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoi5oiR5Lqm5piv5YK75a6dIiwiaWQiOiIxMDAwMDAwMyIsImV4cCI6MTY4NjAZ49ysII41X-W0MR9llWelQ_Ui9wQ"}
+测试名称⼼跳检测失败
+测试编号U061
+测试函数public ResponseEntity handleHeartbeat(HttpServletRequest request)
+输⼊数据
+前置条件⽤⼾获取 token 登录
+预期输出返回失败信息
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试⽂档 .md 2026-06-16
+12 / 63
+---PAGE 13---
+测试名称检测⽤⼾注册信息成功
+测试编号U070
+测试函数public ResponseEntity verifyUserRegister(@RequestBody VerifyRegisterRequest verifyRegisterRequest, HttpServletRequest request)
+输⼊数据{"email": "3rtyugq@a.com","password": "123456","salt":"asdasdasd"}
+前置条件⽤⼾发出注册信息
+预期输出返回注册成功的信息
+实际输出{"status":200,"success":true,"message":" 注册成功 "}
+测试名称检测⽤⼾注册信息失败
+测试编号U071
+测试函数public ResponseEntity verifyUserRegister(@RequestBody VerifyRegisterRequest verifyRegisterRequest, HttpServletRequest request)
+输⼊数据{"email": "11@a.com","password": "123456","salt":"asdasdasd"}
+前置条件⽤⼾发出注册信息
+预期输出返回注册失败的信息
+实际输出{"status":400,"success":false,"message":" 该邮箱已被注册 "}
+测试名称
+获取⽤⼾详细信息成功
+测试编号
+U080
+测试函数
+public ResponseEntity getUserInfo(HttpServletRequest request)
+输⼊数据
+前置条件
+⽤⼾发出请求
+预期输出
+返回⽤⼾详细信息
+实际输出
+{"status":200,"success":true,"message":{"id":10000002,"name":"PCPA","email":"1@q.com","gender":"Male","birthday":"1997-02-05","registerTime":null,"profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel":10,"userLevelName":"LV.10 神⼀般的存在 ","exp":40063,"logInNum":3}}
+测试名称获取⽤⼾详细信息失败
+测试编号U081
+测试函数public ResponseEntity getUserInfo(HttpServletRequest request)
+输⼊数据
+前置条件⽤⼾发出请求
+预期输出返回错误信息
+实际输出{"status":401,"success":false,"message":"Token is null"}
+测试名称
+获取他⼈⽤⼾信息成功
+测试 U090
+测试⽂档 .md 2026-06-16
+13 / 63
+---PAGE 14---
+测试名称
+获取他⼈⽤⼾信息成功
+编号
+测试函数
+public ResponseEntity getOtherUserInfo(@RequestBody GetOtherUserInfoRequest getOtherUserInfoRequest, HttpServletRequest request)
+输⼊数据
+{"userId":"10000002"}
+前置条件
+发出获取信息请求
+预期输出
+返回他⼈信息
+实际输出
+{"status":200,"success":true,"message":{"id":10000002,"name":"PCPA","email":"1@q.com","gender":"Male","birthday":"1997-02-05","registerTime":null,"profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel":10,"userLevelName":"LV.10 神⼀般的存在 ","exp":40063,"logInNum":3}}
+测试名称获取他⼈⽤⼾信息失败
+测试编号U091
+测试函数public ResponseEntity getOtherUserInfo(@RequestBody GetOtherUserInfoRequest getOtherUserInfoRequest, HttpServletRequest request)
+输⼊数据{"userId":"10000001"}
+前置条件发出获取信息请求
+预期输出返回失败信息和空值
+实际输出{"status":400,"success":false,"message":null}
+测试名称 更新⽤⼾信息成功
+测试编号 U100
+测试函数 public ResponseEntity updateAccountInfo(@RequestBody UpdateAccountInfoRequestupdateAccountInfoRequest, HttpServletRequest request)
+输⼊数据 {"id":"10000010","name":" 梦想成为神⼀般的存在 ","email":"312466@qq.com","birthday":"1990-01-01","gender":"Male",
+"profilePhotoUrl":"resource/image/ec6358cc-104d-42ca-9a31-4f427e0844be"}
+前置条件 ⽤⼾发送更新的数据
+预期输出 返回成功信息
+实际输出 {"status":200,"success":true,"message":" 修改成功 "}
+测试名称 更新⽤⼾信息失败
+测试编号 U101
+测试函数 public ResponseEntity updateAccountInfo(@RequestBody UpdateAccountInfoRequestupdateAccountInfoRequest, HttpServletRequest request)
+输⼊数据 {"id":"10000010","name":" 梦想成为神⼀般的存在 ","email":"312466@qq.com","birthday":"1990-01-01","gender":"Male",
+"profilePhotoUrl":"resource/image/ec6358cc-104d-42ca-9a31-4f427e0844be"}( 更换了 token)
+前置条件 ⽤⼾发送更新的数据
+预期输出 返回失败信息
+实际输出 {"status":400,"success":false,"message":" 权限等级不⾜ "}
+测试⽂档 .md 2026-06-16
+14 / 63
+---PAGE 15---
+测试名称
+获取⽤⼾列表成功
+测试编号
+U110
+测试函数
+public ResponseEntity getAccountInfoList(@RequestBody GetAccountInfoListRequest getAccountInfoListRequest, HttpServletRequest request)
+输⼊数据
+{"cntInPage":3,"pageNum":1}
+前置条件
+预期输出
+返回⽤⼾列表信息
+实际输出
+{"status":200,"success":true,"message":{"currPage":1,"prePage":1,"nextPage":2,"count":76,"list":[{"id":10000002,"name":"pcpas","email":"1@q.com","gender":"Male","birthday":"1997-02-05","registerTime":null,"profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel":10,"userLevelName":"LV.10 神⼀般的存在 ","exp":40063,"logInNum":3},{"id":10000003,"name":" 我亦是傻宝 ","email":"20374151@buaa.edu.cn","gender":"Male","birthday":"2023-06-06","registerTime":"2023-05-22","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","userLevel":1,"userLevelName":"LV.1 ⼊⻔菜⻦ ","exp":66,"logInNum":4},{"id":10000010,"name":" 梦想成为神⼀般的存在 ","email":"312466@qq.com","gender":"Male","birthday":"1990-01-01","registerTime":"2023-05-22","profilePhotoUrl":"resource/image/ec6358cc-104d-42ca-9a31-4f427e0844be","userLevel":0,"userLevelName":"LV.0 新⼿⼩⽩ ","exp":0,"logInNum":0}],"pageSize":3,"pageCount":26,"filterCount":0}}
+测试名称获取⽤⼾列表失败
+测试编号U111
+测试函数public ResponseEntity getAccountInfoList(@RequestBody GetAccountInfoListRequest getAccountInfoListRequest, HttpServletRequest request)
+输⼊数据{"cntInPage":3,"pageNum":1}( 更换 token)
+前置条件
+预期输出返回失败信息
+实际输出{"status":400,"success":false,"message":" 权限等级不⾜ "}
+测试名称获取密码成功
+测试编号U120
+测试函数public ResponseEntity getPassword(@RequestBody GetPasswordRequest getPasswordRequest, HttpServletRequest request)
+输⼊数据{"email":"312466@qq.com"}
+前置条件发送请求
+预期输出返回⽤⼾操作成功
+实际输出{"status":200,"success":true,"message":" 密码已重置并发送到你的邮箱 "}
+测试名称获取密码失败
+测试编号U121
+测试函数public ResponseEntity getPassword(@RequestBody GetPasswordRequest getPasswordRequest, HttpServletRequest request)
+输⼊数据{"email":"31dasd6@q.com"}
+前置条件发送请求
+预期输出返回⽤⼾操作失败
+实际输出{"status":404,"success":false,"message":" ⽤⼾不存在 "}
+测试⽂档 .md 2026-06-16
+15 / 63
+---PAGE 16---
+测试名称 更新密码成功
+测试编号 U130
+测试函数 public ResponseEntity updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest, HttpServletRequest request)
+输⼊数据 {"userId": "10000071","oldPassword": "456789876dfghjfghjkjhgfoihyujbvfr67ujhgfrt6yuh","newPassword":"ft67uhgt678ijhgtyujgyhnyuijhgtyuhgfrtygftgfghjk"}
+前置条件 发送请求
+预期输出 返回成功信息
+实际输出 {"status":200,"success":true,"message":" 修改成功 "}
+测试名称 更新密码失败
+测试编号 U131
+测试函数 public ResponseEntity updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest, HttpServletRequest request)
+输⼊数据 {"userId": "10000072","oldPassword": "456789876dfghjfghjkjhgfoihyujbvfr67ujhgfrt6yuh","newPassword":"ft67uhgt678ijhgtyujgyhnyuijhgtyuhgfrtygftgfghjk"}
+前置条件 发送请求
+预期输出 返回失败信息
+实际输出 {"status":401,"success":false,"message":" 原密码错误 "}
+测试名称注销账⼾成功
+测试编号U140
+测试函数public ResponseEntity deleteAccount(@RequestBody DeleteAccountRequest deleteAccountRequest, HttpServletRequest request)
+输⼊数据{"id":"10000011"}
+前置条件
+预期输出返回删除成功信息
+实际输出{"status":200,"success":true,"message":" 删除成功 "}
+测试名称注销账⼾失败
+测试编号U141
+测试函数public ResponseEntity deleteAccount(@RequestBody DeleteAccountRequest deleteAccountRequest, HttpServletRequest request)
+输⼊数据{"id":"10000009"}
+前置条件
+预期输出返回失败信息
+实际输出{"status":404,"success":false,"message":" 不存在此⽤⼾ "}
+资源模块⽅法测试
+测试名称 上传资源成功
+测试编号 S000
+测试函数 public ResponseEntity uploadResource(@RequestBody UploadResourceRequest uploadResourceRequest,
+HttpServletRequest request)
+输⼊数据 {"title": " 我来发个试试 ","subject": 1,"categories": [1,2,3,4],"content": " 不知道能不能成功 "}
+前置条件 发送请求且登录
+预期输出 返回成功信息
+测试⽂档 .md 2026-06-16
+16 / 63
+---PAGE 17---
+测试名称 上传资源成功
+实际输出 {"status":200,"success":true,"message":" 上传成功 "}
+测试名称 上传资源失败
+测试编号 S001
+测试函数 public ResponseEntity uploadResource(@RequestBody UploadResourceRequest uploadResourceRequest,
+HttpServletRequest request)
+输⼊数据 {"title": " 我来发个试试 ","subject": 1,"categories": [1,2,3,4],"content": " 草泥⻢ "}
+前置条件 发送请求且登录
+预期输出 返回错误信息并禁⽌发布
+实际输出 {"status":422,"success":false,"message":" 存在低俗辱骂不合规 "}
+测试名称
+获取资源详细信息成功
+测试编号
+S010
+测试函数
+public ResponseEntity getResourceDetail(@RequestBody GetResourceDetailRequest getResourceDetailRequest,HttpServletRequest request)
+输⼊数据
+{"resourceId":"2"}
+前置条件
+发送请求
+预期输出
+资源详细信息
+实际输出
+{"status":200,"success":true,"message":{"id":2,"userId":"10000072","username":" 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title":" 爱在西元前 ","subject":7,"categories":[],"publishTime":"2023-05-24 20:26:02","content":" 这是周杰伦的⼀⾸歌，爱在西元前 ","fileName":" 学习资料 ","imageUrl":"resource/image/d438d25e-5e70-4bf9-bcb3-2054240c3ed9","path":null,"downloadCount":8,"size":0,"canDelete":false,"canModify":false,"canDownload":false}}
+测试名称获取资源详细信息失败
+测试编号S011
+测试函数public ResponseEntity getResourceDetail(@RequestBody GetResourceDetailRequest getResourceDetailRequest,HttpServletRequest request)
+输⼊数据{"resourceId":"10086"}
+前置条件发送请求
+预期输出返回错误信息
+实际输出{"status":404,"success":false,"message":" 资源不存在 "}
+测试名称
+更新资源内容成功
+测试编号
+S020
+测试⽂档 .md 2026-06-16
+17 / 63
+---PAGE 18---
+测试名称
+更新资源内容成功
+测试函数
+public ResponseEntity updateResource(@RequestBody UpdateResourceRequest updateResourceRequest, HttpServletRequest request)
+输⼊数据
+{"id":"7","title":" 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","content":"asdasdadsasd","subject":1,"categories":[1,2,3]}
+前置条件
+发送请求
+预期输出
+返回更新后的内容
+实际输出
+{"status":200,"success":true,"message":{"id":7,"userId":"10000003","username":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","subject":1,"categories":[1,2,3],"publishTime":"2023-05-25 19:53:31","content":"asdasdadsasd","fileName":" 学习资料 ","imageUrl":"resource/image/a40330a3-bd46-4b44-82e2-89f57403579a","path":"resource/file/a1a73748-1f1f-48d6-92d5-adcd72fd3414","downloadCount":13,"size":503,"canDelete":false,"canModify":false,"canDownload":false}}
+测试名称更新资源内容失败
+测试编号S021
+测试函数public ResponseEntity updateResource(@RequestBody UpdateResourceRequest updateResourceRequest, HttpServletRequest request)
+输⼊数据{"id":"7","title":" 陈之浩在改这个试试这句话有没有超过⼆⼗个字呢 ","content":"asdasdadsasd","subject":1,"categories":[1,2,3]}
+前置条件
+预期输出
+实际输出{"status":400,"success":false,"message":" 标题或内容过⻓！ "}
+测试名称删除资源成功
+测试编号S030
+测试函数public ResponseEntity deleteResource(@RequestBody DeleteResourceRequest deleteResourceRequest,HttpServletRequest request)
+输⼊数据{"resourceId":"11"}
+前置条件
+预期输出返回成功信息
+实际输出{"status":200,"success":true,"message":" 删除成功 "}
+测试名称删除资源失败
+测试编号S031
+测试函数public ResponseEntity deleteResource(@RequestBody DeleteResourceRequest deleteResourceRequest,HttpServletRequest request)
+输⼊数据{"resourceId":"11"}
+前置条件
+预期输出返回失败信息
+实际输出{"status":404,"success":false,"message":" 资源不存在 "}
+测试名称下载资源成功
+测试编号S040
+测试函数public ResponseEntity downloadResource(@RequestBody DownloadResourceRequest downloadResourceRequest, HttpServletRequest request)
+输⼊数据{"resourceId":"2"}
+前置条件发送请求
+预期输出返回资源下载链接
+实际输出{"status":200,"success":true,"message":{"path":"resource/file/84b4ddad-f6ff-44a7-97fb-7fc27b4c9352","fileName":" 学习资料 "}}
+测试⽂档 .md 2026-06-16
+18 / 63
+---PAGE 19---
+测试名称下载资源失败
+测试编号S041
+测试函数public ResponseEntity downloadResource(@RequestBody DownloadResourceRequest downloadResourceRequest, HttpServletRequest request)
+输⼊数据{"resourceId":"2102"}
+前置条件发送请求
+预期输出返回失败信息
+实际输出{"status":404,"success":false,"message":" 资源不存在 "}
+测试名称
+下载历史列表成功
+测试编号
+S050
+测试函数
+public ResponseEntity listDownloadHistoryByUserId(HttpServletRequest request)
+输⼊数据
+前置条件
+发送请求
+预期输出
+下载历史
+实际输出
+{"status":200,"success":true,"message":[{"id":98,"resourceId":2,"userId":10000003,"title":" 爱在西元前 ","fileName":" 学习资料 ","downloadTime":"2023-06-0622:54:46"},{"id":76,"resourceId":56,"userId":10000003,"title":" 市场营销第 3 讲 - 市场环境分析 ","fileName":" 市场营销第 3 讲 - 市场环境分析 2023-3-18.pdf","downloadTime":"2023-06-06 16:06:28"},{"id":74,"resourceId":52,"userId":10000003,"title":" 软件设计说明书⽰例 ","fileName":" 软件设计说明书 .md","downloadTime":"2023-06-06 01:31:56"},{"id":67,"resourceId":2,"userId":10000003,"title":" 爱在西元前 ","fileName":" 学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料 ","downloadTime":"2023-06-0415:10:28"},{"id":64,"resourceId":2,"userId":10000003,"title":" 爱在西元前 ","fileName":" 学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料 ","downloadTime":"2023-06-04 11:45:15"},{"id":63,"resourceId":2,"userId":10000003,"title":" 爱在西元前 ","fileName":" 学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料学习资料 ","downloadTime":"2023-06-04 11:40:55"},{"id":6,"resourceId":2,"userId":10000003,"title":null,"fileName":null,"downloadTime":"2023-06-03 22:49:05"},{"id":5,"resourceId":2,"userId":10000003,"title":null,"fileName":null,"downloadTime":"2023-06-03 09:46:04"},{"id":4,"resourceId":47,"userId":10000003,"title":null,"fileName":null,"downloadTime":"2023-06-02 22:31:12"},{"id":3,"resourceId":35,"userId":10000003,"title":null,"fileName":null,"downloadTime":"2023-05-27 22:31:12"},{"id":2,"resourceId":2,"userId":10000003,"title":null,"fileName":null,"downloadTime":"2023-05-26 23:30:26"},{"id":1,"resourceId":7,"userId":10000003,"title":null,"fileName":null,"downloadTime":"2023-05-25 22:30:21"}]}
+测试名称下载历史列表失败
+测试编号S051
+测试函数public ResponseEntity listDownloadHistoryByUserId(HttpServletRequest request)
+输⼊数据
+前置条件
+预期输出错误信息
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试⽂档 .md 2026-06-16
+19 / 63
+---PAGE 20---
+测试名称
+搜索资源成功
+测试编号
+S060
+测试函数
+public ResponseEntity searchResource(@RequestBody SearchResourceRequest searchResourceRequest,HttpServletRequest request)
+输⼊数据
+{"subjects":[0,1,2,3,4,5,6,7,8],"categories":[0,1,2,3,4,5],"cntInPage":10,"pageNum":1,"keywords":" ⼈⼯智能 "}
+前置条件
+发送请求
+预期输出
+符合条件的资源列表
+实际输出
+{"status":200,"success":true,"message":{"currPage":1,"prePage":1,"nextPage":1,"count":2,"list":[{"id":39,"userId":"10000072","userName":" 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title":" ⼈⼯智能 5555","content":" 最终准确率 67 ，测试过程中稳定在 70 多 ","subject":4,"categories":[0],"downloadCount":4,"canDelete":false},{"id":54,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" ⼈⼯智能是什么东西 ","content":" 和⼩编⼀起来学习⼈⼯智能吧 ","subject":1,"categories":[1,2,3,4],"downloadCount":0,"canDelete":false}],"pageSize":10,"pageCount":1,"filterCount":0}}
+测试名称搜索资源失败
+测试编号S061
+测试函数public ResponseEntity searchResource(@RequestBody SearchResourceRequest searchResourceRequest,HttpServletRequest request)
+输⼊数据{"subjects":[0,1,2,3,4,5,6,7,8],"categories":[0,1,2,3,4,5],"cntInPage":10,"pageNum":1,"keywords":" 搜索不到了吧 "}
+前置条件
+预期输出返回空列表
+实际输出{"status":200,"success":true,"message":{"currPage":1,"prePage":1,"nextPage":2,"count":0,"list":[],"pageSize":10,"pageCount":0,"filterCount":0}}
+测试名称
+以⽤⼾ id 列出资源成功
+测试编号
+S070
+测试函数
+public ResponseEntity listResourceByUserId(@RequestBody ListResourceByUserIdRequest listResourceByUserIdRequest, HttpServletRequest request)
+输⼊数据
+{"userId":10000003,"cntInPage":10,"pageNum":1}
+前置条件
+发送请求
+预期 资源列表
+测试⽂档 .md 2026-06-16
+20 / 63
+---PAGE 21---
+测试名称
+以⽤⼾ id 列出资源成功
+输出
+实际输出
+{"status":200,"success":true,"message":{"currPage":1,"prePage":1,"nextPage":2,"count":20,"list":[{"id":56,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" 市场营销第 3讲 - 市场环境分析 ","content":" （找不到合适的封⾯图⽚），这是 yqh ⽼师的互联⽹营销课件之⼀ ","subject":3,"categories":[0],"downloadCount":2,"canDelete":true},{"id":54,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" ⼈⼯智能是什么东西 ","content":" 和⼩编⼀起来学习⼈⼯智能吧 ","subject":1,"categories":[1,2,3,4],"downloadCount":0,"canDelete":true},{"id":53,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" 爱不在西元前 ","content":" 这是周杰伦的⼀⾸歌，爱在西元前 ","subject":1,"categories":[1,2,3,4],"downloadCount":1,"canDelete":true},{"id":27,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" 爱不在西元前 ","content":" 这是周杰伦的⼀⾸歌，爱在西元前 ","subject":1,"categories":[1,2,3,4],"downloadCount":0,"canDelete":true},{"id":8,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" 爱在西元前 ","content":" 这是周杰伦的⼀⾸歌，爱在西元前 ","subject":1,"categories":[],"downloadCount":0,"canDelete":true},{"id":7,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","content":"asdasdadsasd","subject":1,"categories":[1,2,3],"downloadCount":13,"canDelete":true},{"id":33,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","titl
+测试名称以⽤⼾ id 列出资源失败
+测试编号S071
+测试函数public ResponseEntity listResourceByUserId(@RequestBody ListResourceByUserIdRequest listResourceByUserIdRequest, HttpServletRequest request)
+输⼊数据{"userId":10000003,"cntInPage":10,"pageNum":1}( 更改 token)
+前置条件发送请求
+预期输出返回失败信息
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试名称
+列出资源成功
+测试编号
+S080
+测试函数
+public ResponseEntity listResourceRecommend(HttpServletRequest request)
+输⼊数据
+前置条件
+发送请求
+预期输出
+返回资源列表
+实际输出
+{"status":200,"success":true,"message":[{"id":39,"userId":"10000072","userName":" 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title":" ⼈⼯智能 5555","content":" 最终准确率 67 ，测试过程中稳定在 70 多 ","subject":4,"categories":[0],"downloadCount":4,"canDelete":false},{"id":46,"userId":"10000072","userName":" 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title":" 空巢⽼⼈看护系统 ","content":" 发啊额我发 ","subject":0,"categories":[1],"downloadCount":1,"canDelete":false},{"id":48,"userId":"10000072","userName":" 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title":" 超级⽆敌睡⾐旋转凯尔张正奇之柱跟神⼀样 ","content":" 睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转
+测试⽂档 .md 2026-06-16
+21 / 63
+---PAGE 22---
+测试名称
+列出资源成功
+旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转睡⾐张正奇旋转旋转旋转旋转 ","subject":0,"categories":[1],"downloadCount":1,"canDelete":false},{"id":53,"userId":"10000003","userName":" 我亦是傻宝 ","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title":" 爱不在西元前 ","content":" 这是周杰伦的⼀⾸歌，爱在西元前 ","subject":1,"categories":[1,2,3,4],"downloadCount":1,"canDelete":false},{"id":57,"userId":"10000091","userName":"user10000091","profilePhotoUrl":"https://learning-and-living.oss-cn-beijing.aliyuncs.com/test/ava1.webp","title":" 天使恶魔 ","content":" 天使恶魔 ","subject":5,"categories":[3],"downloadCount":1,"canDelete":false},{"id":20,"userId
+测试名称列出资源失败
+测试编号S081
+测试函数public ResponseEntity listResourceRecommend(HttpServletRequest request)
+输⼊数据( 更改 token)
+前置条件发送请求
+预期输出返回失败信息
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+统计模块⽅法测试
+测试名称获取所有表格成功
+测试编号D000
+测试函数public ResponseEntity getOverallFigure(HttpServletRequest request)
+输⼊数据
+前置条件
+预期输出返回成功信息及数据
+实际输出{"status":200,"success":true,"message":{"numOfOnlineUser":1,"numOfUser":74,"numOfPost":49,"numOfResource":33}}
+测试名称获取所有表格失败
+测试编号D001
+测试函数public ResponseEntity deletePost(@RequestBody DeletePostRequest deletePostRequest, HttpServletRequest request)
+输⼊数据
+前置条件
+预期输出返回失败信息
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试名称资源分类统计成功
+测试编号D010
+测试函数public ResponseEntity resourceClassificationStatistics(HttpServletRequest request)
+输⼊数据
+前置条件
+预期输出返回成功的数据
+实际输出{"status":200,"success":true,"message":[[0,0,0,1,2,0,0,0,0,1],[2,7,0,1,0,0,0,0,1,0],[0,6,1,1,0,0,0,0,0,0],[0,6,0,1,0,1,0,0,0,0],[0,8,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,0,0,0]]}
+测试名称资源分类统计失败
+测试编号D011
+测试函数public ResponseEntity resourceClassificationStatistics(HttpServletRequest request)
+输⼊数据
+前置条件
+预期输出返回失败信息
+实际输出{"status":401,"success":false,"message":"Invalid or expired token"}
+测试⽂档 .md 2026-06-16
+22 / 63
+---PAGE 23---
+测试名称
+获取过去 30 天下载成功
+测试编号
+D020
+测试函数
+public ResponseEntity resourceDownloadsByDays(HttpServletRequest request)
+输⼊数据
+前置条件
+⽤⼾发送请求
+预期输出
+返回下载数据
+实际输出
+{"status":200,"success":true,"message":{"days":["2023-05-08","2023-05-09","2023-05-10","2023-05-11","2023-05-12","2023-05-13","2023-05-14","2023-05-15","2023-05-16","2023-05-17","2023-05-18","2023-05-19","2023-05-20","2023-05-21","2023-05-22","2023-05-23","2023-05-24","2023-05-25","2023-05-26","2023-05-27","2023-05-28","2023-05-29","2023-05-30","2023-05-31","2023-06-01","2023-06-02","2023-06-03","2023-06-04","2023-06-05","2023-06-06"],"downloads":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,19,44,5,25],"uploads":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,0,0,1,0,0,0,0,0,1,7,2,5]}}
+测试名称获取过去 30 天下载失败
+测试编号D021
+测试函数public ResponseEntity resourceDownloadsByDays(HttpServletRequest request)
+输⼊数据( 修改 token)
+前置条件⽤⼾发送请求
+预期输出返回失败信息
+实际输出{"status":401,"success":false,"message":" 你没有权限查看统计信息 "}
+测试名称获取学科资源量成功
+测试编号D030
+测试函数public ResponseEntity resourceCountBySubject(HttpServletRequest request)
+输⼊数据
+前置条件发送请求
+预期输出返回统计数据
+实际输出{"status":200,"success":true,"message":[2,16,1,3,2,1,0,6,1,1]}
+测试名称获取学科资源量失败
+测试编号D031
+测试函数public ResponseEntity resourceCountBySubject(HttpServletRequest request)
+输⼊数据( 修改 token)
+前置条件发送请求
+预期输出返回错误信息
+实际输出{"status":401,"success":false,"message":" 你没有权限查看统计信息 "}
+测试名称
+获取过去 30 天注册⽤⼾成功
+测试 D040
+测试⽂档 .md 2026-06-16
+23 / 63
+---PAGE 24---
+测试名称
+获取过去 30 天注册⽤⼾成功
+编号
+测试函数
+public ResponseEntity userRegisterCountByDays(HttpServletRequest request)
+输⼊数据
+前置条件
+发送请求
+预期输出
+返回注册数据
+实际输出
+{"status":200,"success":true,"message":{"days":["2023-05-08","2023-05-09","2023-05-10","2023-05-11","2023-05-12","2023-05-13","2023-05-14","2023-05-15","2023-05-16","2023-05-17","2023-05-18","2023-05-19","2023-05-20","2023-05-21","2023-05-22","2023-05-23","2023-05-24","2023-05-25","2023-05-26","2023-05-27","2023-05-28","2023-05-29","2023-05-30","2023-05-31","2023-06-01","2023-06-02","2023-06-03","2023-06-04","2023-06-05","2023-06-06"],"count":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,0,0,0,7,4,4,0,0,7,0,0,0,8,1,9]}}
+测试名称获取过去 30 天注册⽤⼾失败
+测试编号D041
+测试函数public ResponseEntity userRegisterCountByDays(HttpServletRequest request)
+输⼊数据( 修改 token)
+前置条件发送请求
+预期输出返回报错信息
+实际输出{"status":401,"success":false,"message":" 你没有权限查看统计信息 "}
+测试名称
+过去 7 天所有帖⼦热度信息成功
+测试编号
+D050
+测试函数
+public ResponseEntity hotPostByDays(HttpServletRequest request)
+输⼊数据
+前置条件
+发送请求
+预期输出
+返回热度信息
+实际 {"status":200,"success":true,"message":{"date":["2023-05-31","2023-06-01","2023-06-02","2023-06-03","2023-06-04","2023-06-05","2023-06-06"],"data":[[2,1001,1,521,48,110," 看看转字符串 "],[4,1,-1,1,0,0," 我是傻逼吗 "],[4,0,-1,0,0,0," 我是傻逼吗 "],[4,2,-1,2,0,0," 我是傻逼吗 "],[4,1,-1,1,0,0," 啊啊啊啊啊 "],[4,0,-1,0,0,0," 钱钱钱 "],[4,13,-1,3,1,1,"11111"],[4,1,-1,1,0,0,"12121"],[4,6,-1,6,0,0,"121"],[4,0,-1,0,0,0,"sdasd"],[4,1,-1,1,0,0,"1212121"],[4,2,-1,2,0,0,"21212"],[4,15,-1,15,0,3,"12121"],
+测试⽂档 .md 2026-06-16
+24 / 63
+---PAGE 25---
+测试名称
+过去 7 天所有帖⼦热度信息成功
+输出 [4,1,-1,1,0,0," 的 "],[4,3,-1,3,0,0,"aaaaa"],[4,6,-1,6,0,1," 我是撒谎 "],[5,25,1,15,1,2," 胖胖张正奇可爱捏 "],[5,44,1,24,2,5,"WOWOWO"],[6,5,10,5,0,1," 你们都看不了这个帖⼦略略略 "],[6,22,1,12,1,4," 我为什么是零级 "],[6,2,-1,2,0,0," 测试帖⼦ "],[6,2,10,2,0,0,"test10.50"],[6,4,9,4,0,1," ⼤图测试 "],[6,6,9,6,0,1," ⻓图测试 1"],[6,6,9,6,0,1," ⻓图测试 2"],[6,17,0,7,1,0,"JAVA 详解之注解（⼀） "],[6,10050,10,10040,1,5," 原创：数据库和 Lucene 扫盲 "],[6,8,-1,8,0,0,"sjb"],[6,0,9,0,0,0," 测试帖⼦标题 "],[6,1,9,1,0,0," 按位的 "],[6,0,9,0,0,0," 分⾊法 "],[6,5,10,5,0,0,"test1"],[6,5,0,5,0,1,"# 新⼈⼊住 "],[6,1,10,1,0,0,"test1"],[6,0,10,0,0,0,"test18.12"],[6,0,10,0,0,0,"test18.13-1"],[6,1,10,1,0,0,"12345"],[6,14,10,4,1,2,"12345"],[6,3,10,3,0,0,"2345678"],[6,0,1,0,0,0," 测试 upload"],[6,0,1,0,0,0," 测试 upload"],[6,0,1,0,0,0," 天猫 618 ⼤促，加 V"],[6,0,1,0,0,0," 天猫 618 ⼤促，加微信⼴告 "],[6,0,1,0,0,0," 天猫 618 ⼤促， +V123415326"],[6,0,1,0,0,0," 重⾦求⼦ "],[6,0,1,0,0,0," 诈骗⼴告 "],[6,2,1,2,0,1," 私密⼀对⼀服务， 888 元 "],[6,1,1,1,0,0," 我的号被盗了  ！！ "]]}}
+测试名称过去 7 天所有帖⼦热度信息失败
+测试编号D051
+测试函数public ResponseEntity hotPostByDays(HttpServletRequest request)
+输⼊数据( 修改 token)
+前置条件发送请求
+预期输出返回失败信息
+实际输出{"status":401,"success":false,"message":" 你没有权限查看统计信息 "}
+⾮测试功能测试
+⾮功能测试的⽬的
+⾮功能测试应提⾼产品的可⽤性，效率，可维护性和可移植性。帮助降低与产品的⾮功能性⽅⾯相关的⽣产⻛险和成本。优化产品的安装，设置，执⾏，管理和监视⽅式。收集并产⽣⽤于内部研发的度量和指标。改进和增强对产品⾏为和所使⽤技术的了解。
+⾮功能测试项⽬
+安全性
+本项⽬数据库采取腾讯云数据库，因此可以根据其提供的报告来测试安全性。
+漏洞扫描：这是通过⾃动化软件根据已知漏洞签名扫描系统来完成的。安全扫描：它涉及识别⽹络和系统弱点，然后提供降低这些⻛险的解决⽅案。此扫描可以针对⼿动和⾃动扫描执⾏。渗透测试：这种测试模拟来⾃恶意⿊客的攻击。此测试涉及对特定系统的分析，以检查外部⿊客攻击尝试的潜在漏洞。⻛险评估：此测试涉及对组织中观察到的安全⻛险的分析。⻛险分为低、中和⾼。此测试建议控制和措施以降低⻛险。安全审计：这是对应⽤程序和操作系统的安全漏洞的内部检查。也可以通过逐⾏检查代码来完成审核道德⿊客：它正在⼊侵组织软件系统。与为了⾃⼰的利益⽽窃取的恶意⿊客不同，其⽬的是暴露系统中的安全漏洞。
+测试⽂档 .md 2026-06-16
+25 / 63
+---PAGE 26---
+姿势评估：这结合了安全扫描、⿊客攻击和⻛险评估，以显⽰组织的整体安全状况。
+通过以上测试项⽬，本项⽬安全性较好，通过安全性测试。
+可靠性
+任何软件系统在没有故障的情况下连续执⾏指定功能的程度。
+本项⽬通过实际部署在云端运⾏，已经可以实现 24 ⼩时稳定服务，通过可靠性测试。
+效率：
+本项⽬⼤部分⽹⻚响应时间都在 1000 毫秒以内，初始化时间在 1500 毫秒以内，符合设计要求。
+可⽤性：
+本项⽬所⽤交互输⼊框和按钮逻辑均可正常使⽤，符合可⽤性设计要求。
+测试⽂档 .md 2026-06-16
+26 / 63
+---PAGE 27---
+可重⽤性：
+本项⽬存在部署在Docker上的版本，可以直接下载镜像使⽤，符合可重⽤性的要求。
+便携性：
+本项⽬前端源⽂件⼤⼩为  325 MB ，后端源⽂件⼤⼩为  31.8 MB ，轻量化便于传输，符合便捷性设计的要求。
+测试⽂档 .md 2026-06-16
+27 / 63
+---PAGE 28---
+灵活性：
+本项⽬可以在不同的硬件和软件配置中轻松⼯作，对于电脑硬件配置没有特殊要求，可以成功运⾏在Chrome、edge、firefox等主流浏览器上。
+⽤例级别测试
+登录 / 注册模块
+⽤例名称合法注册账号
+⽤例编号L001
+输⼊数据
+{"email": "test@test.com","password": "ac1ee2023ae4e9c40b490d4ae5a851a371a31d310670938d56c54828afb9dc71","salt": "eHWC5zEj5FPRk8wbiJtr"}
+前置条件输⼊格式正确的账⼾
+预期输出{status: 200, success: true, message: " 注册成功 "}
+实际输出{status: 200, success: true, message: " 注册成功 "}
+⽤例名称⾮法注册账号
+⽤例编号L002
+输⼊数据{}
+前置条件输⼊格式不正确的账⼾
+测试步骤1. 在注册⻚⾯点击账⼾输⼊框2. 输⼊不符合格式的账⼾
+预期输出{status: 400, success: false, message: " 注册信息为空 "}
+实际输出{status: 400, success: false, message: " 注册信息为空 "}
+⽤例名称合法登录账号
+⽤例编号L003
+测试⽂档 .md 2026-06-16
+28 / 63
+---PAGE 29---
+⽤例名称合法登录账号
+输⼊数据
+{"idOrEmail": "10000002","password": "d877c5d2e85523fb355ccf50f1dbf43f570ca0baf80f25573a1846a9d0859f47"}
+前置条件输⼊格式正确的账⼾
+预期输出
+{"status": 200,"success": true,"message": {"id": "10000002","name": "PCPA","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiUENQQSIsImlkIjoiMTAwMDAwMDIiLCJleHAiOjE2ODYwNjM5NjJ9.rOl15iLzpXLNqZ1ID-9Ti-lN0VzfoxRnB0TX5VMjTEM"}}
+实际输出
+{"status": 200,"success": true,"message": {"id": "10000002","name": "PCPA","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiUENQQSIsImlkIjoiMTAwMDAwMDIiLCJleHAiOjE2ODYwNjM5NjJ9.rOl15iLzpXLNqZ1ID-9Ti-lN0VzfoxRnB0TX5VMjTEM"}}
+⽤例名称⾮法登录账号
+⽤例编号L004
+输⼊数据
+{"idOrEmail": "1","password": "4d287b4ee3f25e1c2aafd4475f8ab4c12520bf9f0db98e1c177387a96bad9b14"}
+前置条件输⼊不存在的账⼾
+预期输出
+{"status": 400,"success": false,"message": null}
+实际输出
+{"status": 400,"success": false,"message": null}
+⽤例名称找回密码
+⽤例编号L005
+输⼊数据123456@163.com
+前置条件{"email": "1134@qq.com"}
+测试步骤1. 在登录⻚⾯点击 “ 忘记密码 ”2. 输⼊正确邮箱
+预期输出
+{"status": 200,"success": true,"message": " 密码已重置并发送到你的邮箱 "}
+测试⽂档 .md 2026-06-16
+29 / 63
+---PAGE 30---
+⽤例名称找回密码
+实际输出
+{"status": 200,"success": true,"message": " 密码已重置并发送到你的邮箱 "}
+⽤例名称找回密码失败
+⽤例编号L006
+输⼊数据{"email": "123456@qq.com"}
+前置条件⽤⼾输⼊未注册的邮箱找回密码
+预期输出
+{"status": 404,"success": false,"message": " ⽤⼾不存在 "}
+实际输出
+{"status": 404,"success": false,"message": " ⽤⼾不存在 "}
+⽤例名称
+登出
+⽤例编号
+L214
+输⼊数据
+{header:{token:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiUENQQSIsImlkIjoiMTAwMDAwMDIiLCJleHAiOjE2ODYwNjQyMjh9.4c7edfroxaGFPF6_HXClnxk54X7J2ID0to8
+前置条件
+⽤⼾或管理员已登录
+预期输出
+{"status":200,"success":true,"message":"logout success"}
+实际输出
+{"status":200,"success":true,"message":"logout success"}
+资源模块
+⽤例名称合法选择资源频道和类型
+⽤例编号S001
+输⼊数据{"keywords": "","subjects": [0,1,2,3,4,5,6,7,
+测试⽂档 .md 2026-06-16
+30 / 63
+---PAGE 31---
+⽤例名称合法选择资源频道和类型
+8,9],"categories": [0,1,2,3,4,5],"cntInPage": 10,"pageNum": 1}
+前置条件点击按钮多选资源频道和类型
+预期输出{"status": 200,"success": true,"message": {"currPage": 1,"prePage": 1,"nextPage": 2,"count": 21,"list": [{"id": 7,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","content": "asdasdadsasd","subject": 1,"categories": [1,2,3],"downloadCount": 0,"canDelete": false},{"id": 16,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 爱在西元前 ","content": " 这是周杰伦的⼀⾸歌，爱在西元前 ","subject": 7,"categories": [4],"downloadCount": 0,"canDelete": false},{"id": 20,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " ⾃动删除 ","content": " ⾃动刷难处 ","subject": 1,"categories": [4],"downloadCount": 0,"canDelete": false
+测试⽂档 .md 2026-06-16
+31 / 63
+---PAGE 32---
+⽤例名称合法选择资源频道和类型
+},{"id": 21,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " ⾃动删除 ","content": " ⾃动刷难处 ","subject": 1,"categories": [4],"downloadCount": 0,"canDelete": false},{"id": 22,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " ⾃动删除 ","content": " ⾃动刷难处 ","subject": 1,"categories": [4],"downloadCount": 0,"canDelete": false},{"id": 26,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 爱在西元前 ","content": " 这是周杰伦的⼀⾸歌，爱在西元前 ","subject": 3,"categories": [1,2],"downloadCount": 0,"canDelete": false},{"id": 27,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 爱不在西元前 ","content": " 这是周杰伦的⼀⾸歌，爱在西元前 ","subject": 1,"categories": [1,2,3,4],"downloadCount": 0,"canDelete": false},{"id": 35,"userId": "10000072","userName": " 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title": " 我是⼩⼩张正奇 ","content": " 嘿嘿 ",
+测试⽂档 .md 2026-06-16
+32 / 63
+---PAGE 33---
+⽤例名称合法选择资源频道和类型
+"subject": 8,"categories": [1],"downloadCount": 0,"canDelete": false},{"id": 39,"userId": "10000072","userName": " 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title": " ⼈⼯智能 5555","content": " 最终准确率 67 ，测试过程中稳定在 70 多 ","subject": 4,"categories": [0],"downloadCount": 0,"canDelete": false},{"id": 46,"userId": "10000072","userName": " 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title": " 空巢⽼⼈看护系统 ","content": " 发啊额我发 ","subject": 0,"categories": [1],"downloadCount": 0,"canDelete": false}],"pageSize": 10,"pageCount": 3,"filterCount": 0}}
+实际输出{"status": 200,"success": true,"message": {"currPage": 1,"prePage": 1,"nextPage": 2,"count": 21,"list": [{"id": 7,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","content": "asdasdadsasd","subject": 1,"categories": [1,2,3],"downloadCount": 0,"canDelete": false},{"id": 16,
+测试⽂档 .md 2026-06-16
+33 / 63
+---PAGE 34---
+⽤例名称合法选择资源频道和类型
+"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 爱在西元前 ","content": " 这是周杰伦的⼀⾸歌，爱在西元前 ","subject": 7,"categories": [4],"downloadCount": 0,"canDelete": false},{"id": 20,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " ⾃动删除 ","content": " ⾃动刷难处 ","subject": 1,"categories": [4],"downloadCount": 0,"canDelete": false},{"id": 21,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " ⾃动删除 ","content": " ⾃动刷难处 ","subject": 1,"categories": [4],"downloadCount": 0,"canDelete": false},{"id": 22,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " ⾃动删除 ","content": " ⾃动刷难处 ","subject": 1,"categories": [4],"downloadCount": 0,"canDelete": false},{"id": 26,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 爱在西元前 ","content": " 这是周杰伦的⼀⾸歌，爱在西元前 ","subject": 3,"categories": [1,2],"downloadCount": 0,"canDelete": false
+测试⽂档 .md 2026-06-16
+34 / 63
+---PAGE 35---
+⽤例名称合法选择资源频道和类型
+},{"id": 27,"userId": "10000003","userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 爱不在西元前 ","content": " 这是周杰伦的⼀⾸歌，爱在西元前 ","subject": 1,"categories": [1,2,3,4],"downloadCount": 0,"canDelete": false},{"id": 35,"userId": "10000072","userName": " 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title": " 我是⼩⼩张正奇 ","content": " 嘿嘿 ","subject": 8,"categories": [1],"downloadCount": 0,"canDelete": false},{"id": 39,"userId": "10000072","userName": " 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title": " ⼈⼯智能 5555","content": " 最终准确率 67 ，测试过程中稳定在 70 多 ","subject": 4,"categories": [0],"downloadCount": 0,"canDelete": false},{"id": 46,"userId": "10000072","userName": " 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","title": " 空巢⽼⼈看护系统 ","content": " 发啊额我发 ","subject": 0,"categories": [1],"downloadCount": 0,"canDelete": false}],"pageSize": 10,"pageCount": 3,"filterCount": 0}}
+测试⽂档 .md 2026-06-16
+35 / 63
+---PAGE 36---
+⽤例名称⾮法选择资源频道和类型
+⽤例编号S002
+输⼊数据全不选所有频道和类型
+前置条件错误地发送资源频道和类型
+预期输出
+{"status": 400,"success": false,"message": " 获取资源列表失败 "}
+实际输出
+{"status": 400,"success": false,"message": " 获取资源列表失败 "}
+⽤例名称合法发布资源
+⽤例编号S003
+输⼊数据
+{"title": " 软件设计说明书 ","subject": 0,"categories": [0],"content": " 傻宝 ","imagePath": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/b9fe8e39-1576-46ef-9f4b-ac1d95528125","filePath": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/file/8fd5f100-6818-42c9-aeeb-fdbd59953fc0","fileName": " 软件设计说明书 .md","size": 64907}
+前置条件⽤⼾填写所有必须项
+预期输出
+{"status": 200,"success": true,"message": " 上传成功 "}
+实际输出
+{"status": 200,"success": true,"message": " 上传成功 "}
+⽤例名称⾮法发布资源
+⽤例编号S004
+输⼊数据
+{"title": " 软件设计说明书 ","subject": 0,"categories": [0],"content": " 狗屎 ","imagePath": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/b9fe8e39-1576-46ef-9f4b-ac1d95528125","filePath": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/file/8fd5f100-6818-42c9-aeeb-fdbd59953fc0","fileName": " 软件设计说明书 .md","size": 64907}
+前置条件⽤⼾发布含有⾮法字符的资源
+预期输出
+{"status": 422,"success": false,"message": " 存在低俗辱骂不合规 "}
+实际输出{"status": 422,
+测试⽂档 .md 2026-06-16
+36 / 63
+---PAGE 37---
+⽤例名称⾮法发布资源
+"success": false,"message": " 存在低俗辱骂不合规 "}
+⽤例名称合法删除发布资源
+⽤例编号S005
+输⼊数据{"resourceId": 59}
+前置条件⽤⼾删除⾃⾝的资源发布
+预期输出
+{"status": 200,"success": true,"message": " 删除成功 "}
+实际输出
+{"status": 200,"success": true,"message": " 删除成功 "}
+⽤例名称⾮法删除发布资源
+⽤例编号S006
+输⼊数据{}
+前置条件发送错误的资源 id
+预期输出
+{"status": 400,"success": false,"message": " 删除失败 "}
+实际输出
+{"status": 400,"success": false,"message": " 删除失败 "}
+⽤例名称查看资源详情
+⽤例编号S007
+输⼊数据{"resourceId": 7}
+前置条件⽤⼾选择想查看的资源
+预期输出{"status": 200,"success": true,"message": {"id": 7,"userId": "10000003","username": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","subject": 1,"categories": [1,2,3],"publishTime": "2023-05-25 19:53:31","content": "asdasdadsasd","fileName": " 学习资料 ","imageUrl": "resource/image/a40330a3-bd46-4b44-82e2-89f57403579a","path": null,"downloadCount": 12,
+测试⽂档 .md 2026-06-16
+37 / 63
+---PAGE 38---
+⽤例名称查看资源详情
+"size": 503,"canDelete": false,"canModify": false,"canDownload": true}}
+实际输出
+{"status": 200,"success": true,"message": {"id": 7,"userId": "10000003","username": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","title": " 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","subject": 1,"categories": [1,2,3],"publishTime": "2023-05-25 19:53:31","content": "asdasdadsasd","fileName": " 学习资料 ","imageUrl": "resource/image/a40330a3-bd46-4b44-82e2-89f57403579a","path": null,"downloadCount": 12,"size": 503,"canDelete": false,"canModify": false,"canDownload": true}}
+⽤例名称查看资源详情失败
+⽤例编号S008
+输⼊数据{}
+前置条件⽤⼾选择想查看的资源
+预期输出
+{"status": 400,"success": false,"message": " 资源不存在 "}
+实际输出
+{"status": 400,"success": false,"message": " 资源不存在 "}
+⽤例名称合法下载资源
+⽤例编号S211
+输⼊数据{"resourceId": 7}
+前置条件⽤⼾下载需要的资源
+预期输出
+{"status": 200,"success": true,"message": {"path": "resource/file/a1a73748-1f1f-48d6-92d5-adcd72fd3414","fileName": " 学习资料 "}}
+测试⽂档 .md 2026-06-16
+38 / 63
+---PAGE 39---
+⽤例名称合法下载资源
+实际输出
+{"status": 200,"success": true,"message": {"path": "resource/file/a1a73748-1f1f-48d6-92d5-adcd72fd3414","fileName": " 学习资料 "}}
+⽤例名称⾮法法下载资源
+⽤例编号S212
+输⼊数据{"resourceId": -100}
+前置条件⽤⼾下载需要的资源
+预期输出
+{"status": 400,"success": false,"message": " 资源不存在 "}
+实际输出
+{"status": 400,"success": false,"message": " 资源不存在 "}
+帖⼦模块
+⽤例名称默认访问帖⼦列表
+⽤例编号P201
+输⼊数据
+{"cntInPage": 10,"pageNum": 1,"mode": 2}
+前置条件⽤⼾访问帖⼦列表
+预期输出{"status": 200,"success": true,"message": {"currPage": 1,"prePage": 1,"nextPage": 2,"count": 50,"list": [{"id": 34,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "12121","likeCount": 0,"browseCount": 15,"hotPoint": 15,"updateTime": "2023-06-06 21:25:02","canDelete": false},{"id": 92,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b",
+测试⽂档 .md 2026-06-16
+39 / 63
+---PAGE 40---
+⽤例名称默认访问帖⼦列表
+"authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 我的号被盗了  ！！ ","likeCount": 0,"browseCount": 1,"hotPoint": 1,"updateTime": "2023-06-06 21:12:17","canDelete": false},{"id": 91,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 私密⼀对⼀服务， 888 元 ","likeCount": 0,"browseCount": 2,"hotPoint": 2,"updateTime": "2023-06-06 21:11:45","canDelete": false},{"id": 90,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 诈骗⼴告 ","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 21:00:30","canDelete": false},{"id": 89,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 重⾦求⼦ ","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:59:34","canDelete": false},{"id": 88,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 天猫 618 ⼤促， +V123415326","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:58:21","canDelete": false},{"id": 87,"userId": 10000003,
+测试⽂档 .md 2026-06-16
+40 / 63
+---PAGE 41---
+⽤例名称默认访问帖⼦列表
+"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 天猫 618 ⼤促，加微信⼴告 ","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:58:00","canDelete": false},{"id": 86,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 天猫 618 ⼤促，加 V","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:57:51","canDelete": false},{"id": 26,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "11111","likeCount": 1,"browseCount": 3,"hotPoint": 13,"updateTime": "2023-06-06 20:54:25","canDelete": false},{"id": 85,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 测试 upload","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:25:50","canDelete": false}],"pageSize": 10,"pageCount": 5,"filterCount": 0}}
+实际输出{"status": 200,"success": true,"message": {"currPage": 1,"prePage": 1,"nextPage": 2,"count": 50,"list": [
+测试⽂档 .md 2026-06-16
+41 / 63
+---PAGE 42---
+⽤例名称默认访问帖⼦列表
+{"id": 34,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "12121","likeCount": 0,"browseCount": 15,"hotPoint": 15,"updateTime": "2023-06-06 21:25:02","canDelete": false},{"id": 92,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 我的号被盗了  ！！ ","likeCount": 0,"browseCount": 1,"hotPoint": 1,"updateTime": "2023-06-06 21:12:17","canDelete": false},{"id": 91,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 私密⼀对⼀服务， 888 元 ","likeCount": 0,"browseCount": 2,"hotPoint": 2,"updateTime": "2023-06-06 21:11:45","canDelete": false},{"id": 90,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 诈骗⼴告 ","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 21:00:30","canDelete": false},{"id": 89,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 重⾦求⼦ ","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:59:34",
+测试⽂档 .md 2026-06-16
+42 / 63
+---PAGE 43---
+⽤例名称默认访问帖⼦列表
+"canDelete": false},{"id": 88,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 天猫 618 ⼤促， +V123415326","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:58:21","canDelete": false},{"id": 87,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 天猫 618 ⼤促，加微信⼴告 ","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:58:00","canDelete": false},{"id": 86,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 天猫 618 ⼤促，加 V","likeCount": 0,"browseCount": 0,"hotPoint": 0,"updateTime": "2023-06-06 20:57:51","canDelete": false},{"id": 26,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "11111","likeCount": 1,"browseCount": 3,"hotPoint": 13,"updateTime": "2023-06-06 20:54:25","canDelete": false},{"id": 85,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 测试 upload","likeCount": 0,"browseCount": 0,
+测试⽂档 .md 2026-06-16
+43 / 63
+---PAGE 44---
+⽤例名称默认访问帖⼦列表
+"hotPoint": 0,"updateTime": "2023-06-06 20:25:50","canDelete": false}],"pageSize": 10,"pageCount": 5,"filterCount": 0}}
+⽤例名称查看热⻔帖⼦
+⽤例编号P203
+输⼊数据NULL
+前置条件⽤⼾访问帖⼦列表并希望查看热⻔帖⼦
+预期输出{"status": 200,"success": true,"message": [{"id": 69,"userId": 10000002,"userName": "PCPA","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","authority": 10,"userLevelName": "LV.10 神⼀般的存在 ","title": " 原创：数据库和 Lucene 扫盲 ","likeCount": 1,"browseCount": 10040,"hotPoint": 10050,"updateTime": "2023-06-06 15:13:54","canDelete": false},{"id": 7,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 看看转字符串 ","likeCount": 48,"browseCount": 521,"hotPoint": 1001,"updateTime": "2023-06-06 00:03:16","canDelete": false},{"id": 47,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": "WOWOWO","likeCount": 2,"browseCount": 24,"hotPoint": 44,"updateTime": "2023-06-06 15:55:52","canDelete": false},{"id": 50,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,
+测试⽂档 .md 2026-06-16
+44 / 63
+---PAGE 45---
+⽤例名称查看热⻔帖⼦
+"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 我为什么是零级 ","likeCount": 1,"browseCount": 12,"hotPoint": 22,"updateTime": "2023-06-06 16:48:48","canDelete": false},{"id": 44,"userId": 10000072,"userName": " 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 胖胖张正奇可爱捏 ","likeCount": 1,"browseCount": 11,"hotPoint": 21,"updateTime": "2023-06-06 01:13:59","canDelete": false},{"id": 1,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 这是标题 ","likeCount": 1,"browseCount": 10,"hotPoint": 20,"updateTime": null,"canDelete": false},{"id": 68,"userId": 10000088,"userName": "user10000088","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/test/ava1.webp","authority": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","title": "JAVA 详解之注解（⼀） ","likeCount": 1,"browseCount": 7,"hotPoint": 17,"updateTime": "2023-06-06 13:21:00","canDelete": false},{"id": 34,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "12121","likeCount": 0,"browseCount": 15,"hotPoint": 15,"updateTime": "2023-06-06 21:25:02","canDelete": false},{"id": 26,"userId": 0,"userName": " ⽤⼾已注销 ",
+测试⽂档 .md 2026-06-16
+45 / 63
+---PAGE 46---
+⽤例名称查看热⻔帖⼦
+"profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "11111","likeCount": 1,"browseCount": 3,"hotPoint": 13,"updateTime": "2023-06-06 20:54:25","canDelete": false},{"id": 70,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "sjb","likeCount": 0,"browseCount": 8,"hotPoint": 8,"updateTime": "2023-06-06 16:21:29","canDelete": false},{"id": 62,"userId": 10000089,"userName": " 周公旦 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/b8aef0f9-de8d-4add-924b-89d0281b7ec8","authority": 9,"userLevelName": "LV.9 传奇天才 ","title": " ⻓图测试 2","likeCount": 0,"browseCount": 6,"hotPoint": 6,"updateTime": "2023-06-06 12:42:59","canDelete": false},{"id": 37,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": " 我是撒谎 ","likeCount": 0,"browseCount": 6,"hotPoint": 6,"updateTime": "2023-06-03 23:22:27","canDelete": false}]}
+实际输出{"status": 200,"success": true,"message": [{"id": 69,"userId": 10000002,"userName": "PCPA","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","authority": 10,"userLevelName": "LV.10 神⼀般的存在 ","title": " 原创：数据库和 Lucene 扫盲 ","likeCount": 1,"browseCount": 10040,
+测试⽂档 .md 2026-06-16
+46 / 63
+---PAGE 47---
+⽤例名称查看热⻔帖⼦
+"hotPoint": 10050,"updateTime": "2023-06-06 15:13:54","canDelete": false},{"id": 7,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 看看转字符串 ","likeCount": 48,"browseCount": 521,"hotPoint": 1001,"updateTime": "2023-06-06 00:03:16","canDelete": false},{"id": 47,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": "WOWOWO","likeCount": 2,"browseCount": 24,"hotPoint": 44,"updateTime": "2023-06-06 15:55:52","canDelete": false},{"id": 50,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 我为什么是零级 ","likeCount": 1,"browseCount": 12,"hotPoint": 22,"updateTime": "2023-06-06 16:48:48","canDelete": false},{"id": 44,"userId": 10000072,"userName": " 我很喜欢原来的昵称但为了测试只能改掉 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/ee70a449-ee07-47c8-9ca0-435fec4dc0b0","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 胖胖张正奇可爱捏 ","likeCount": 1,"browseCount": 11,"hotPoint": 21,"updateTime": "2023-06-06 01:13:59","canDelete": false},{"id": 1,"userId": 10000003,"userName": " 我亦是傻宝 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","authority": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","title": " 这是标题 ",
+测试⽂档 .md 2026-06-16
+47 / 63
+---PAGE 48---
+⽤例名称查看热⻔帖⼦
+"likeCount": 1,"browseCount": 10,"hotPoint": 20,"updateTime": null,"canDelete": false},{"id": 68,"userId": 10000088,"userName": "user10000088","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/test/ava1.webp","authority": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","title": "JAVA 详解之注解（⼀） ","likeCount": 1,"browseCount": 7,"hotPoint": 17,"updateTime": "2023-06-06 13:21:00","canDelete": false},{"id": 34,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "12121","likeCount": 0,"browseCount": 15,"hotPoint": 15,"updateTime": "2023-06-06 21:25:02","canDelete": false},{"id": 26,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "11111","likeCount": 1,"browseCount": 3,"hotPoint": 13,"updateTime": "2023-06-06 20:54:25","canDelete": false},{"id": 70,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": "sjb","likeCount": 0,"browseCount": 8,"hotPoint": 8,"updateTime": "2023-06-06 16:21:29","canDelete": false},{"id": 62,"userId": 10000089,"userName": " 周公旦 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/b8aef0f9-de8d-4add-924b-89d0281b7ec8","authority": 9,
+测试⽂档 .md 2026-06-16
+48 / 63
+---PAGE 49---
+⽤例名称查看热⻔帖⼦
+"userLevelName": "LV.9 传奇天才 ","title": " ⻓图测试 2","likeCount": 0,"browseCount": 6,"hotPoint": 6,"updateTime": "2023-06-06 12:42:59","canDelete": false},{"id": 37,"userId": 0,"userName": " ⽤⼾已注销 ","profilePhotoUrl": "http://learning-and-living.oss-cn-beijing.aliyuncs.com/0/0aea2d71-6b3d-416e-babd-39de69b040d5","authority": -1,"userLevelName": null,"title": " 我是撒谎 ","likeCount": 0,"browseCount": 6,"hotPoint": 6,"updateTime": "2023-06-03 23:22:27","canDelete": false}]}
+⽤例名称发布帖⼦
+⽤例编号P205
+输⼊数据
+{"title": " 你好 ","content": "
+测试
+","authority": "0","images": []}
+前置条件⽤⼾处于帖⼦列表⻚并想要发布帖⼦
+预期输出
+{"status": 200,"success": true,"message": " 上传成功 "}
+实际输出
+{"status": 200,"success": true,"message": " 上传成功 "}
+⽤例名称发布帖⼦包含⾮法内容
+⽤例编号P206
+输⼊数据
+{"title": " 傻逼 ","content": "
+煞笔煞笔煞笔煞笔煞笔煞笔⼋⼗⼋收不识别
+","authority": "0","images": []}
+前置条件⽤⼾处于帖⼦列表⻚并想要发布帖⼦
+预期输出{"status": 422,"success": false,
+测试⽂档 .md 2026-06-16
+49 / 63
+---PAGE 50---
+⽤例名称发布帖⼦包含⾮法内容
+"message": " 存在低俗辱骂不合规 "}
+实际输出
+{"status": 422,"success": false,"message": " 存在低俗辱骂不合规 "}
+⽤例名称访问帖⼦详情⻚
+⽤例编号P211
+输⼊数据{"postId": 93}
+前置条件⽤⼾访问帖⼦详情⻚
+预期输出
+{"status": 200,"success": true,"message": {"id": 93,"userId": 10000002,"userName": "PCPA","userLevel": 10,"userLevelName": "LV.10 神⼀般的存在 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","title": " 你好 ","content": "
+测试
+","likeCount": 0,"browseCount": 1,"imageurls": null,"imageUrlList": null,"postTime": "2023-06-06 22:27:11","updateTime": "2023-06-06 22:27:11","commentList": {"currPage": 1,"prePage": 1,"nextPage": 2,"count": 0,"list": [],"pageSize": 10,"pageCount": 0,"filterCount": 0},"authority": 0,"hotPoint": 1,"canDelete": true,"like": false,"canOperate": true}}
+实际输出{"status": 200,"success": true,"message": {"id": 93,"userId": 10000002,"userName": "PCPA","userLevel": 10,"userLevelName": "LV.10 神⼀般的存在 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","title": " 你好 ","content": "
+测试
+测试⽂档 .md 2026-06-16
+50 / 63
+---PAGE 51---
+⽤例名称访问帖⼦详情⻚
+","likeCount": 0,"browseCount": 1,"imageurls": null,"imageUrlList": null,"postTime": "2023-06-06 22:27:11","updateTime": "2023-06-06 22:27:11","commentList": {"currPage": 1,"prePage": 1,"nextPage": 2,"count": 0,"list": [],"pageSize": 10,"pageCount": 0,"filterCount": 0},"authority": 0,"hotPoint": 1,"canDelete": true,"like": false,"canOperate": true}}
+⽤例名称删除帖⼦
+⽤例编号P212
+输⼊数据
+{"postId": 93,"pageNum": 1}
+前置条件⽤⼾删除⾃⼰的帖⼦
+预期输出
+{"status": 200,"success": true,"message": 2}
+实际输出
+{"status": 200,"success": true,"message": 2}
+⽤例名称⾮法删除帖⼦
+⽤例编号P213
+输⼊数据
+{"postId": 93,"pageNum": 1}
+前置条件⽤⼾删除别⼈的帖⼦
+预期输出
+{"status": 400,"success": false,"message": ” ⾮法请求 “}
+实际输出
+{"status": 400,"success": false,"message": ” ⾮法请求 “}
+⽤例名称点赞帖⼦
+⽤例编号P214
+测试⽂档 .md 2026-06-16
+51 / 63
+---PAGE 52---
+⽤例名称点赞帖⼦
+输⼊数据
+{"postId": 82,"isLike": false}
+前置条件⽤⼾给某帖⼦点赞
+预期输出{"status":200,"success":true,"message":1}
+实际输出{"status":200,"success":true,"message":1}
+⽤例名称评论帖⼦
+⽤例编号P215
+输⼊数据
+{"postId": 82,"imageUrl": [],"content": "
+测试
+"}
+前置条件⽤⼾给某帖⼦评论
+预期输出
+{"status": 200,"success": true,"message": " 评论成功 "}
+实际输出
+{"status": 200,"success": true,"message": " 评论成功 "}
+⽤例名称发布不当评论
+⽤例编号P217
+输⼊数据
+{"postId": 82,"imageUrl": [],"content": "
+傻逼
+"}
+前置条件⽤⼾给某帖⼦评论
+预期输出
+{"status": 422,"success": false,"message": " 存在低俗辱骂不合规 "}
+实际输出
+{"status": 422,"success": false,"message": " 存在低俗辱骂不合规 "}
+⽤例名称回复评论
+⽤例编号P218
+输⼊数据
+{"postId": 82,"commentId": 150,"content": " 你好 "}
+前置条件⽤⼾给某帖⼦的评论回复
+测试⽂档 .md 2026-06-16
+52 / 63
+---PAGE 53---
+⽤例名称回复评论
+预期输出
+{"status": 200,"success": true,"message": {"id": 0,"userId": 10000002,"userName": "PCPA","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel": 0,"userLevelName": null,"postId": 82,"commentId": 150,"content": " 你好 ","publishTime": "2023-06-06 22:34:19","canDelete": true}}
+实际输出
+{"status": 200,"success": true,"message": {"id": 0,"userId": 10000002,"userName": "PCPA","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel": 0,"userLevelName": null,"postId": 82,"commentId": 150,"content": " 你好 ","publishTime": "2023-06-06 22:34:19","canDelete": true}}
+⽤例名称发布不当回复
+⽤例编号P220
+输⼊数据
+{"postId": 82,"commentId": 149,"content": " 傻逼 "}
+前置条件⽤⼾给某帖⼦的评论回复
+预期输出
+{"status": 422,"success": false,"message": " 存在低俗辱骂不合规 "}
+实际输出
+{"status": 422,"success": false,"message": " 存在低俗辱骂不合规 "}
+⽤⼾模块
+⽤例名称⽤⼾查看个⼈信息
+⽤例编号P201
+输⼊数据NULL
+前置条件⽤⼾相应查看个⼈信息
+预期输出{"status": 200,"success": true,"message": {
+测试⽂档 .md 2026-06-16
+53 / 63
+---PAGE 54---
+⽤例名称⽤⼾查看个⼈信息
+"id": 10000002,"name": "PCPA","email": "1@q.com","gender": "Male","birthday": "1997-02-05","registerTime": null,"profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel": 10,"userLevelName": "LV.10 神⼀般的存在 ","exp": 40063,"logInNum": 3}}
+实际输出
+{"status": 200,"success": true,"message": {"id": 10000002,"name": "PCPA","email": "1@q.com","gender": "Male","birthday": "1997-02-05","registerTime": null,"profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel": 10,"userLevelName": "LV.10 神⼀般的存在 ","exp": 40063,"logInNum": 3}}
+⽤例名称⽤⼾修改个⼈信息
+⽤例编号P202
+输⼊数据
+{"id": 10000002,"name": "pcpas","email": "1@q.com","birthday": "1997-02-05","gender": "Male","level": 10,"levelName": "LV.10 神⼀般的存在 ","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0"}
+前置条件⽤⼾想要修改个⼈信息
+预期输出
+{"status": 200,"success": true,"message": " 修改成功 "}
+实际输出
+{"status": 200,"success": true,"message": " 修改成功 "}
+⽤例名称⽤⼾查看下载历史
+⽤例编号P204
+输⼊数据NULL
+前置条件⽤⼾想要查看下载历史
+预期输出{"status": 200,"success": true,"message": [{
+测试⽂档 .md 2026-06-16
+54 / 63
+---PAGE 55---
+⽤例名称⽤⼾查看下载历史
+"id": 89,"resourceId": 7,"userId": 10000002,"title": " 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","fileName": " 学习资料 ","downloadTime": "2023-06-06 22:23:29"},{"id": 73,"resourceId": 21,"userId": 10000002,"title": " ⾃动删除 ","fileName": " 学习资料 ","downloadTime": "2023-06-05 20:38:24"},{"id": 72,"resourceId": 20,"userId": 10000002,"title": " ⾃动删除 ","fileName": " 学习资料 ","downloadTime": "2023-06-05 20:38:21"},{"id": 71,"resourceId": 7,"userId": 10000002,"title": " 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","fileName": " 学习资料 ","downloadTime": "2023-06-05 20:38:17"},{"id": 68,"resourceId": 52,"userId": 10000002,"title": " 软件设计说明书⽰例 ","fileName": " 软件设计说明书 .md","downloadTime": "2023-06-04 18:49:15"}]}
+实际输出{"status": 200,"success": true,"message": [{"id": 89,"resourceId": 7,"userId": 10000002,"title": " 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","fileName": " 学习资料 ","downloadTime": "2023-06-06 22:23:29"},{"id": 73,"resourceId": 21,"userId": 10000002,"title": " ⾃动删除 ","fileName": " 学习资料 ","downloadTime": "2023-06-05 20:38:24"},{"id": 72,"resourceId": 20,"userId": 10000002,"title": " ⾃动删除 ","fileName": " 学习资料 ","downloadTime": "2023-06-05 20:38:21"
+测试⽂档 .md 2026-06-16
+55 / 63
+---PAGE 56---
+⽤例名称⽤⼾查看下载历史
+},{"id": 71,"resourceId": 7,"userId": 10000002,"title": " 陈之浩在改这个试试这句话有没有⼆⼗个字呢 ","fileName": " 学习资料 ","downloadTime": "2023-06-05 20:38:17"},{"id": 68,"resourceId": 52,"userId": 10000002,"title": " 软件设计说明书⽰例 ","fileName": " 软件设计说明书 .md","downloadTime": "2023-06-04 18:49:15"}]}
+⽤例名称管理员查看⽤⼾列表
+⽤例编号P106
+输⼊数据
+{"cntInPage": 13,"pageNum": 1}
+前置条件管理员查看⽤⼾列表
+预期输出{"currPage": 1,"prePage": 1,"nextPage": 2,"count": 76,"list": [{"id": 10000002,"name": "pcpas","email": "1@q.com","gender": "Male","birthday": "1997-02-05","registerTime": null,"profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel": 10,"userLevelName": "LV.10 神⼀般的存在 ","exp": 40063,"logInNum": 3},{"id": 10000003,"name": " 我亦是傻宝 ","email": "20374151@buaa.edu.cn","gender": "Male","birthday": "2023-06-06","registerTime": "2023-05-22","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","userLevel": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","exp": 66,"logInNum": 4},{"id": 10000010,"name": " 梦想成为神⼀般的存在 ","email": "312466@qq.com","gender": "Male","birthday": "1990-01-01","registerTime": "2023-05-22","profilePhotoUrl": "resource/image/ec6358cc-104d-42ca-9a31-4f427e0844be",
+测试⽂档 .md 2026-06-16
+56 / 63
+---PAGE 57---
+⽤例名称管理员查看⽤⼾列表
+"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000011,"name": " 我亦是沙⽐ ","email": "9@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000012,"name": " 我真的不糊 i","email": "10@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000013,"name": " 阿斯顿法定 ","email": "11@aa.com","gender": "Male","birthday": "2014-01-10","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000014,"name": " 撒 ","email": "12@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000015,"name": " 阿斯顿  ","email": "13@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,
+测试⽂档 .md 2026-06-16
+57 / 63
+---PAGE 58---
+⽤例名称管理员查看⽤⼾列表
+"logInNum": 0},{"id": 10000016,"name": "2345 微软 ","email": "14@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000017,"name": " 的⾝份平均⾝⾼ ","email": "15@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000018,"name": " 给⽽是 ","email": "16@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000019,"name": " ⼠⼤夫如果 ","email": "17@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000021,"name": " 如果是 ","email": "sdfdsf1@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0}],
+测试⽂档 .md 2026-06-16
+58 / 63
+---PAGE 59---
+⽤例名称管理员查看⽤⼾列表
+"pageSize": 13,"pageCount": 6,"filterCount": 0}
+实际输出{"currPage": 1,"prePage": 1,"nextPage": 2,"count": 76,"list": [{"id": 10000002,"name": "pcpas","email": "1@q.com","gender": "Male","birthday": "1997-02-05","registerTime": null,"profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/e923b31f-d98e-417d-ae91-fa849e7ea3a0","userLevel": 10,"userLevelName": "LV.10 神⼀般的存在 ","exp": 40063,"logInNum": 3},{"id": 10000003,"name": " 我亦是傻宝 ","email": "20374151@buaa.edu.cn","gender": "Male","birthday": "2023-06-06","registerTime": "2023-05-22","profilePhotoUrl": "https://learning-and-living.oss-cn-beijing.aliyuncs.com/resource/image/281054a3-1160-456a-b289-05f16f82eb2b","userLevel": 1,"userLevelName": "LV.1 ⼊⻔菜⻦ ","exp": 66,"logInNum": 4},{"id": 10000010,"name": " 梦想成为神⼀般的存在 ","email": "312466@qq.com","gender": "Male","birthday": "1990-01-01","registerTime": "2023-05-22","profilePhotoUrl": "resource/image/ec6358cc-104d-42ca-9a31-4f427e0844be","userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000011,"name": " 我亦是沙⽐ ","email": "9@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000012,"name": " 我真的不糊 i","email": "10@aa.com","gender": "Helicopter","birthday": "2023-01-01",
+测试⽂档 .md 2026-06-16
+59 / 63
+---PAGE 60---
+⽤例名称管理员查看⽤⼾列表
+"registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000013,"name": " 阿斯顿法定 ","email": "11@aa.com","gender": "Male","birthday": "2014-01-10","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000014,"name": " 撒 ","email": "12@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000015,"name": " 阿斯顿  ","email": "13@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000016,"name": "2345 微软 ","email": "14@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000017,"name": " 的⾝份平均⾝⾼ ","email": "15@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,
+测试⽂档 .md 2026-06-16
+60 / 63
+---PAGE 61---
+⽤例名称管理员查看⽤⼾列表
+"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000018,"name": " 给⽽是 ","email": "16@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000019,"name": " ⼠⼤夫如果 ","email": "17@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0},{"id": 10000021,"name": " 如果是 ","email": "sdfdsf1@aa.com","gender": "Helicopter","birthday": "2023-01-01","registerTime": "2023-05-22","profilePhotoUrl": null,"userLevel": 0,"userLevelName": "LV.0 新⼿⼩⽩ ","exp": 0,"logInNum": 0}],"pageSize": 13,"pageCount": 6,"filterCount": 0}
+⽤例名称管理员修改⽤⼾信息
+⽤例编号P107
+输⼊数据
+{"id": 10000014,"name": " 测试 ","gender": "Male","email": "12@aa.com","birthday": "2022-12-31T16:00:00.000Z","profilePhotoUrl": null}
+前置条件管理员想要修改某⽤⼾信息
+预期输出
+{"status": 200,"success": true,"message": " 修改成功 "}
+测试⽂档 .md 2026-06-16
+61 / 63
+---PAGE 62---
+⽤例名称管理员修改⽤⼾信息
+实际输出
+{"status": 200,"success": true,"message": " 修改成功 "}
+⽤例名称管理员删除⽤⼾
+⽤例编号P109
+输⼊数据{"id": 10000014}
+前置条件管理员想要删除某⽤⼾
+预期输出
+{"status": 200,"success": true,"message": " 删除成功 "}
+实际输出
+{"status": 200,"success": true,"message": " 删除成功 "}
+统计数据模块
+⽤例名称管理员查看统计数据
+⽤例编号D101
+输⼊数据NULL
+前置条件管理员想要查看⽹站统计数据
+预期输出
+{"status": 200,"success": true,"message": {"numOfOnlineUser": 3,"numOfUser": 75,"numOfPost": 49,"numOfResource": 33}}
+实际输出
+{"status": 200,"success": true,"message": {"numOfOnlineUser": 3,"numOfUser": 75,"numOfPost": 49,"numOfResource": 33}}
+⽤例名称⽤⼾⾮法查看统计数据
+⽤例编号D101
+输⼊数据NULL
+前置条件⽤⼾想要查看⽹站统计数据
+预期输出
+{"status": 401,"success": false,"message": " ⽆权限 "}
+实际输出{"status": 401,"success": false,
+测试⽂档 .md 2026-06-16
+62 / 63
+---PAGE 63---
+⽤例名称⽤⼾⾮法查看统计数据
+"message": " ⽆权限 "}
+测试⽂档 .md 2026-06-16
+63 / 63

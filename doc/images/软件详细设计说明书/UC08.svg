@@ -1,129 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1176" height="952" viewBox="0 0 1176 952">
+<svg xmlns="http://www.w3.org/2000/svg" width="996px" height="636px" version="1.1" style="background-color:#fff">
   <defs>
-    <marker id="uml-filled-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L10,5 L0,10 Z" fill="#141414"/>
-    </marker>
-    <marker id="uml-open-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#141414" stroke-width="1.2"/>
-    </marker>
+    <linearGradient x1="0%" y1="0%" x2="100%" y2="0%" id="head-grad">
+      <stop offset="0%" style="stop-color:#DAE8FC"/>
+      <stop offset="100%" style="stop-color:#FFFFFF"/>
+    </linearGradient>
   </defs>
-  <rect x="0" y="0" width="1176" height="952" fill="#FFFFFF"/>
-  <g>
-<g>
-    <circle cx="132" cy="22" r="9" fill="none" stroke="#141414" stroke-width="1.5"/>
-    <line x1="132" y1="31" x2="132" y2="45" stroke="#141414" stroke-width="1.5"/>
-    <line x1="121" y1="38" x2="143" y2="38" stroke="#141414" stroke-width="1.5"/>
-    <line x1="132" y1="45" x2="123" y2="57" stroke="#141414" stroke-width="1.5"/>
-    <line x1="132" y1="45" x2="141" y2="57" stroke="#141414" stroke-width="1.5"/>
-    <text x="132" y="56" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline">user:User</text>
-  </g>
-<line x1="132" y1="78" x2="132" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
-<g>
-    <rect x="217" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-    <text x="284" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="284" dy="0">detailSvc :</tspan><tspan x="284" dy="14">DetailService</tspan></text>
-  </g>
-<line x1="284" y1="78" x2="284" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
-<g>
-    <rect x="369" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-    <text x="436" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="436" dy="0">itemRepo :</tspan><tspan x="436" dy="14">ItemRepository</tspan></text>
-  </g>
-<line x1="436" y1="78" x2="436" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
-<g>
-    <rect x="521" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-    <text x="588" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="588" dy="0">userRepo :</tspan><tspan x="588" dy="14">UserRepository</tspan></text>
-  </g>
-<line x1="588" y1="78" x2="588" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
-<g>
-    <rect x="673" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-    <text x="740" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="740" dy="0">intentRepo :</tspan><tspan x="740" dy="14">IntentRepository</tspan></text>
-  </g>
-<line x1="740" y1="78" x2="740" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
-<g>
-    <rect x="825" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-    <text x="892" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="892" dy="0">msgRepo :</tspan><tspan x="892" dy="14">MessageRepository</tspan></text>
-  </g>
-<line x1="892" y1="78" x2="892" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
-<g>
-    <rect x="977" y="16" width="134" height="44" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-    <text x="1044" y="34" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" text-decoration="underline"><tspan x="1044" dy="0">detail :</tspan><tspan x="1044" dy="14">ProductDetail</tspan></text>
-  </g>
-<line x1="1044" y1="78" x2="1044" y2="932" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
-<g>
-    <rect x="40" y="294" width="1112" height="624" fill="none" stroke="#141414" stroke-width="1"/>
-    <rect x="40" y="294" width="28" height="18" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-    <text x="45" y="307" fill="#141414" font-size="11" font-weight="600" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">alt</text>
-    <line x1="40" y1="844" x2="1152" y2="844" stroke="#141414" stroke-width="1" stroke-dasharray="5 5"/>
-    <text x="76" y="573" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">[商品可见]</text>
-    <text x="76" y="885" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">[不可见]</text>
-  </g>
-<rect x="130" y="102" width="8" height="58.599999999999994" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<rect x="278" y="102" width="12" height="816.8" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<rect x="434" y="170" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<rect x="586" y="306" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<rect x="738" y="442" width="8" height="133.39999999999998" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<rect x="890" y="578" width="8" height="133.4000000000001" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<rect x="1042" y="714" width="8" height="85.79999999999995" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<rect x="130" y="782" width="8" height="58.59999999999991" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<rect x="130" y="850" width="8" height="58.59999999999991" fill="#FFFFFF" stroke="#141414" stroke-width="1"/>
-<g>
-    <line x1="142" y1="130" x2="274" y2="130" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
-    <rect x="143" y="98" width="130" height="16" fill="#FFFFFF"/>
-    <text x="208" y="110" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">获取详情(商品ID, 访客ID)</text>
-  </g>
-<g>
-    <line x1="294" y1="198" x2="426" y2="198" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
-    <rect x="295" y="166" width="130" height="16" fill="#FFFFFF"/>
-    <text x="360" y="178" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据ID查找商品(商品ID)</text>
-  </g>
-<g>
-    <line x1="426" y1="266" x2="294" y2="266" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
-    <rect x="344" y="278" width="32" height="16" fill="#FFFFFF"/>
-    <text x="360" y="290" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">商品</text>
-  </g>
-<g>
-    <line x1="294" y1="334" x2="578" y2="334" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
-    <rect x="354.3" y="302" width="163.39999999999998" height="16" fill="#FFFFFF"/>
-    <text x="436" y="314" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">根据ID查找用户(商品.卖家ID)</text>
-  </g>
-<g>
-    <line x1="578" y1="402" x2="294" y2="402" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
-    <rect x="420" y="414" width="32" height="16" fill="#FFFFFF"/>
-    <text x="436" y="426" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">卖家</text>
-  </g>
-<g>
-    <line x1="294" y1="470" x2="730" y2="470" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
-    <rect x="399.70000000000005" y="438" width="224.5999999999999" height="16" fill="#FFFFFF"/>
-    <text x="512" y="450" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">查找当前用户的活跃意向(商品ID, 访客ID)</text>
-  </g>
-<g>
-    <line x1="730" y1="538" x2="294" y2="538" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
-    <rect x="485" y="550" width="54" height="16" fill="#FFFFFF"/>
-    <text x="512" y="562" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">我的意向</text>
-  </g>
-<g>
-    <line x1="294" y1="606" x2="882" y2="606" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
-    <rect x="515.6" y="574" width="144.79999999999998" height="16" fill="#FFFFFF"/>
-    <text x="588" y="586" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">查找商品公开留言(商品ID)</text>
-  </g>
-<g>
-    <line x1="882" y1="674" x2="294" y2="674" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
-    <rect x="561" y="686" width="54" height="16" fill="#FFFFFF"/>
-    <text x="588" y="698" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">留言列表</text>
-  </g>
-<g>
-    <line x1="294" y1="742" x2="1034" y2="742" stroke="#141414" stroke-width="1" marker-end="url(#uml-filled-arrow)"/>
-    <rect x="551.7" y="710" width="224.59999999999997" height="16" fill="#FFFFFF"/>
-    <text x="664" y="722" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">构建详情(商品, 卖家, 可执行动作, 留言)</text>
-  </g>
-<g>
-    <line x1="274" y1="810" x2="142" y2="810" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
-    <rect x="170" y="822" width="76" height="16" fill="#FFFFFF"/>
-    <text x="208" y="834" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">返回详情聚合</text>
-  </g>
-<g>
-    <line x1="274" y1="878" x2="142" y2="878" stroke="#141414" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#uml-open-arrow)"/>
-    <rect x="182.7" y="890" width="50.6" height="16" fill="#FFFFFF"/>
-    <text x="208" y="902" text-anchor="middle" fill="#141414" font-size="11" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">返回404</text>
-  </g>
+  <g transform="translate(0.5,0.5)">
+<ellipse cx="96" cy="15" rx="5" ry="5" fill="#dae8fc" stroke="#808080"/>
+    <path d="M 96 20 L 96 36.67 M 96 23.33 L 86 23.33 M 96 23.33 L 106 23.33 M 96 36.67 L 86 50 M 96 36.67 L 106 50" fill="none" stroke="#808080" stroke-miterlimit="10"/>
+<path d="M 96 60 L 96 626" fill="none" stroke="#808080" stroke-dasharray="3 3"/>
+<rect x="212" y="10" width="168" height="50" fill="url(#head-grad)" stroke="#808080"/>
+    <text x="296" y="32.32" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">GovernanceAdmin<tspan x="296" dy="14">Controller</tspan></text>
+<path d="M 296 60 L 296 626" fill="none" stroke="#808080" stroke-dasharray="3 3"/>
+<rect x="412" y="10" width="168" height="50" fill="url(#head-grad)" stroke="#808080"/>
+    <text x="496" y="39.32" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">AdminController</text>
+<path d="M 496 60 L 496 626" fill="none" stroke="#808080" stroke-dasharray="3 3"/>
+<rect x="612" y="10" width="168" height="50" fill="url(#head-grad)" stroke="#808080"/>
+    <text x="696" y="32.32" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">ContentGovernance<tspan x="696" dy="14">Service</tspan></text>
+<path d="M 696 60 L 696 626" fill="none" stroke="#808080" stroke-dasharray="3 3"/>
+<rect x="812" y="10" width="168" height="50" fill="url(#head-grad)" stroke="#808080"/>
+    <text x="896" y="32.32" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">CurrentActor<tspan x="896" dy="14">Service</tspan></text>
+<path d="M 896 60 L 896 626" fill="none" stroke="#808080" stroke-dasharray="3 3"/>
+<rect x="91" y="116" width="10" height="456" fill="#dae8fc" stroke="#000000"/>
+<rect x="291" y="116" width="10" height="262" fill="#dae8fc" stroke="#000000"/>
+<rect x="491" y="430" width="10" height="142" fill="#dae8fc" stroke="#000000"/>
+<rect x="691" y="204" width="10" height="174" fill="#dae8fc" stroke="#000000"/>
+<rect x="891" y="160" width="10" height="10" fill="#dae8fc" stroke="#000000"/>
+<path d="M 102 116 L 281 116" fill="none" stroke="#000000"/>
+<path d="M 290 116 L 281 120.5 L 281 111.5 Z" fill="#000000" stroke="#000000"/>
+<path d="M 302 160 L 881 160" fill="none" stroke="#000000"/>
+<path d="M 890 160 L 881 164.5 L 881 155.5 Z" fill="#000000" stroke="#000000"/>
+<path d="M 302 204 L 681 204" fill="none" stroke="#000000"/>
+<path d="M 690 204 L 681 208.5 L 681 199.5 Z" fill="#000000" stroke="#000000"/>
+<path d="M 690 288 L 311 288" fill="none" stroke="#000000" stroke-dasharray="3 3"/>
+<path d="M 309 284.5 L 302 288 L 309 291.5" fill="none" stroke="#000000"/>
+<path d="M 690 368 L 311 368" fill="none" stroke="#000000" stroke-dasharray="3 3"/>
+<path d="M 309 364.5 L 302 368 L 309 371.5" fill="none" stroke="#000000"/>
+<path d="M 102 430 L 481 430" fill="none" stroke="#000000"/>
+<path d="M 490 430 L 481 434.5 L 481 425.5 Z" fill="#000000" stroke="#000000"/>
+<path d="M 102 474 L 481 474" fill="none" stroke="#000000"/>
+<path d="M 490 474 L 481 478.5 L 481 469.5 Z" fill="#000000" stroke="#000000"/>
+<path d="M 102 518 L 481 518" fill="none" stroke="#000000"/>
+<path d="M 490 518 L 481 522.5 L 481 513.5 Z" fill="#000000" stroke="#000000"/>
+<path d="M 490 562 L 111 562" fill="none" stroke="#000000" stroke-dasharray="3 3"/>
+<path d="M 109 558.5 L 102 562 L 109 565.5" fill="none" stroke="#000000"/>
+<path d="M 36 232 L 96 232 L 96 247 L 86 262 L 36 262 Z" fill="none" stroke="#ffb570" stroke-width="1.5"/>
+<path d="M 96 232 L 980 232 L 980 422 L 36 422 L 36 262" fill="none" stroke="#ffb570" stroke-width="1.5"/>
+<path d="M 36 328 L 980 328" fill="none" stroke="#ffb570" stroke-width="1.5"/>
+<text x="66" y="251.3" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">alt</text>
+<text x="104" y="250" text-anchor="start" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">[RESOLVE]</text>
+<text x="104" y="344" text-anchor="start" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">[DISMISS]</text>
+<text x="96" y="64" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">Admin</text>
+<text x="196" y="109" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">decide()</text>
+<text x="596" y="153" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">require()</text>
+<text x="496" y="197" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">decide()</text>
+<text x="496" y="281" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">ok</text>
+<text x="496" y="361" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">ok</text>
+<text x="296" y="423" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">updateUserStatus()</text>
+<text x="296" y="467" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">updateItemStatus()</text>
+<text x="296" y="511" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">deleteMessage()</text>
+<text x="296" y="555" text-anchor="middle" fill="#333333" font-family="Helvetica, Arial, sans-serif" font-size="12">ok</text>
 </g></svg>
