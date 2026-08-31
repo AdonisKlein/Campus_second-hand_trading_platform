@@ -52,16 +52,26 @@ public class GatewaySecurityWebFilter implements WebFilter {
             return chain.filter(withoutClientIdentity(exchange));
         }
         if (!isUnsafe(method) && isPublicRead(path)) {
-            return chain.filter(withoutClientIdentity(exchange));
+            return authenticateIfPresent(exchange, chain);
         }
         return authenticate(exchange, chain);
     }
 
     private Mono<Void> authenticate(ServerWebExchange exchange, WebFilterChain chain) {
+        return authenticate(exchange, chain, true);
+    }
+
+    private Mono<Void> authenticateIfPresent(ServerWebExchange exchange, WebFilterChain chain) {
+        return authenticate(exchange, chain, false);
+    }
+
+    private Mono<Void> authenticate(ServerWebExchange exchange, WebFilterChain chain, boolean required) {
         return exchange.getSession().flatMap(session -> {
             AuthenticatedAccount sessionAccount = session.getAttribute(SESSION_ACCOUNT);
             if (sessionAccount == null) {
-                return reject(exchange, HttpStatus.UNAUTHORIZED, "请先登录");
+                return required
+                        ? reject(exchange, HttpStatus.UNAUTHORIZED, "请先登录")
+                        : chain.filter(withoutClientIdentity(exchange));
             }
             return accounts.securityState(sessionAccount.userId())
                     .flatMap(current -> {

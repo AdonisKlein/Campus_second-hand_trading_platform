@@ -18,7 +18,7 @@ class ProductImagesTest {
         ByteArrayOutputStream bytes=new ByteArrayOutputStream();
         ImageIO.write(source,"png",bytes);
         var properties=new MarketplaceProperties("http://account","http://trading",
-                "service-token-012345678901234567890123","jwt-secret-012345678901234567890123456",temp.toString());
+                "service-token-012345678901234567890123","jwt-secret-012345678901234567890123456",temp.toString(),300,800);
         var images=new FileSystemProductImages(properties);
         var stored=images.store(7L,new ProductImages.ImageUpload(bytes.toByteArray(),"fake.jpg","image/jpeg"));
         assertThat(stored.contentType()).isEqualTo("image/png");
@@ -28,7 +28,7 @@ class ProductImagesTest {
 
     @Test void nonImageBytesAreRejected() {
         var properties=new MarketplaceProperties("http://account","http://trading",
-                "service-token-012345678901234567890123","jwt-secret-012345678901234567890123456",temp.toString());
+                "service-token-012345678901234567890123","jwt-secret-012345678901234567890123456",temp.toString(),300,800);
         var images=new FileSystemProductImages(properties);
         assertThatThrownBy(()->images.store(7L,new ProductImages.ImageUpload(new byte[]{1,2,3},"x.jpg","image/jpeg")))
                 .isInstanceOf(ProductImageException.class).hasMessageContaining("支持 JPG 和 PNG");

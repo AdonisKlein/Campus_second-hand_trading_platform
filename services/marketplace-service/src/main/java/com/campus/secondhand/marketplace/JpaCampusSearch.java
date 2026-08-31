@@ -73,7 +73,7 @@ public class JpaCampusSearch implements CampusSearch {
         if (query.sort() == SearchQuery.Sort.CREDIT) orders.add(cb.desc(user.get("creditScore")));
         if (query.sort() == SearchQuery.Sort.NEAREST && viewerRegion != null)
             orders.add(cb.asc(cb.<Integer>selectCase().when(cb.equal(user.get("campusRegion"), viewerRegion), 0).otherwise(1)));
-        if (query.sort() == SearchQuery.Sort.RELEVANCE)
+        if (query.sort() == SearchQuery.Sort.RELEVANCE && !SearchQueryRules.terms(query.keywords()).isEmpty())
             orders.add(cb.desc(userRelevance(query, cb, user)));
         orders.add(cb.desc(user.get("createdAt"))); orders.add(cb.desc(user.get("id"))); criteria.orderBy(orders);
         List<SearchableUserProjection> found = entityManager.createQuery(criteria)
@@ -94,7 +94,11 @@ public class JpaCampusSearch implements CampusSearch {
             case PRICE_ASC -> orders.add(cb.asc(item.get("price")));
             case PRICE_DESC -> orders.add(cb.desc(item.get("price")));
             case NEAREST -> { if (region != null) orders.add(cb.asc(cb.<Integer>selectCase().when(cb.equal(item.get("region"), region), 0).otherwise(1))); }
-            case RELEVANCE -> orders.add(cb.desc(itemRelevance(q,cb,item)));
+            case RELEVANCE -> {
+                if (!SearchQueryRules.terms(q.keywords()).isEmpty()) {
+                    orders.add(cb.desc(itemRelevance(q, cb, item)));
+                }
+            }
             default -> { }
         }
         orders.add(cb.desc(item.get("createdAt"))); orders.add(cb.desc(item.get("id"))); return orders;

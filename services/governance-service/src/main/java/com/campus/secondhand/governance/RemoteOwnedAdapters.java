@@ -13,11 +13,13 @@ abstract class OwnedRemoteAdapter {
     private final GovernanceProperties properties;
     OwnedRemoteAdapter(WebClient.Builder builder,GovernanceProperties properties,String baseUrl){
         this.client=builder.clone().clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS,300))).baseUrl(baseUrl).build();this.properties=properties;
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS,properties.dependencyConnectTimeoutMs())))
+                .baseUrl(baseUrl).build();this.properties=properties;
     }
     Map<?,?> get(String path,Object... values){
         try{return client.get().uri(path,values).header("X-Internal-Service-Token",properties.internalServiceToken())
-                .retrieve().bodyToMono(Map.class).timeout(Duration.ofMillis(800)).retry(1).block();}
+                .retrieve().bodyToMono(Map.class)
+                .timeout(Duration.ofMillis(properties.dependencyResponseTimeoutMs())).retry(1).block();}
         catch(WebClientResponseException.NotFound ignored){return Map.of();}
         catch(RuntimeException error){throw GovernanceException.unavailable();}
     }

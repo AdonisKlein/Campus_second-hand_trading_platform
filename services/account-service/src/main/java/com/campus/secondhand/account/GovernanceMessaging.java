@@ -26,8 +26,8 @@ class GovernanceCommandListener {
  private final GovernanceActionHandler handler; private final ObjectMapper mapper=new ObjectMapper();
  GovernanceCommandListener(GovernanceActionHandler h) { handler=h; }
  @RabbitListener(queues=GovernanceRabbitConfiguration.QUEUE)
- void receive(String body) throws Exception {
-  JsonNode n=mapper.readTree(body); String eventId=n.path("eventId").asText();
+ void receive(Message body) throws Exception {
+  JsonNode n=mapper.readTree(body.getBody()); String eventId=n.path("eventId").asText();
   try { handler.handle(eventId, n.path("type").asText(), n.path("payload").isMissingNode()?n:n.path("payload")); }
   catch (DataIntegrityViolationException duplicate) { if (!handler.processed(eventId)) throw duplicate; }
  }
@@ -39,5 +39,5 @@ class GovernanceOutboxPublisher {
  private final AccountOutboxRepository outbox; private final RabbitTemplate rabbit;
  GovernanceOutboxPublisher(AccountOutboxRepository o, RabbitTemplate r) { outbox=o; rabbit=r; }
  @Scheduled(fixedDelayString="${app.governance-events.publish-ms:1000}") @Transactional
- void publish() { for (AccountOutboxEvent e: outbox.findByPublishedAtIsNullOrderById(PageRequest.of(0,100))) { rabbit.convertAndSend(GovernanceRabbitConfiguration.EXCHANGE,"governance.results",e.getPayload()); e.markPublished(); } }
+ void publish() { for (AccountOutboxEvent e: outbox.findByPublishedAtIsNullOrderById(PageRequest.of(0,100))) { if("UserPublicProfileChanged".equals(e.getEventType()))continue; rabbit.convertAndSend(GovernanceRabbitConfiguration.EXCHANGE,"governance.results",e.getPayload()); e.markPublished(); } }
 }

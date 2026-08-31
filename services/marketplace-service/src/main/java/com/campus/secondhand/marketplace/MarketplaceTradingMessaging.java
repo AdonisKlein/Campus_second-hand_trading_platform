@@ -25,12 +25,12 @@ class MarketplaceGovernanceRabbitConfiguration {
 @Component @ConditionalOnProperty(prefix="campus.trading-events",name="enabled",havingValue="true")
 class MarketplaceCommandListener {
     private final TradingEventHandler handler;private final ObjectMapper mapper=new ObjectMapper();MarketplaceCommandListener(TradingEventHandler handler){this.handler=handler;}
-    @RabbitListener(queues=MarketplaceTradingRabbitConfiguration.COMMAND_QUEUE)void receive(String payload)throws Exception{JsonNode n=mapper.readTree(payload);handler.handle(n.path("eventId").asText(),n.path("type").asText(),n.path("itemId").asLong(),n.path("orderId").asLong());}
+    @RabbitListener(queues=MarketplaceTradingRabbitConfiguration.COMMAND_QUEUE)void receive(Message payload)throws Exception{JsonNode n=mapper.readTree(payload.getBody());handler.handle(n.path("eventId").asText(),n.path("type").asText(),n.path("itemId").asLong(),n.path("orderId").asLong());}
 }
 @Component @ConditionalOnProperty(prefix="campus.governance-events",name="enabled",havingValue="true")
 class MarketplaceGovernanceCommandListener {
     private final TradingEventHandler handler;private final ObjectMapper mapper=new ObjectMapper();MarketplaceGovernanceCommandListener(TradingEventHandler handler){this.handler=handler;}
-    @RabbitListener(queues=MarketplaceGovernanceRabbitConfiguration.COMMAND_QUEUE)void receive(String payload)throws Exception{JsonNode event=mapper.readTree(payload);String eventId=event.path("eventId").asText();try{handler.handleGovernance(event);}catch(DataIntegrityViolationException duplicate){if(!handler.processed(eventId))throw duplicate;}}
+    @RabbitListener(queues=MarketplaceGovernanceRabbitConfiguration.COMMAND_QUEUE)void receive(Message payload)throws Exception{JsonNode event=mapper.readTree(payload.getBody());String eventId=event.path("eventId").asText();try{handler.handleGovernance(event);}catch(DataIntegrityViolationException duplicate){if(!handler.processed(eventId))throw duplicate;}}
 }
 @Component @ConditionalOnProperty(prefix="campus.trading-events",name="enabled",havingValue="true")
 class MarketplaceOutboxPublisher {

@@ -31,6 +31,8 @@ campus:
     purchase-request-minutes: ${PURCHASE_REQUEST_MINUTES:1440}
     handover-minutes: ${HANDOVER_MINUTES:4320}
     messaging-enabled: ${TRADING_MESSAGING_ENABLED:false}
+    dependency-connect-timeout-ms: ${DEPENDENCY_CONNECT_TIMEOUT_MS:300}
+    dependency-response-timeout-ms: ${DEPENDENCY_RESPONSE_TIMEOUT_MS:800}
 management:
   endpoints:
     web:

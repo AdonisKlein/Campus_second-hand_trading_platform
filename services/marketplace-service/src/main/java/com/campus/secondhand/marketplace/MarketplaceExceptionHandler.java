@@ -7,6 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 import com.campus.secondhand.marketplace.media.ProductImageException;
 
 @RestControllerAdvice
@@ -36,6 +37,11 @@ class MarketplaceExceptionHandler {
     @ExceptionHandler(ProductImageException.class)
     ResponseEntity<ApiResponse<Void>> image(ProductImageException error) {
         return ResponseEntity.status(error.status()).body(ApiResponse.fail(error.getMessage()));
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    ResponseEntity<ApiResponse<Void>> invalidMultipart(MultipartException error) {
+        return ResponseEntity.badRequest().body(ApiResponse.fail("请使用 multipart/form-data 上传图片文件"));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

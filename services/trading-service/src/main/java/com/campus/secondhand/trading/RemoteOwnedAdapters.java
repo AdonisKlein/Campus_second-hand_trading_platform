@@ -19,7 +19,8 @@ abstract class OwnedRemoteAdapter {
 
     OwnedRemoteAdapter(WebClient.Builder builder, TradingProperties properties, String baseUrl) {
         this.client = builder.clone().clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 300))).baseUrl(baseUrl).build();
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.dependencyConnectTimeoutMs())))
+                .baseUrl(baseUrl).build();
         this.properties = properties;
     }
 
@@ -28,7 +29,7 @@ abstract class OwnedRemoteAdapter {
             return client.get().uri(path, values)
                     .header("X-Internal-Service-Token", properties.internalServiceToken())
                     .retrieve().onStatus(HttpStatusCode::isError, response -> response.createException())
-                    .bodyToMono(Map.class).timeout(Duration.ofMillis(800)).retry(1).block();
+                .bodyToMono(Map.class).timeout(Duration.ofMillis(properties.dependencyResponseTimeoutMs())).retry(1).block();
         } catch (WebClientResponseException.NotFound ignored) {
             return Map.of();
         } catch (RuntimeException error) {

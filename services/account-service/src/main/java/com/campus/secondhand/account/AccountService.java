@@ -20,13 +20,16 @@ public class AccountService {
     private final Clock clock;
     private final String mailFrom;
     private final boolean mailEnabled;
+    private final PublicProfileEventStore profiles;
     private final SecureRandom random = new SecureRandom();
 
     public AccountService(UserRepository users, VerificationService verification,
             PasswordEncoder passwords, JavaMailSender mailSender, Clock clock,
-            @Value("${app.mail.enabled:false}") boolean mailEnabled, @Value("${app.mail.from:}") String mailFrom) {
+            @Value("${app.mail.enabled:false}") boolean mailEnabled, @Value("${app.mail.from:}") String mailFrom,
+            PublicProfileEventStore profiles) {
         this.users = users; this.verification = verification; this.passwords = passwords;
         this.mailSender = mailSender; this.clock = clock; this.mailEnabled = mailEnabled; this.mailFrom = mailFrom;
+        this.profiles = profiles;
     }
 
     public void sendCode(String email, String purpose) {
@@ -46,7 +49,7 @@ public class AccountService {
         if (!verification.verify(email, "REGISTER", code)) throw new InvalidVerificationCodeException();
         if (users.existsByEmail(email) || users.existsByUsername(username.trim())) throw new DataIntegrityViolationException("duplicate");
         User user = new User(); user.setEmail(email); user.setUsername(username.trim()); user.setNickname(nickname);
-        user.setPasswordHash(passwords.encode(password)); return users.saveAndFlush(user);
+        user.setPasswordHash(passwords.encode(password)); users.saveAndFlush(user); profiles.record(user); return user;
     }
 
     @Transactional(noRollbackFor = InvalidVerificationCodeException.class)
@@ -62,6 +65,19 @@ public class AccountService {
         if (!"ACTIVE".equals(user.getStatus()) || !passwords.matches(password, user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }
-        user.setLastActiveAt(LocalDateTime.now(clock)); return users.save(user);
+        user.setLastActiveAt(LocalDateTime.now(clock)); profiles.record(user); return users.save(user);
+    }
+
+    @Transactional
+    public User updateProfile(Long userId, String nickname, String phone, String campusRegion) {
+        User user = users.findById(userId).orElseThrow(); user.setNickname(nickname); user.setPhone(phone);
+        if (campusRegion != null && !campusRegion.isBlank()) user.setCampusRegion(campusRegion);
+        profiles.record(user); return users.save(user);
+    }
+
+    @Transactional
+    public User updateStatus(Long userId, String status) {
+        User user = users.findLockedById(userId).orElseThrow(); user.setStatus(status);
+        user.setAuthVersion(user.getAuthVersion() + 1); profiles.record(user); return users.save(user);
     }
 }

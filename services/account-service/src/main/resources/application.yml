@@ -43,6 +43,8 @@ app:
     enabled: ${GOVERNANCE_EVENTS_ENABLED:false}
     exchange: ${GOVERNANCE_EVENTS_EXCHANGE:campus.governance}
     queue: ${GOVERNANCE_EVENTS_QUEUE:account.governance.commands}
+  public-profile-events:
+    enabled: ${PUBLIC_PROFILE_EVENTS_ENABLED:false}
 management:
   endpoints:
     web:

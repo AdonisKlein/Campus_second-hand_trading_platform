@@ -188,7 +188,8 @@ messageForm.addEventListener("submit", async event => {
     if (!user || !currentItem) return;
     const submit = messageForm.querySelector("button[type='submit']");
     submit.disabled = true;
-    const result = await request("/messages", { method: "POST", body: JSON.stringify({ itemId: Number(itemId), content: messageForm.content.value }) });
+    const content = messageForm.elements.namedItem("content").value;
+    const result = await request("/messages", { method: "POST", body: JSON.stringify({ itemId: Number(itemId), content }) });
     submit.disabled = false;
     if (!result.success) { alert(result.message); return; }
     messageForm.reset();

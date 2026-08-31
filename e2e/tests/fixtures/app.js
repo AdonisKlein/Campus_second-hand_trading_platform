@@ -9,12 +9,39 @@ const ACCOUNTS = Object.freeze({
 async function login(page, role) {
   const account = ACCOUNTS[role];
   if (!account) throw new Error(`Unknown E2E account role: ${role}`);
-  await page.goto('/profile.html');
-  await page.locator('#loginForm input[name="email"]').fill(account.email);
-  await page.locator('#loginForm input[name="password"]').fill(account.password);
-  await page.locator('#loginForm button[type="submit"]').click();
-  await expect(page.locator('#profileSection')).toBeVisible();
+  await loginWithCredentials(page, account.email, account.password);
   return account;
+}
+
+async function loginWithCredentials(page, email, password) {
+  await page.goto('/profile.html');
+  await page.locator('#loginForm input[name="email"]').fill(email);
+  await page.locator('#loginForm input[name="password"]').fill(password);
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const responsePromise = page.waitForResponse(response =>
+      response.url().endsWith('/api/auth/login') && response.request().method() === 'POST');
+    await page.locator('#loginForm button[type="submit"]').click();
+    const response = await responsePromise;
+    if (response.status() === 200) {
+      await expect(page.locator('#profileSection')).toBeVisible();
+      return;
+    }
+    if (response.status() !== 503 || attempt === 3) {
+      expect(response.status(), `登录接口失败: ${email}`).toBe(200);
+    }
+    await page.waitForTimeout(1_000 * attempt);
+  }
+}
+
+async function sendVerificationCode(page, messageSelector = '#registerMessage') {
+  const responsePromise = page.waitForResponse(response =>
+    response.url().includes('/api/auth/verification/')
+      && response.request().method() === 'POST',
+  { timeout: 30_000 });
+  await page.getByRole('button', { name: '发送验证码' }).click();
+  const response = await responsePromise;
+  expect(response.status(), '验证码发送接口应返回 202').toBe(202);
+  await expect(page.locator(messageSelector)).toHaveText('验证码已发送，请查收邮箱', { timeout: 30_000 });
 }
 
 async function api(page, path, { method = 'GET', body, headers = {} } = {}) {
@@ -53,4 +80,4 @@ async function publishItem(page, title) {
   });
 }
 
-module.exports = { ACCOUNTS, api, login, publishItem };
+module.exports = { ACCOUNTS, api, login, loginWithCredentials, publishItem, sendVerificationCode };

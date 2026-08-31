@@ -45,6 +45,16 @@ class MarketplaceApiTest {
                 .andExpect(jsonPath("$.data.items[0].sellerNickname").value("林同学"));
     }
 
+    @Test void anonymousBlankSearchFallsBackToNewestItems() throws Exception {
+        project(2, "seller", "林同学", "ACTIVE", 120, 1);
+        item(2, "高等数学 教材", new BigDecimal("18.00"));
+
+        mvc.perform(get("/api/search"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.scope").value("ITEMS"))
+                .andExpect(jsonPath("$.data.items[0].title").value("高等数学 教材"));
+    }
+
     @Test void anonymousCanOpenPublicProductDetail() throws Exception {
         LocalDateTime active=LocalDateTime.of(2026,8,28,8,0);
         when(accounts.findPublic(2)).thenReturn(Optional.of(new AccountPublicPort.PublicAccount(
@@ -100,6 +110,14 @@ class MarketplaceApiTest {
         mvc.perform(post("/api/items").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"title\":\"台灯\",\"category\":\"生活\",\"price\":25}"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test void productImageUploadRejectsNonMultipartRequestAsBadRequest() throws Exception {
+        mvc.perform(post("/api/media/product-images")
+                .header("Authorization", "Bearer " + jwt(7, "STUDENT"))
+                .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
     }
 
     @Test void staleProfileEventCannotOverwriteNewProjection() throws Exception {

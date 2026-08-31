@@ -10,5 +10,7 @@ public record TradingProperties(
         String internalJwtSecret,
         long purchaseRequestMinutes,
         long handoverMinutes,
-        boolean messagingEnabled) {
+        boolean messagingEnabled,
+        int dependencyConnectTimeoutMs,
+        int dependencyResponseTimeoutMs) {
 }

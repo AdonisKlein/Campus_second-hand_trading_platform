@@ -19,8 +19,9 @@ public class DefaultAccountClient implements AccountClient {
 
     public DefaultAccountClient(WebClient.Builder builder, GatewayProperties properties) {
         HttpClient http = HttpClient.create()
-                .option(io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS, 300)
-                .responseTimeout(Duration.ofMillis(800));
+                .option(io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS,
+                        properties.dependencyConnectTimeoutMs())
+                .responseTimeout(Duration.ofMillis(properties.dependencyResponseTimeoutMs()));
         this.client = builder.clientConnector(new ReactorClientHttpConnector(http))
                 .baseUrl(properties.accountUri())
                 .build();

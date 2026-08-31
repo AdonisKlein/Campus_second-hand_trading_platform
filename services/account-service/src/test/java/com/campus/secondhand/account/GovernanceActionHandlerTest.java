@@ -11,7 +11,8 @@ class GovernanceActionHandlerTest {
  private final UserRepository users = mock(UserRepository.class);
  private final AccountInboxRepository inbox = mock(AccountInboxRepository.class);
  private final AccountOutboxRepository outbox = mock(AccountOutboxRepository.class);
- private final GovernanceActionHandler handler = new GovernanceActionHandler(users, inbox, outbox);
+ private final PublicProfileEventStore profiles = mock(PublicProfileEventStore.class);
+ private final GovernanceActionHandler handler = new GovernanceActionHandler(users, inbox, outbox, profiles);
  private final ObjectMapper json = new ObjectMapper();
 
  @Test
@@ -20,6 +21,7 @@ class GovernanceActionHandlerTest {
   when(inbox.existsById("evt-1")).thenReturn(false); when(users.findLockedById(9L)).thenReturn(Optional.of(user));
   handler.handle("evt-1", "GovernanceActionRequested", json.createObjectNode().put("targetType", "USER").put("targetId", 9).put("action", "DISABLE_USER"));
   assertThat(user.getStatus()).isEqualTo("DISABLED"); assertThat(user.getAuthVersion()).isEqualTo(5);
+  verify(profiles).record(user);
   verify(outbox).save(argThat(event -> event.getPayload().contains("GovernanceActionApplied")));
  }
 

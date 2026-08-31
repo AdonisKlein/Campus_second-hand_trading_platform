@@ -9,7 +9,9 @@
 ./scripts/ci/verify-services.ps1 -JavaVersion 24
 ```
 
-`test-report.mjs` 不依赖第三方 Node 包，把 Maven Surefire/Failsafe 和 Playwright 的 JUnit XML 合并为：
+`test-report.mjs` 不依赖第三方 Node 包。存在 `services/*` 时，它只汇总
+各微服务的 Maven Surefire/Failsafe 报告；尚未拆分的旧版本才读取
+`backend` 报告。最后再与 Playwright JUnit XML 合并为：
 
 - `test-report.json`：流水线上传、门禁和后续统计使用的机器可读结果；
 - `test-report.md`：提交号、分支、环境、三类测试统计和失败摘要。

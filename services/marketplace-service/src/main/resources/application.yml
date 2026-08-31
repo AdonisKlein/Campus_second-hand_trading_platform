@@ -26,6 +26,10 @@ campus:
     internal-service-token: ${INTERNAL_SERVICE_TOKEN}
     internal-jwt-secret: ${INTERNAL_JWT_SECRET}
     upload-dir: ${UPLOAD_DIR:uploads}
+    dependency-connect-timeout-ms: ${DEPENDENCY_CONNECT_TIMEOUT_MS:300}
+    dependency-response-timeout-ms: ${DEPENDENCY_RESPONSE_TIMEOUT_MS:800}
+  account-profile-events:
+    enabled: ${ACCOUNT_PROFILE_EVENTS_ENABLED:false}
   trading-events:
     enabled: ${TRADING_EVENTS_ENABLED:false}
     exchange: ${TRADING_EVENTS_EXCHANGE:campus.trading}

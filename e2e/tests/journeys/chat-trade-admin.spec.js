@@ -10,6 +10,23 @@ async function acceptDialogOnClick(page, locator, promptText) {
   await Promise.all([handled, locator.click()]);
 }
 
+async function waitForOrderText(page, orderId, expected, perspective = 'BUYING') {
+  await expect.poll(async () => {
+    await page.reload();
+    await page.locator(`[data-perspective="${perspective}"]`).click();
+    return page.locator(`[data-order-record="${orderId}"]`).textContent();
+  }, { timeout: 20_000, intervals: [500, 1_000, 2_000] }).toContain(expected);
+}
+
+async function submitOrderAction(page, order, orderId, action) {
+  await order.locator(`[data-order-action="${action}"]`).click();
+  const actionCompleted = page.waitForResponse(response => response.url().endsWith(`/api/orders/${orderId}/actions`)
+    && response.request().method() === 'POST');
+  await page.locator('#orderActionDialog [data-confirm-action]').click();
+  expect((await actionCompleted).status()).toBe(200);
+  await expect(page.locator('#orderActionDialog')).not.toBeVisible();
+}
+
 test('私聊→未读→屏蔽', async ({ page: buyer, browser }) => {
   const sellerContext = await browser.newContext();
   const seller = await sellerContext.newPage();
@@ -19,7 +36,15 @@ test('私聊→未读→屏蔽', async ({ page: buyer, browser }) => {
     const item = await publishItem(seller, uniqueTitle('私聊商品'));
     await login(buyer, 'buyer');
     await buyer.goto(`/detail.html?id=${item.id}`);
-    await buyer.locator('button[data-product-action="chat"]').first().click();
+    await expect.poll(() => buyer.evaluate(async () => (await session.current({ refresh: true }))?.id ?? null), {
+      message: '买家 Session 应在商品详情页恢复'
+    }).toBe(2);
+    const chatButton = buyer.locator('button[data-product-action="chat"]').first();
+    await expect(chatButton).toBeEnabled();
+    const conversationCreated = buyer.waitForResponse(response => response.url().endsWith('/api/chat/conversations')
+      && response.request().method() === 'POST');
+    await chatButton.click();
+    expect((await conversationCreated).ok()).toBeTruthy();
     await expect(buyer).toHaveURL(/messages\.html\?conversation=/);
     await expect(buyer.locator('#chatRoom')).toBeVisible();
     await buyer.locator('#chatBody').fill(message);
@@ -32,9 +57,17 @@ test('私聊→未读→屏蔽', async ({ page: buyer, browser }) => {
     await expect(conversation.locator('em')).toHaveText('1');
     await conversation.click();
     await expect(seller.locator('#chatMessages')).toContainText(message);
+    const blocked = seller.waitForResponse(response => response.url().includes('/api/chat/blocks/')
+      && response.request().method() === 'PUT');
     await seller.locator('#toggleChatBlock').click();
-    await expect(seller.locator('#toggleChatBlock')).toHaveText('解除屏蔽');
+    expect((await blocked).ok()).toBeTruthy();
+    await expect(seller.locator('#toggleChatBlock')).toHaveText('解除屏蔽', { timeout: 15_000 });
     await expect(seller.locator('#chatBody')).toBeDisabled();
+    const unblocked = seller.waitForResponse(response => response.url().includes('/api/chat/blocks/')
+      && response.request().method() === 'DELETE');
+    await seller.locator('#toggleChatBlock').click();
+    expect((await unblocked).ok()).toBeTruthy();
+    await expect(seller.locator('#toggleChatBlock')).toHaveText('屏蔽', { timeout: 15_000 });
   } finally {
     await sellerContext.close();
   }
@@ -48,8 +81,11 @@ test('购买意向→卖家选择→交接完成', async ({ page: buyer, browser
     const item = await publishItem(seller, uniqueTitle('交易商品'));
     await login(buyer, 'buyer');
     await buyer.goto(`/detail.html?id=${item.id}`);
+    const requestCreated = buyer.waitForResponse(response => response.url().endsWith('/api/orders')
+      && response.request().method() === 'POST');
     await buyer.locator('button[data-product-action="request"]').first().click();
-    await expect(buyer.locator('.purchase-request-notice')).toContainText('购买意向已提交');
+    expect((await requestCreated).status()).toBe(200);
+    await expect(buyer.locator('.purchase-request-notice')).toContainText('购买意向已提交', { timeout: 15_000 });
     await buyer.goto('/orders.html');
     const buyerGroup = buyer.locator('.order-item-group').filter({ hasText: item.title }).first();
     const buyerOrder = buyerGroup.locator('.order-record').first();
@@ -61,16 +97,14 @@ test('购买意向→卖家选择→交接完成', async ({ page: buyer, browser
     await seller.locator('[data-perspective="SELLING"]').click();
     const sellerOrder = seller.locator(`[data-order-record="${orderId}"]`);
     await expect(sellerOrder).toBeVisible();
-    await sellerOrder.locator('[data-order-action="ACCEPT"]').click();
-    await seller.locator('[data-confirm-action]').click();
-    await expect(seller.locator(`[data-order-record="${orderId}"]`)).toContainText('待当面交易');
+    await submitOrderAction(seller, sellerOrder, orderId, 'ACCEPT');
+    await waitForOrderText(seller, orderId, '待当面交易', 'SELLING');
 
     await buyer.reload();
     const selectedOrder = buyer.locator(`[data-order-record="${orderId}"]`);
     await expect(selectedOrder).toContainText('待当面交易');
-    await selectedOrder.locator('[data-order-action="COMPLETE"]').click();
-    await buyer.locator('[data-confirm-action]').click();
-    await expect(buyer.locator(`[data-order-record="${orderId}"]`)).toContainText('交易完成');
+    await submitOrderAction(buyer, selectedOrder, orderId, 'COMPLETE');
+    await waitForOrderText(buyer, orderId, '交易完成');
   } finally {
     await sellerContext.close();
   }
@@ -84,8 +118,11 @@ test('订单工作台→买卖视角→阶段筛选→时间线与动作集合',
     const item = await publishItem(seller, uniqueTitle('工作台商品'));
     await login(buyer, 'buyer');
     await buyer.goto(`/detail.html?id=${item.id}`);
+    const requestCreated = buyer.waitForResponse(response => response.url().endsWith('/api/orders')
+      && response.request().method() === 'POST');
     await buyer.locator('button[data-product-action="request"]').first().click();
-    await expect(buyer.locator('.purchase-request-notice')).toContainText('购买意向已提交');
+    expect((await requestCreated).status()).toBe(200);
+    await expect(buyer.locator('.purchase-request-notice')).toContainText('购买意向已提交', { timeout: 15_000 });
 
     await buyer.goto('/orders.html');
     const buyerGroup = buyer.locator('.order-item-group').filter({ hasText: item.title }).first();
@@ -101,9 +138,8 @@ test('订单工作台→买卖视角→阶段筛选→时间线与动作集合',
     const sellerOrder = seller.locator(`[data-order-record="${orderId}"]`);
     await expect(sellerOrder).toBeVisible();
     await expect(sellerOrder.locator('.order-record-actions')).toContainText('接受');
-    await sellerOrder.locator('[data-order-action="ACCEPT"]').click();
-    await seller.locator('[data-confirm-action]').click();
-    await expect(seller.locator(`[data-order-record="${orderId}"]`)).toContainText('待当面交易');
+    await submitOrderAction(seller, sellerOrder, orderId, 'ACCEPT');
+    await waitForOrderText(seller, orderId, '待当面交易', 'SELLING');
     await expect(seller.locator(`[data-order-record="${orderId}"] .order-mini-timeline`)).toBeVisible();
 
     await buyer.reload();
@@ -117,6 +153,7 @@ test('订单工作台→买卖视角→阶段筛选→时间线与动作集合',
 });
 
 test('管理员举报治理及用户管理', async ({ page: admin, browser }) => {
+  test.setTimeout(120_000);
   const sellerContext = await browser.newContext();
   const buyerContext = await browser.newContext();
   const seller = await sellerContext.newPage();
@@ -130,8 +167,11 @@ test('管理员举报治理及用户管理', async ({ page: admin, browser }) =>
     const reportDialog = buyer.locator('#contentReportDialog');
     await expect(reportDialog).toBeVisible();
     await reportDialog.locator('textarea[name="description"]').fill('该商品信息存在明显虚假内容，请管理员核查处理。');
+    const reportCreated = buyer.waitForResponse(response => response.url().endsWith('/api/reports')
+      && response.request().method() === 'POST', { timeout: 30_000 });
     await reportDialog.locator('button[type="submit"]').click();
-    await expect(reportDialog).toBeHidden();
+    expect((await reportCreated).ok()).toBeTruthy();
+    await expect(reportDialog).toBeHidden({ timeout: 15_000 });
 
     const publicQuestion = `待管理员删除的留言${Date.now()}`;
     await buyer.locator('#publicQuestion').fill(publicQuestion);
@@ -150,7 +190,13 @@ test('管理员举报治理及用户管理', async ({ page: admin, browser }) =>
     await expect(report).toBeVisible();
     await acceptDialogOnClick(admin, report.locator('[data-action="resolve-report"]'),
       'E2E 核查确认商品违规并执行下架');
-    await expect(admin.locator('#adminReportMessage')).toContainText('举报处理完成');
+    await expect(admin.locator('#adminReportMessage')).toContainText('治理措施正在处理中');
+    await expect.poll(async () => {
+      const items = await api(admin, '/admin/items');
+      return items.find(candidate => candidate.id === item.id)?.moderationStatus;
+    }, { timeout: 30_000, intervals: [500, 1_000, 2_000] }).toBe('REMOVED');
+    await admin.reload();
+    await expect(admin.locator('#adminPanel')).toBeVisible();
     await expect(admin.locator('#adminItemList').filter({ hasText: item.title })).toContainText('已下架');
 
     await admin.locator('[data-admin-tab="messages"]').click();

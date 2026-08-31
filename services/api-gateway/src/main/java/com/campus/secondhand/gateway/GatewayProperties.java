@@ -8,7 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record GatewayProperties(String accountUri, String redisUrl,
                                 String internalServiceToken, String internalJwtSecret,
                                 List<String> corsOrigins, List<String> corsAllowedHeaders,
-                                boolean secureCookies) {
+                                boolean secureCookies, int dependencyConnectTimeoutMs,
+                                int dependencyResponseTimeoutMs) {
     public GatewayProperties {
         requireSecret("internal-jwt-secret", internalJwtSecret);
         requireSecret("internal-service-token", internalServiceToken);
@@ -20,6 +21,9 @@ public record GatewayProperties(String accountUri, String redisUrl,
         if (corsAllowedHeaders == null || corsAllowedHeaders.isEmpty()
                 || corsAllowedHeaders.stream().anyMatch(header -> header.isBlank() || header.contains("*"))) {
             throw new IllegalArgumentException("campus.gateway.cors-allowed-headers must be explicit");
+        }
+        if (dependencyConnectTimeoutMs < 100 || dependencyResponseTimeoutMs < 100) {
+            throw new IllegalArgumentException("campus.gateway dependency timeouts must be at least 100 ms");
         }
     }
 

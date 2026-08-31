@@ -17,14 +17,14 @@ abstract class RemoteClient {
     RemoteClient(WebClient.Builder b, MarketplaceProperties p, String base) {
         this.client = b.clone()
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 300)))
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, p.dependencyConnectTimeoutMs())))
                 .baseUrl(base).build();
         this.props = p;
     }
     Map<?,?> get(String path, Object... args) {
         try { return client.get().uri(path, args).header("X-Internal-Service-Token", props.internalServiceToken())
             .retrieve().onStatus(HttpStatusCode::isError, r -> r.createException()).bodyToMono(Map.class)
-            .timeout(Duration.ofMillis(800)).retry(1).block(); }
+            .timeout(Duration.ofMillis(props.dependencyResponseTimeoutMs())).retry(1).block(); }
         catch (WebClientResponseException.NotFound ignored) { return java.util.Collections.emptyMap(); }
         catch (Exception e) { throw new RemoteUnavailableException("下游服务暂时不可用", e); }
     }

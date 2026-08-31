@@ -37,6 +37,7 @@ class AccountOutboxEvent {
  AccountOutboxEvent(String id, String type, String body) { eventId=id; eventType=type; payload=body; createdAt=LocalDateTime.now(); }
  void markPublished() { publishedAt=LocalDateTime.now(); }
  String getPayload() { return payload; }
+ String getEventType() { return eventType; }
 }
 interface AccountOutboxRepository extends JpaRepository<AccountOutboxEvent,Long> {
  java.util.List<AccountOutboxEvent> findByPublishedAtIsNullOrderById(Pageable page);
@@ -45,8 +46,9 @@ interface AccountOutboxRepository extends JpaRepository<AccountOutboxEvent,Long>
 @Service
 class GovernanceActionHandler {
  private final UserRepository users; private final AccountInboxRepository inbox; private final AccountOutboxRepository outbox;
+ private final PublicProfileEventStore profiles;
  private final ObjectMapper mapper = new ObjectMapper();
- GovernanceActionHandler(UserRepository u, AccountInboxRepository i, AccountOutboxRepository o) { users=u; inbox=i; outbox=o; }
+ GovernanceActionHandler(UserRepository u, AccountInboxRepository i, AccountOutboxRepository o, PublicProfileEventStore p) { users=u; inbox=i; outbox=o; profiles=p; }
 
  boolean processed(String eventId) { return eventId != null && inbox.existsById(eventId); }
 
@@ -67,7 +69,7 @@ class GovernanceActionHandler {
    if (user == null) reason = "user not found";
    else if (!"STUDENT".equals(user.getRole())) reason = "only student accounts can be governed";
    else if ("DISABLED".equals(user.getStatus())) result = "GovernanceActionApplied";
-   else { user.setStatus("DISABLED"); user.setAuthVersion(user.getAuthVersion() + 1); users.save(user); result = "GovernanceActionApplied"; }
+   else { user.setStatus("DISABLED"); user.setAuthVersion(user.getAuthVersion() + 1); profiles.record(user); users.save(user); result = "GovernanceActionApplied"; }
   }
   Map<String,Object> body = new LinkedHashMap<>(); body.put("eventId", eventId + ":result"); body.put("correlationId", eventId);
   body.put("version", 1); body.put("occurredAt", LocalDateTime.now().toString()); body.put("producer", "account-service");

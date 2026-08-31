@@ -58,10 +58,23 @@ function parseArgs(argv) {
 }
 
 function discoverInputs(projectRoot) {
-  const candidates = [
+  const serviceRoot = path.join(projectRoot, 'services');
+  const serviceProjects = exists(serviceRoot)
+    ? fs.readdirSync(serviceRoot, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => path.join(serviceRoot, entry.name))
+    : [];
+  const backendCandidates = serviceProjects.length === 0 ? [
     ['unit', path.join(projectRoot, 'backend', 'target', 'surefire-reports')],
     ['integration', path.join(projectRoot, 'backend', 'target', 'failsafe-reports')],
+  ] : [];
+  const candidates = [
+    ...backendCandidates,
     ['e2e', path.join(projectRoot, 'e2e', 'test-results')],
+    ...serviceProjects.flatMap((service) => [
+      ['unit', path.join(service, 'target', 'surefire-reports')],
+      ['integration', path.join(service, 'target', 'failsafe-reports')],
+    ]),
   ];
   return candidates.flatMap(([, dir]) => exists(dir) ? findXml(dir) : []);
 }
@@ -78,6 +91,7 @@ function classify(file) {
   const normalized = file.replaceAll('\\', '/').toLowerCase();
   if (normalized.includes('failsafe') || normalized.includes('/integration')) return 'integration';
   if (normalized.includes('/e2e') || normalized.includes('playwright')) return 'e2e';
+  if (normalized.includes('apitest') || normalized.includes('gatewayauthwebtest')) return 'integration';
   return 'unit';
 }
 

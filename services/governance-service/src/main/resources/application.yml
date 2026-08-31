@@ -29,6 +29,8 @@ campus:
     internal-service-token: ${INTERNAL_SERVICE_TOKEN}
     internal-jwt-secret: ${INTERNAL_JWT_SECRET}
     messaging-enabled: ${GOVERNANCE_MESSAGING_ENABLED:false}
+    dependency-connect-timeout-ms: ${DEPENDENCY_CONNECT_TIMEOUT_MS:300}
+    dependency-response-timeout-ms: ${DEPENDENCY_RESPONSE_TIMEOUT_MS:800}
 management:
   endpoints:
     web:

@@ -73,12 +73,7 @@ public class AccountController {
     public ApiResponse<UserView> updateProfile(Authentication authentication,
                                                @Valid @RequestBody UpdateRequest request) {
         User user = currentUser(authentication);
-        user.setNickname(request.nickname());
-        user.setPhone(request.phone());
-        if (request.campusRegion() != null && !request.campusRegion().isBlank()) {
-            user.setCampusRegion(request.campusRegion());
-        }
-        return ApiResponse.ok(UserView.from(users.save(user)));
+        return ApiResponse.ok(UserView.from(accounts.updateProfile(user.getId(), request.nickname(), request.phone(), request.campusRegion())));
     }
 
     @GetMapping("/admin/users")
@@ -97,9 +92,7 @@ public class AccountController {
         if ("ADMIN".equals(user.getRole())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "不能修改管理员账号");
         }
-        user.setStatus(request.status());
-        user.setAuthVersion(user.getAuthVersion() + 1);
-        return ApiResponse.ok(UserView.from(users.save(user)));
+        return ApiResponse.ok(UserView.from(accounts.updateStatus(user.getId(), request.status())));
     }
 
     private User currentUser(Authentication authentication) {

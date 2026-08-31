@@ -19,5 +19,5 @@ class TradingOutboxPublisher{
 class MarketplaceResultListener{
  private final TradingWorkflow workflow;private final ObjectMapper mapper=new ObjectMapper();
  MarketplaceResultListener(TradingWorkflow workflow){this.workflow=workflow;}
- @RabbitListener(queues=TradingRabbitConfiguration.RESULT_QUEUE) void receive(String payload)throws Exception{JsonNode node=mapper.readTree(payload);workflow.applyMarketplaceResult(new TradingWorkflow.MarketplaceResult(node.path("eventId").asText(),node.path("type").asText(),node.path("orderId").asLong(),node.path("itemId").asLong(),node.path("reason").isMissingNode()||node.path("reason").isNull()?null:node.path("reason").asText()));}
+ @RabbitListener(queues=TradingRabbitConfiguration.RESULT_QUEUE) void receive(Message payload)throws Exception{JsonNode node=mapper.readTree(payload.getBody());workflow.applyMarketplaceResult(new TradingWorkflow.MarketplaceResult(node.path("eventId").asText(),node.path("type").asText(),node.path("orderId").asLong(),node.path("itemId").asLong(),node.path("reason").isMissingNode()||node.path("reason").isNull()?null:node.path("reason").asText()));}
 }

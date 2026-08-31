@@ -17,6 +17,7 @@ public class User {
  @Column(name="login_failed_count",nullable=false) private Integer loginFailedCount=0;
  @Column(name="locked_until") private LocalDateTime lockedUntil;
  @Column(name="auth_version",nullable=false) private Integer authVersion=0;
+ @Column(name="public_profile_version",nullable=false) private Long publicProfileVersion=0L;
  @Column(name="campus_region",length=40) private String campusRegion="学院路校区";
  @Column(name="credit_score",nullable=false) private Integer creditScore=100;
  @Column(name="last_active_at",nullable=false) private LocalDateTime lastActiveAt=LocalDateTime.now();
@@ -38,6 +39,8 @@ public class User {
  public void setStatus(String value) { status = value; }
  public Integer getAuthVersion() { return authVersion; }
  public void setAuthVersion(Integer value) { authVersion = value; }
+ public Long getPublicProfileVersion() { return publicProfileVersion; }
+ public void setPublicProfileVersion(Long value) { publicProfileVersion = value; }
  public Integer getCreditScore() { return creditScore; }
  public String getCampusRegion() { return campusRegion; }
  public void setCampusRegion(String value) { campusRegion = value; }
@@ -46,4 +49,5 @@ public class User {
  public Integer getLoginFailedCount() { return loginFailedCount; }
  public void setLoginFailedCount(Integer value) { loginFailedCount = value; }
  public LocalDateTime getLockedUntil() { return lockedUntil; }
+ public LocalDateTime getCreatedAt() { return createdAt; }
 }
