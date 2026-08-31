@@ -486,6 +486,12 @@
 - 将安全校验明确为所有场景的共同约束，不再单列安全用例。
 - 验证：`git diff --check`；未运行 Maven/Docker（本轮仅修改文档）。
 
+### 修复验证码服务测试包路径（2026-08-31）
+
+- 将 `VerificationServiceTests` 移至与其 `com.campus.secondhand.user` 包声明一致的测试目录，避免增量/干净构建时 Surefire 找不到 `EmailVerificationRepository`。
+- 验证：`mvn test` 通过，35/35；前端 JavaScript 语法与 Node 契约测试此前已通过。
+- 遗留：无。
+
 ## 接手检查清单
 
 1. `git status --short` 确认没有覆盖其他人的未提交修改。
