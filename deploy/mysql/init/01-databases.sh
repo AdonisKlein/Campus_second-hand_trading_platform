@@ -1,5 +1,8 @@
 #!/bin/sh
-set -eu
+# MySQL sources files in /docker-entrypoint-initdb.d into its own entrypoint
+# process. Enabling `nounset` here would leak into that parent script and make
+# optional MySQL variables (for example MYSQL_ONETIME_PASSWORD) fatal.
+set -e
 mysql --protocol=socket -uroot -p"$MYSQL_ROOT_PASSWORD" <<SQL
 CREATE DATABASE IF NOT EXISTS campus_account CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS campus_marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

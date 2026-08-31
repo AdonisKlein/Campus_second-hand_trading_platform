@@ -9,6 +9,7 @@
     "e2e:down": "node scripts/compose-e2e.cjs down",
     "e2e:wait": "node scripts/wait-for-e2e.cjs",
     "test:e2e:routing": "node scripts/check-compose-routing.cjs",
+    "test:e2e:init-safety": "node scripts/check-mysql-init-safety.cjs",
     "test:e2e:traceability": "node scripts/check-uc-traceability.cjs",
     "test:e2e:runtime-traceability": "node scripts/check-uc-runtime-evidence.cjs",
     "test:e2e:compose": "node scripts/run-compose-e2e.cjs",

@@ -18,14 +18,26 @@ let exitCode = 1;
 let stage = 'uc-traceability';
 try {
   exitCode = run(process.execPath, ['scripts/check-uc-traceability.cjs']);
-  stage = 'routing-contract';
-  if (exitCode === 0) exitCode = run(process.execPath, ['scripts/check-compose-routing.cjs']);
-  stage = 'compose-up';
-  if (exitCode === 0) exitCode = run(process.execPath, ['scripts/compose-e2e.cjs', 'up']);
-  stage = 'environment-readiness';
-  if (exitCode === 0) exitCode = run(process.execPath, ['scripts/wait-for-e2e.cjs']);
-  stage = 'database-seed';
-  if (exitCode === 0) exitCode = run(process.execPath, ['scripts/compose-e2e.cjs', 'seed']);
+  if (exitCode === 0) {
+    stage = 'mysql-init-safety';
+    exitCode = run(process.execPath, ['scripts/check-mysql-init-safety.cjs']);
+  }
+  if (exitCode === 0) {
+    stage = 'routing-contract';
+    exitCode = run(process.execPath, ['scripts/check-compose-routing.cjs']);
+  }
+  if (exitCode === 0) {
+    stage = 'compose-up';
+    exitCode = run(process.execPath, ['scripts/compose-e2e.cjs', 'up']);
+  }
+  if (exitCode === 0) {
+    stage = 'environment-readiness';
+    exitCode = run(process.execPath, ['scripts/wait-for-e2e.cjs']);
+  }
+  if (exitCode === 0) {
+    stage = 'database-seed';
+    exitCode = run(process.execPath, ['scripts/compose-e2e.cjs', 'seed']);
+  }
   if (exitCode === 0) {
     stage = 'playwright';
     mkdirSync(evidenceDir, { recursive: true });

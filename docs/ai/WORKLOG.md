@@ -447,6 +447,13 @@
 - 本地用相同 Compose 命令复现：`私聊→未读→屏蔽` 在详情页用默认 5 秒等待 Session 恢复，冷启动时商品/消息接口单次约 3.3 秒，`/users/me` 尚未完成便被测试取消；trace 证明登录已设置 `SESSION` Cookie，不是会话丢失。
 - 私聊旅程总预算调整为 120 秒，两个详情页 Session 断言改为 30 秒分段轮询，仍严格断言买家 ID，不删除安全断言，也不把失败步骤设为可忽略。
 - 最小回归 `1/1` 通过（50.9 秒）；完整隔离 Compose 回归 `15/15` 通过（3.6 分钟），UC01—UC08 运行证据 `8/8`。
+
+### 工作项 8：MySQL 8.4.11 初始化失败修复（2026-08-31）
+
+- GitHub Actions 运行 `33373434134` 在隔离微服务环境启动阶段失败；artifact 中 MySQL 的首个错误为 `/usr/local/bin/docker-entrypoint.sh: line 341: MYSQL_ONETIME_PASSWORD: unbound variable`，RabbitMQ 启动日志和后续容器删除只是正常启动与失败清理。
+- 根因是 `deploy/mysql/init/01-databases.sh` 会被 MySQL 官方入口脚本 source，脚本内 `set -eu` 将 `nounset` 泄漏到父入口脚本，使官方未配置的可选变量变成致命错误；改为只启用 `errexit`。
+- 新增 MySQL sourced-init 安全契约门禁，禁止初始化脚本再次启用 `nounset`；Compose E2E 的阶段记录也改为仅在实际执行阶段时更新，避免 readiness 失败被误记成 database-seed。
+- 真实 Docker 复验使用全新 MySQL 8.4.11 数据卷：MySQL、RabbitMQ、Redis、Gateway、四个业务服务和 Web 全部 Healthy，数据库 seed 成功，Playwright `15/15`、UC01—UC08 运行证据 `8/8`，命令退出码为 0。
 ### 图片上传 HTTP 413 排障（2026-08-28）
 
 - Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。
