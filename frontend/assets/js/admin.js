@@ -128,6 +128,7 @@ async function loadItems() {
 function adminReportLabel(value) { return ({ FRAUD:"疑似诈骗", PROHIBITED_CONTENT:"违规内容", HARASSMENT:"骚扰行为", SPAM:"垃圾广告", OTHER:"其他问题" })[value] || value; }
 function adminTargetLabel(value) { return ({ ITEM:"商品", MESSAGE:"留言", USER:"用户" })[value] || value; }
 function adminStatusLabel(value) { return ({ OPEN:"待处理", RESOLVED:"已确认", DISMISSED:"已驳回" })[value] || value; }
+function adminActionStateLabel(value) { return ({ NONE:"无需执行", PENDING:"治理处理中", APPLIED:"治理已生效", FAILED:"治理执行失败" })[value] || value; }
 function expectedAction(type) { return ({ ITEM:"REMOVE_ITEM", MESSAGE:"REMOVE_MESSAGE", USER:"DISABLE_USER" })[type]; }
 
 async function loadReports() {
@@ -140,11 +141,13 @@ async function loadReports() {
             <div class="report-card-top"><span class="status-badge ${report.status === "OPEN" ? "pending" : report.status === "RESOLVED" ? "completed" : "cancelled"}">${adminStatusLabel(report.status)}</span><time>${escapeHtml(formatTime(report.createdAt))}</time></div>
             <h3>${adminTargetLabel(report.targetType)} #${report.targetId}：${escapeHtml(report.targetSummary)}</h3>
             <p><strong>${escapeHtml(report.reporterName)}</strong> 举报为“${adminReportLabel(report.reasonCode)}”</p><p>${escapeHtml(report.description)}</p>
+            ${report.actionState && report.actionState !== "NONE" ? `<div class="report-resolution"><strong>${adminActionStateLabel(report.actionState)}</strong>${report.actionError ? `<p>${escapeHtml(report.actionError)}</p>` : ""}</div>` : ""}
             ${report.evidenceSnapshot
                 ? `<section class="report-evidence"><strong>举报关联聊天证据</strong><pre>${escapeHtml(report.evidenceSnapshot)}</pre></section>`
                 : report.targetType === "USER" ? '<p class="report-evidence-missing">该举报未关联聊天会话，无法展示聊天证据。</p>' : ""}
             ${report.resolutionNote ? `<div class="report-resolution"><strong>处理说明</strong><p>${escapeHtml(report.resolutionNote)}</p></div>` : ""}
             ${report.status === "OPEN" ? `<div class="admin-row-actions"><button type="button" data-action="resolve-report" data-report-id="${report.id}" data-target-type="${report.targetType}">确认并治理</button><button type="button" class="secondary" data-action="dismiss-report" data-report-id="${report.id}">驳回举报</button></div>` : ""}
+            ${report.actionState === "FAILED" && report.status === "RESOLVED" ? `<div class="admin-row-actions"><button type="button" class="secondary" data-action="retry-report" data-report-id="${report.id}" data-report-action="${report.decisionAction || ""}" data-report-note="${escapeHtml(report.resolutionNote || "")}">重试治理</button></div>` : ""}
         </article>`).join("") : '<p class="empty-state">当前筛选下没有举报。</p>';
 }
 
@@ -229,15 +232,19 @@ adminReportStatus.addEventListener("change", loadReports);
 adminReportList.addEventListener("click", async event => {
     const button = event.target.closest("button[data-action]");
     if (!button) return;
-    const resolving = button.dataset.action === "resolve-report";
-    const note = prompt(resolving ? "请填写确认举报及治理说明" : "请填写驳回原因");
+    const retrying = button.dataset.action === "retry-report";
+    const resolving = button.dataset.action === "resolve-report" || retrying;
+    const note = retrying ? button.dataset.reportNote : prompt(resolving ? "请填写确认举报及治理说明" : "请填写驳回原因");
     if (!note || note.trim().length < 2) { adminReportMessage.textContent = "处理说明至少需要 2 个字"; return; }
     button.disabled = true;
     const result = await adminRequest(`/reports/${button.dataset.reportId}`, { method:"PUT", body:JSON.stringify({
-        status: resolving ? "RESOLVED" : "DISMISSED", action: resolving ? expectedAction(button.dataset.targetType) : "NONE", note: note.trim()
+        status: resolving ? "RESOLVED" : "DISMISSED", action: retrying ? button.dataset.reportAction : resolving ? expectedAction(button.dataset.targetType) : "NONE", note: note.trim()
     }) });
     button.disabled = false;
-    adminReportMessage.textContent = result.success ? "举报处理完成，治理措施已经生效" : (result.message || "处理失败");
+    const state = result.data?.actionState;
+    adminReportMessage.textContent = result.success
+        ? (state === "PENDING" ? "举报已确认，治理措施正在处理中" : state === "FAILED" ? "举报已确认，但治理措施执行失败，可重试" : "举报处理完成，治理措施已经生效")
+        : (result.message || "处理失败");
     if (result.success) { loadReports(); loadUsers(); loadMessages(); loadItems(); }
 });
 

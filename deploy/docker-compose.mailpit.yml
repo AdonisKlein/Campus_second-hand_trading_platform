@@ -11,7 +11,7 @@ services:
     volumes:
       - mailpit-data:/data
 
-  backend:
+  account-service:
     environment:
       MAIL_ENABLED: "true"
       MAIL_HOST: mailpit

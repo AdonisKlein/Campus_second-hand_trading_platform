@@ -1,0 +1,51 @@
+{
+  "source": "doc/业务场景（用例）清单.md",
+  "useCases": {
+    "UC01": {
+      "e2e": [
+        { "file": "e2e/tests/auth-password-journey.spec.js", "test": "注册→登录→退出→重置密码" },
+        { "file": "e2e/tests/product-publish-edit-question-journey.spec.js", "test": "个人资料修改后公开资料更新" }
+      ]
+    },
+    "UC02": {
+      "e2e": [
+        { "file": "e2e/tests/product-publish-edit-question-journey.spec.js", "test": "搜索→上传图片→发布→编辑→问答" },
+        { "file": "e2e/tests/microservice-business-journeys.spec.js", "test": "UC02 商品与用户搜索支持筛选排序且不泄露私密资料" }
+      ]
+    },
+    "UC03": {
+      "e2e": [
+        { "file": "e2e/tests/product-publish-edit-question-journey.spec.js", "test": "搜索→上传图片→发布→编辑→问答" },
+        { "file": "e2e/tests/product-publish-edit-question-journey.spec.js", "test": "卖家下架后可以重新上架" }
+      ]
+    },
+    "UC04": {
+      "e2e": [
+        { "file": "e2e/tests/product-publish-edit-question-journey.spec.js", "test": "搜索→上传图片→发布→编辑→问答" },
+        { "file": "e2e/tests/microservice-business-journeys.spec.js", "test": "UC04 私聊消息仅买卖双方可见且未读数可更新" }
+      ]
+    },
+    "UC05": {
+      "e2e": [
+        { "file": "e2e/tests/microservice-business-journeys.spec.js", "test": "UC05-UC06 购买意向经卖家选定后完成并进入本人交易记录" }
+      ]
+    },
+    "UC06": {
+      "e2e": [
+        { "file": "e2e/tests/microservice-business-journeys.spec.js", "test": "UC05-UC06 购买意向经卖家选定后完成并进入本人交易记录" }
+      ]
+    },
+    "UC07": {
+      "e2e": [
+        { "file": "e2e/tests/microservice-business-journeys.spec.js", "test": "UC07-UC08 学生跟踪举报且管理员治理结果可审计" },
+        { "file": "e2e/tests/microservice-business-journeys.spec.js", "test": "UC07-UC08 留言和用户举报会执行匹配治理措施并留下审计记录" }
+      ]
+    },
+    "UC08": {
+      "e2e": [
+        { "file": "e2e/tests/microservice-business-journeys.spec.js", "test": "UC07-UC08 学生跟踪举报且管理员治理结果可审计" },
+        { "file": "e2e/tests/microservice-business-journeys.spec.js", "test": "UC07-UC08 留言和用户举报会执行匹配治理措施并留下审计记录" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,71 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: campus-account-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          connectiontimeout: ${MAIL_CONNECTION_TIMEOUT_MS:5000}
+          timeout: ${MAIL_READ_TIMEOUT_MS:10000}
+          writetimeout: ${MAIL_WRITE_TIMEOUT_MS:10000}
+          starttls:
+            enable: ${MAIL_STARTTLS_ENABLED:false}
+            required: ${MAIL_STARTTLS_REQUIRED:false}
+          ssl:
+            enable: ${MAIL_SSL_ENABLED:false}
+app:
+  verification:
+    pepper: ${VERIFICATION_PEPPER}
+  security:
+    internal-service-token: ${INTERNAL_SERVICE_TOKEN}
+    internal-jwt-secret: ${INTERNAL_JWT_SECRET}
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:}
+  governance-events:
+    enabled: ${GOVERNANCE_EVENTS_ENABLED:false}
+    exchange: ${GOVERNANCE_EVENTS_EXCHANGE:campus.governance}
+    queue: ${GOVERNANCE_EVENTS_QUEUE:account.governance.commands}
+  public-profile-events:
+    enabled: ${PUBLIC_PROFILE_EVENTS_ENABLED:false}
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    mail:
+      enabled: ${MAIL_ENABLED:false}
+info:
+  app:
+    name: ${spring.application.name}
+    version: ${APP_VERSION:dev}
+    commit: ${GIT_COMMIT:local}
+logging:
+  structured:
+    format:
+      console: ecs

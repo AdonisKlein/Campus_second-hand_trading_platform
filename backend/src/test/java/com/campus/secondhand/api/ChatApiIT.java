@@ -2,7 +2,7 @@ package com.campus.secondhand.api;
 
 import com.campus.secondhand.item.SellerInventory;
 import com.campus.secondhand.user.User;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,0 +1,3 @@
+package com.campus.secondhand.marketplace;
+import java.math.BigDecimal; import java.time.LocalDateTime; import java.util.*;
+public interface CampusSearch { SearchPage search(SearchQuery query,String viewerRegion); record SearchPage(SearchQuery.Scope scope,List<ItemHit> items,List<UserHit> users,int page,int size,boolean hasNext,List<String> regions,List<String> tags){} record ItemHit(Long id,String title,BigDecimal price,String description,String imageUrl,String region,Set<String> tags,Long sellerId,String sellerNickname,Integer sellerCreditScore,LocalDateTime sellerLastActiveAt,LocalDateTime createdAt){} record UserHit(Long id,String username,String nickname,String region,Integer creditScore,LocalDateTime lastActiveAt){} }

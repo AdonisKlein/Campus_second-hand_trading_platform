@@ -2,7 +2,7 @@ package com.campus.secondhand.security;
 
 import com.campus.secondhand.common.ApiResponse;
 import com.campus.secondhand.user.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -47,7 +50,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper mapper) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper mapper,
+                                            ObjectProvider<JwtDecoder> jwtDecoders,
+                                            ObjectProvider<JwtAuthenticationConverter> jwtConverters) throws Exception {
         CookieCsrfTokenRepository csrf = CookieCsrfTokenRepository.withHttpOnlyFalse();
         csrf.setCookiePath("/");
         http
@@ -68,6 +73,14 @@ public class SecurityConfig {
                 .authenticationEntryPoint((request, response, ex) -> writeError(response, mapper, 401, "请先登录"))
                 .accessDeniedHandler((request, response, ex) -> writeError(response, mapper, 403, "无权执行此操作")))
             .logout(logout -> logout.disable());
+        JwtDecoder jwtDecoder = jwtDecoders.getIfAvailable();
+        if (jwtDecoder != null) {
+            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {
+                jwt.decoder(jwtDecoder);
+                JwtAuthenticationConverter converter = jwtConverters.getIfAvailable();
+                if (converter != null) jwt.jwtAuthenticationConverter(converter);
+            }));
+        }
         return http.build();
     }
 

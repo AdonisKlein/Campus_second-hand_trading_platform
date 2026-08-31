@@ -1,59 +1,60 @@
 services:
   mysql:
-    image: mysql:8.4
+    restart: "no"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 30}
+  redis:
+    restart: "no"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 30}
+  rabbitmq:
+    restart: "no"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 30}
+    volumes: !reset []
     environment:
-      MYSQL_DATABASE: campus_secondhand_e2e
-      MYSQL_USER: campus
-      MYSQL_PASSWORD: campus-e2e-password
-      MYSQL_ROOT_PASSWORD: root-e2e-password
-      TZ: Asia/Shanghai
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-P", "3306", "-uroot", "-proot-e2e-password"]
-      interval: 5s
-      timeout: 5s
-      retries: 24
-
+      HOME: /tmp/rabbitmq
+      RABBITMQ_ERLANG_COOKIE: e2e-only-rabbitmq-erlang-cookie
+      RABBITMQ_MNESIA_BASE: /tmp/rabbitmq/mnesia
+      RABBITMQ_PID_FILE: /tmp/rabbitmq/rabbitmq.pid
+  api-gateway:
+    restart: "no"
+    environment:
+      DEPENDENCY_CONNECT_TIMEOUT_MS: "3000"
+      DEPENDENCY_RESPONSE_TIMEOUT_MS: "10000"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 45}
+  account-service:
+    restart: "no"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 45}
+  marketplace-service:
+    restart: "no"
+    environment:
+      DEPENDENCY_CONNECT_TIMEOUT_MS: "3000"
+      DEPENDENCY_RESPONSE_TIMEOUT_MS: "10000"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 45}
+  trading-service:
+    restart: "no"
+    environment:
+      DEPENDENCY_CONNECT_TIMEOUT_MS: "3000"
+      DEPENDENCY_RESPONSE_TIMEOUT_MS: "10000"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 45}
+  governance-service:
+    restart: "no"
+    environment:
+      DEPENDENCY_CONNECT_TIMEOUT_MS: "3000"
+      DEPENDENCY_RESPONSE_TIMEOUT_MS: "10000"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 45}
   mailpit:
-    image: axllent/mailpit:v1.30.6
-    environment:
-      MP_MAX_MESSAGES: 500
-    ports:
-      - "127.0.0.1:18025:8025"
-
-  backend:
-    build: ../backend
-    environment:
-      DB_URL: jdbc:mysql://mysql:3306/campus_secondhand_e2e?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-      DB_USERNAME: campus
-      DB_PASSWORD: campus-e2e-password
-      VERIFICATION_PEPPER: e2e-only-verification-pepper-32-characters
-      CORS_ALLOWED_ORIGINS: http://127.0.0.1:18080
-      SESSION_COOKIE_SECURE: "false"
-      MAIL_ENABLED: "true"
-      MAIL_HOST: mailpit
-      MAIL_PORT: "1025"
-      MAIL_USERNAME: e2e
-      MAIL_PASSWORD: e2e
-      MAIL_FROM: no-reply@e2e.campus.test
-      MAIL_SMTP_AUTH: "false"
-      MAIL_SSL_ENABLED: "false"
-      MAIL_STARTTLS_ENABLED: "false"
-      MAIL_STARTTLS_REQUIRED: "false"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      mailpit:
-        condition: service_started
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/api/actuator/health/liveness"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-
+    restart: "no"
   web:
-    build: ../frontend
-    ports:
-      - "127.0.0.1:18080:80"
-    depends_on:
-      backend:
-        condition: service_healthy
+    restart: "no"
+    healthcheck: {interval: 2s, timeout: 3s, retries: 30}
+
+volumes:
+  mysql-data:
+    name: campus-secondhand-e2e-mysql-data
+  media-data:
+    name: campus-secondhand-e2e-media-data
+  microservice-redis-data:
+    name: campus-secondhand-e2e-redis-data
+  microservice-rabbitmq-data:
+    name: campus-secondhand-e2e-rabbitmq-data
+  mailpit-data:
+    name: campus-secondhand-e2e-mailpit-data

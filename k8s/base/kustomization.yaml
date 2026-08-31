@@ -5,6 +5,5 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - pvc.yaml
-  - mysql-statefulset.yaml
-  - backend-deployment.yaml
-  - web-deployment.yaml
+  - platform.yaml
+  - services.yaml

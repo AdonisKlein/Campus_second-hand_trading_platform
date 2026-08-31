@@ -1,92 +1,74 @@
-# 从空数据库部署
+# 微服务本地部署
 
-## PowerShell 启动
+当前 Compose 拓扑包含一个 MySQL 8.4 服务器、四个独立数据库和账号、Redis、RabbitMQ、API Gateway、四个业务服务与 Nginx Web。只有 Web 暴露宿主机端口，浏览器始终通过 Gateway 访问业务接口。
 
-这套 Compose 配置会启动 MySQL、后端和 Web/Nginx。MySQL 只创建空数据库，后端启动时由 Flyway 自动创建并校验全部表。
+## 一键启动
 
-1. 安装并启动 Docker Desktop，执行 `docker version`，确认 Client 和 Server 都可用。
-2. 复制 `deploy/.env.example` 为 `deploy/.env`，填写数据库密码和 `VERIFICATION_PEPPER`。这些关键值留空时 Compose 会直接拒绝启动，避免误用公开示例密钥。可用 PowerShell 生成随机值：
+1. 启动 Docker Desktop，确认 `docker version` 同时显示 Client 和 Server。
+2. 从项目根目录复制配置：
+
+```powershell
+Copy-Item deploy/.env.example deploy/.env
+```
+
+3. 为所有空值填写随机本地密码。`VERIFICATION_PEPPER`、`INTERNAL_SERVICE_TOKEN` 和 `INTERNAL_JWT_SECRET` 至少 32 个字符。可重复执行以下表达式生成不同值：
 
 ```powershell
 [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
 ```
-3. 在项目根目录运行：
+
+4. 启动包含 Mailpit 的完整开发环境：
 
 ```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build
+powershell -ExecutionPolicy Bypass -File scripts/dev/microservices.ps1 -Action up -Mailpit
+powershell -ExecutionPolicy Bypass -File scripts/dev/microservices.ps1 -Action verify -Mailpit
 ```
 
-4. 访问 `http://localhost`。查看状态：
+访问地址：
+
+- 平台：`http://localhost`，若修改了 `WEB_PORT` 则使用对应端口。
+- Mailpit：`http://localhost:8025`。
+- Gateway 存活检查：`http://localhost/api/actuator/health/liveness`。
+
+`verify` 不只是查看容器有没有启动，还会检查所有容器健康、四个服务的 Flyway 表、四个数据库账号的跨库访问被拒绝、Gateway 和 Web 可访问。修改源码后重新执行 `up`；单纯 `restart` 不会把源码重新构建进镜像。
+
+## 状态、日志和停止
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts/dev/microservices.ps1 -Action status -Mailpit
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml logs -f api-gateway account-service marketplace-service trading-service governance-service
+powershell -ExecutionPolicy Bypass -File scripts/dev/microservices.ps1 -Action down -Mailpit
+```
+
+停止不会删除命名卷。MySQL、Redis、RabbitMQ、商品图片和 Mailpit 邮件数据会保留。不要在仍需保留数据时使用 `down --volumes`。
+
+不需要邮件测试时去掉所有命令中的 `-Mailpit`。直接使用 Compose 的等价命令是：
+
+```powershell
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build --remove-orphans
 docker compose --env-file deploy/.env -f deploy/docker-compose.yml ps
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml logs -f backend
 ```
 
-健康检查：
+## 本地注册与重置密码
 
-```powershell
-Invoke-RestMethod http://localhost/api/actuator/health/liveness
-```
+Mailpit 是本地 SMTP adapter，不会把邮件发到公网。启动 `-Mailpit` 环境后，在注册页填写任意格式正确且未注册的测试邮箱，发送验证码，再到 `http://localhost:8025` 打开最新邮件并复制 6 位验证码。注册、重置密码与生产环境走同一套验证码生成、摘要存储和消费逻辑，只替换邮件投递 adapter。
 
-返回 `status = UP` 即表示后端可用。修改代码后应重新执行 `up -d --build`；只执行 `restart` 不会把源码更新进镜像。
+旧单体的 `database/seed.sql` 与四库微服务结构不兼容，不要导入当前微服务数据库。开发账号应通过正常注册流程创建；管理员账号初始化将在后续运维工作项提供专用、不可误用于生产的命令。
 
-## 本地邮箱验证码：Mailpit
+## 生产邮件
 
-本地开发不需要真实发送公网邮件。项目提供 `docker-compose.mailpit.yml` 作为本地 SMTP adapter：后端仍完整执行生成验证码、SMTP 发送、摘要存储和注册校验，邮件被 Mailpit 截获并显示在本机收件箱。
+未配置邮件时保持 `MAIL_ENABLED=false`，账号服务仍能启动，但发送验证码会返回 503。使用阿里云邮件推送时：
 
-启动或切换到 Mailpit 模式：
-
-```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml up -d --build
-```
-
-访问：
-
-```text
-平台：http://localhost
-Mailpit 收件箱：http://localhost:8025
-```
-
-在平台注册页填写任意格式正确且尚未注册的测试邮箱，例如 `student1@example.com`，点击“发送验证码”，再到 Mailpit 打开最新邮件复制 6 位验证码。Mailpit 不会把邮件投递到真实邮箱。
-
-Mailpit Web 端口只绑定 `127.0.0.1`，SMTP 1025 端口只在 Compose 私有网络中使用，没有暴露给宿主机或局域网。邮件最多保留 500 封，并持久化在 `mailpit-data` 本地 volume。
-
-查看开发服务状态：
-
-```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml ps
-```
-
-停止 Mailpit 模式且保留数据库、图片和测试邮件：
-
-```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml -f deploy/docker-compose.mailpit.yml down
-```
-
-切回阿里云/普通 Compose 配置时，使用基础文件重建后端：
-
-```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build --force-recreate backend
-```
-
-Mailpit 仅用于本地开发，不能加入生产 Compose 命令，也不要把 8025 暴露到公网。官方默认端口说明见 [Mailpit Docker 文档](https://mailpit.axllent.org/docs/install/docker/)。
-
-## 阿里云邮件推送
-
-未配置邮件时保持 `MAIL_ENABLED=false`，网站仍可浏览和使用演示账号，但注册与找回密码的验证码接口会返回 503。生产启用步骤：
-
-1. 在阿里云邮件推送的华东 1 区域创建专用发信子域名，例如 `notify.example.com`。
-2. 按控制台给出的值，在实际 DNS 托管商添加所有权、SPF、DKIM、DMARC 和 MX 记录，等待全部验证通过。
-3. 创建发信地址，例如 `no-reply@notify.example.com`，并为它设置独立 SMTP 密码。
-4. 在 `deploy/.env` 填写：
+1. 创建专用发信子域名并按控制台完成 SPF、DKIM、DMARC 和 MX 验证。
+2. 创建发信地址与独立 SMTP 密码。
+3. 在未提交到 Git 的 `deploy/.env` 中配置：
 
 ```dotenv
 MAIL_ENABLED=true
 MAIL_HOST=smtpdm.aliyun.com
 MAIL_PORT=465
 MAIL_USERNAME=no-reply@notify.example.com
-MAIL_PASSWORD=阿里云控制台设置的SMTP密码
+MAIL_PASSWORD=阿里云SMTP密码
 MAIL_FROM=no-reply@notify.example.com
 MAIL_SMTP_AUTH=true
 MAIL_SSL_ENABLED=true
@@ -94,36 +76,22 @@ MAIL_STARTTLS_ENABLED=false
 MAIL_STARTTLS_REQUIRED=false
 ```
 
-`MAIL_USERNAME`、`MAIL_FROM` 必须使用阿里云控制台已创建的同一个发信地址。不要填写阿里云登录密码或 AccessKey。更新后执行：
+重建账号服务和 Gateway 后查看日志：
 
 ```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build --force-recreate backend
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml logs --tail 100 backend
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build --force-recreate account-service api-gateway
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml logs --tail 100 account-service
 ```
 
-如果所在网络无法使用 465，可根据阿里云控制台与官方文档改用端口 80 + STARTTLS：关闭 `MAIL_SSL_ENABLED`，同时开启 `MAIL_STARTTLS_ENABLED` 和 `MAIL_STARTTLS_REQUIRED`。不要使用被云服务器默认限制的 25 端口。
+生产域名启用 HTTPS 后，把 `CORS_ORIGINS` 设置为完整站点 origin，并将 `SESSION_COOKIE_SECURE=true`。SMTP 健康状态不作为整个平台启动门槛，邮件临时故障不会连带阻止商品和交易服务启动。
 
-官方配置依据：[阿里云发信域名](https://help.aliyun.com/zh/direct-mail/user-guide/how-to-configure-sending-domain-names)、[SMTP 地址和端口](https://www.alibabacloud.com/help/zh/direct-mail/smtp-endpoints)、[设置 SMTP 密码](https://www.alibabacloud.com/help/zh/direct-mail/sender-address-faqs)。
+## 数据与安全边界
 
-如需演示账号和商品，可在**全新的空业务库**中从项目根目录导入一次种子数据。脚本检测到已有用户或商品会直接停止，禁止在生产环境执行：
+- `account_user` 只能访问 `campus_account`。
+- `marketplace_user` 只能访问 `campus_marketplace`。
+- `trading_user` 只能访问 `campus_trading`。
+- `governance_user` 只能访问 `campus_governance`。
+- 跨服务查询走内部 REST，状态变更走 RabbitMQ Inbox/Outbox；禁止跨库联表。
+- Redis 保存 Gateway Web Session，内部 JWT 不返回浏览器。
 
-```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml cp database/seed.sql mysql:/tmp/seed.sql
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml exec -T mysql sh -lc 'mysql --default-character-set=utf8mb4 -uroot -p"$MYSQL_ROOT_PASSWORD" < /tmp/seed.sql'
-```
-
-演示账号为 `admin@example.com`、`alice@example.com`、`bob@example.com`，密码统一为 `abc123`，仅供本地开发使用。
-
-正式域名启用 HTTPS 后，把 `PUBLIC_ORIGIN` 改成完整域名，并把 `SESSION_COOKIE_SECURE` 改成 `true`。TLS 可以放在这套 Nginx 前面的 Caddy、Traefik 或云负载均衡器终止。
-
-网站启动健康检查只检查应用存活，不把 SMTP 当作启动门槛；邮件发送状态应单独监控。这样邮箱服务临时故障时，浏览和订单功能仍可使用。
-
-数据库数据位于 Docker volume `mysql-data`，商品图片位于 `media-data`。删除容器不会删除这些数据；只有显式删除对应 volume 才会清空。
-
-日常停止且保留数据：
-
-```powershell
-docker compose --env-file deploy/.env -f deploy/docker-compose.yml down
-```
-
-不要在仍需保留数据时追加 `--volumes`。本机 MySQL + Maven 调试、完整测试、最小验收和常见故障处理见 `doc/软件部署文档.md`。
+MySQL 初始化脚本只在全新数据卷第一次启动时运行。如果修改了数据库初始化账号且本地数据无需保留，应明确删除 `campus-microservices-mysql-data` 后重建；这会永久清除本地微服务数据，执行前自行确认。

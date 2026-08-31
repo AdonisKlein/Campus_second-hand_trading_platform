@@ -1,0 +1,76 @@
+server:
+  port: ${SERVER_PORT:8080}
+  reactive:
+    session:
+      timeout: 30m
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${SESSION_COOKIE_SECURE:false}
+
+spring:
+  application:
+    name: campus-api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+  session:
+    store-type: redis
+    timeout: 30m
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: account
+              uri: ${ACCOUNT_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/api/auth/verification/**,/api/auth/register,/api/auth/password/reset,/api/users/**,/api/admin/users/**
+            - id: marketplace
+              uri: ${MARKETPLACE_SERVICE_URI:http://localhost:8082}
+              predicates:
+                - Path=/api/items/**,/api/media/**,/api/messages/**,/api/search,/api/admin/items/**,/api/admin/messages/**
+            - id: trading
+              uri: ${TRADING_SERVICE_URI:http://localhost:8083}
+              predicates:
+                - Path=/api/orders/**,/api/chat/**
+            - id: governance
+              uri: ${GOVERNANCE_SERVICE_URI:http://localhost:8084}
+              predicates:
+                - Path=/api/reports/**,/api/admin/reports/**
+
+campus:
+  gateway:
+    account-uri: ${ACCOUNT_SERVICE_URI:http://localhost:8081}
+    redis-url: redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}
+    internal-service-token: ${INTERNAL_SERVICE_TOKEN}
+    internal-jwt-secret: ${INTERNAL_JWT_SECRET}
+    cors-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5500,http://127.0.0.1:5500}
+    cors-allowed-headers: ${CORS_ALLOWED_HEADERS:Content-Type,X-XSRF-TOKEN,Authorization}
+    secure-cookies: ${SESSION_COOKIE_SECURE:false}
+    dependency-connect-timeout-ms: ${DEPENDENCY_CONNECT_TIMEOUT_MS:300}
+    dependency-response-timeout-ms: ${DEPENDENCY_RESPONSE_TIMEOUT_MS:800}
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+info:
+  app:
+    name: ${spring.application.name}
+    version: ${APP_VERSION:dev}
+    commit: ${GIT_COMMIT:local}
+logging:
+  structured:
+    format:
+      console: ecs

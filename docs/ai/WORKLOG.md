@@ -135,6 +135,53 @@
 
 ## 已完成轮次
 
+### 微服务工作项 5：Governance Service 与单体运行路径退役（2026-08-28）
+
+- Governance 成为第四个提取的业务服务，独占举报、治理决定、追加式动作审计和本服务 Inbox/Outbox；Gateway 将 `/api/reports/**`、`/api/admin/reports/**` 直达端口 8084，并删除单体兜底及 `MONOLITH_URI`。
+- `ContentGovernance` 集中举报快照、24 小时限流、防自举报、防重复、管理员决定和失败重试。举报 `RESOLVED/DISMISSED` 与治理动作 `NONE/PENDING/APPLIED/FAILED` 分开表达，页面不会把“已决定”误报成“远端已执行”。
+- Governance 只经 Account/Marketplace 内部 port 获取安全快照；Account 幂等执行用户禁用，Marketplace 幂等执行商品/留言下架。命令与结果通过 Outbox/Inbox 和 correlationId 串联，重复结果被忽略，旧回执不能覆盖新重试。
+- 旧 `backend/` 仅作为 `monolith-start` 行为与性能比较基线保留，不再是 Gateway 运行路径；默认 Compose 的四库、Redis、RabbitMQ 和五应用接线将在工作项 6 完成。
+- 验证：Gateway 6/6、Account 13/13、Marketplace 19/19、Trading 16/16、Governance 12/12，共 66/66；前端契约 3/3、全部 JS 语法和 `git diff --check` 通过。
+- 提交：`refactor: extract governance service and retire monolith`（使用 `git log -1` 查看）。
+
+### 微服务工作项 4：Trading Service 与私聊（2026-08-28）
+
+- Trading 成为第三个提取的业务服务，独占购买意向/订单、私聊会话、消息、屏蔽和本服务 Inbox/Outbox；Gateway 将 `/api/orders/**`、`/api/chat/**` 直接转发端口 8083。
+- `TradingWorkflow` 保持闲鱼式流程：买家意向不锁商品，卖家接受后才经 Outbox 请求 Marketplace 预留；取消、完成和超时使用释放/售出 Saga，不做跨库事务。
+- Marketplace 以商品悲观锁保证一个商品最多归一个订单预留；命令和结果都以 eventId 幂等，事件包含 correlationId。Broker 暂不可用时未发布 Outbox 保留等待重试。
+- `DirectChat` 集中参与者校验、会话复用、sequence 游标分页、双方独立已读游标、未读统计、双向屏蔽和发送限流；只保存跨服务快照，不读取 Account/Marketplace 数据库。
+- 修复验收发现的 Pending Saga 被普通过期覆盖风险；Saga 未完成时不会被定时任务改写，第二订单也不能抢占 Marketplace 已有预留。
+- 验证：Trading 16/16、Marketplace 17/17 通过；三路低成本子 Agent 做 Saga/并发、安全和 API/边界只读验收，最终无剩余 P0/P1。
+- 提交：`refactor: extract trading and direct-chat service`（使用 `git log -1` 查看）。
+
+### 微服务工作项 3：Marketplace Service（2026-08-28）
+
+- Marketplace 成为第二个提取的业务服务，独占商品、标签、受控图片、公开问答和用户公开搜索投影；Gateway 保持浏览器 `/api/items|media|messages|search|admin` 契约并改为直达 Marketplace。
+- 核心 interface 为 `CampusSearch`、`ProductDetail`、`SellerInventory`、`ProductImages`、`PublicQuestions`；服务内没有 Account/Trading Repository，跨服务查询集中在 `AccountPublicPort` 与 `TradingInquiryPort`。
+- `UserPublicProfileChanged` 消费端按 source version 幂等维护投影，Account 不可用时已有投影仍可搜索；交易 Saga 的 RabbitMQ/Inbox/Outbox adapter 已在工作项 4 加入，容器部署接线仍留到工作项 6。
+- 内部 JWT 只由 Gateway 生成，Marketplace 精确公开游客 GET，其他接口要求身份；角色 claim 映射 `ROLE_*`，请求体中的 sellerId/receiverId 不参与身份或资源归属判断。
+- 图片 adapter 按真实文件内容识别 JPG/PNG、重新编码清除元数据、限制体积/像素/配额，并只生成 ownerId + UUID 平台路径。
+- 验证：Marketplace 14/14、Account 9/9、Gateway 6/6 通过；Flyway/Hibernate 空库校验、JWT API、权限反向测试、游客详情、投影并发乱序、搜索相关度、图片真实内容均有断言。
+- 提交：`refactor: extract marketplace service`（使用 `git log -1` 查看）。
+
+### 微服务工作项 2：Gateway 与 Account Service（2026-08-27）
+
+- Gateway 接管浏览器 Redis Session、CSRF、登录/退出、精确 CORS 和身份头清洗；每个受保护请求向 Account 复核 `status`、`role` 与 `authVersion`，再签发 60 秒内部 JWT。
+- Account 成为首个真正提取的业务服务，只拥有 `users` 与 `email_verification` 及独立 Flyway V1；注册、验证码、密码重置、资料和管理员账号状态接口不再依赖单体数据库。
+- 内部密码验证与安全状态查询由 `AccountClient` 深 interface 隔离：生产使用 300ms 连接/800ms 响应的 HTTP adapter，测试使用 mock adapter；仅安全 GET 重试一次，依赖失败固定返回 503 与 `Retry-After`。
+- 浏览器仍只持有 HttpOnly Session Cookie 与 CSRF token；内部 JWT 不暴露给前端。未迁出的业务暂时由 Gateway 转发给单体，单体通过兼容 JWT actor 继续执行原有资源权限规则。
+- 验证：Gateway 6/6、Account 8/8、兼容单体单元 30/30 与 API/真实 MySQL 50/50、五个独立工程统一 `mvn verify`、前端契约 3/3 全绿。
+- 提交：`refactor: extract account service and gateway authentication`（使用 `git log -1` 查看）。
+
+### 微服务工作项 1：冻结单体行为并建立迁移基线（2026-08-27）
+
+- 单体从 Spring Boot 3.5.14 升级到 4.0.8，并适配 Boot 4 的 WebMVC 测试、Flyway、JDBC Session 和 Jackson 3 模块坐标；浏览器 Session + CSRF 安全边界保持不变。
+- 建立 `api-gateway` 与 Account、Marketplace、Trading、Governance 四个独立 Maven/Spring Boot 工程骨架。每个工程可独立编译、测试和生成可执行 JAR；骨架尚不代表业务完成迁移。
+- 新增 `contracts/http/public-api-v1.tsv` 冻结 45 个公开 method + path 及未来服务归属，并以 `PublicApiContractIT` 自动比对真实 Controller 映射。
+- 新增 `scripts/ci/verify-services.ps1`，逐个验证五个新工程，任一个失败均停止并返回非零。
+- 验证：Java 24 兼容覆盖项目声明的 Java 25；单体 `mvn clean -Djava.version=24 verify` 为单元 29/29、API/真实 MySQL 50/50 全绿；五个新工程各 1/1 全绿。
+- 提交：`refactor: establish microservice migration baseline`（使用 `git log -1` 查看）。
+
 ### 第十五轮：私聊页面完整重设计（进行中）
 
 - 分支：`codex/round-15-chat-redesign`。
@@ -365,6 +412,48 @@
 - 提交：`8c8d21a docs: establish refactor baseline and UI direction`
 - 确认角色、模块、视觉方向和重构计划。
 
+### 微服务工作项 6：四库隔离与完整运行拓扑（2026-08-29）
+
+- 默认 Compose 已切换为 API Gateway、Account、Marketplace、Trading、Governance、MySQL 四库四账号、Redis、RabbitMQ 和 Web；旧 `backend` 不再参与运行。
+- 五个 Java 工程分别拥有 Dockerfile，可独立构建；浏览器只访问 Web/Gateway，内部服务保持私网可见。
+- `scripts/dev/microservices.ps1` 统一启动、状态、验收和停止操作；验收会检查全部容器健康、四个 Flyway schema、跨库访问拒绝及 Gateway/Web。
+- Kubernetes Base 与 CI Overlay 已同步相同拓扑，每个服务有独立 Deployment、Service、Secret 配置和三类探针；本地 Kind 脚本构建并加载六个镜像后执行 rollout 与冒烟。
+- Compose 实测全部服务健康，四个账号只能读取自身数据库；Kind 实测全部 Pod 1/1 Running、PVC Bound、同源 liveness 与首页通过。
+- 本地 JDK 24 兼容回归入口为 `scripts/ci/verify-services.ps1 -JavaVersion 24`；发布镜像仍使用 Docker 内的 Java 25。
+- 下一工作项：补齐微服务 API、事件、基础设施集成和最新版 UC01—UC08 追溯测试；现有旧单体 CI 自动部署脚本将在工作项 8 替换。
+
+### 微服务工作项 7：测试与业务用例闭环（2026-08-31）
+
+- 提交：`7e71804 test: cover microservice contracts and all business journeys`。
+- Gateway 与四个业务服务的单元、API、MySQL、Redis、RabbitMQ 测试可独立执行；公开 API 清单共 45 个 method + path，已建立反向权限/参数/成功路径追溯。
+- 按最新版业务清单 UC01—UC08 建立机器可读静态映射和 Playwright 运行证据门禁，不再沿用旧 UC01—UC18 编号。
+- 最终统一报告 92/92：单元 44、API/集成 33、E2E 15；三轮只读验收无剩余 P0/P1。
+
+### 微服务工作项 8：独立 CI/CD 与可观测性（2026-08-31）
+
+- `.github/workflows/ci.yml` 不再构建退役单体，改为五个服务独立 `mvn verify`、契约/前端门禁、Compose 微服务 E2E、六个 GHCR SHA 镜像、main 分支 Kind 部署和冒烟。
+- 新增改动范围分类器与工作项 8 静态契约检查。基础设施、契约或 E2E 变化标记全部服务受影响；当前为保证发布一致性仍执行全量测试和同一 SHA 的整套镜像。
+- `scripts/ci/deploy-kind.sh` 改为部署 Gateway、Account、Marketplace、Trading、Governance 和 Web；检查每个 Java 服务的 readiness 与版本信息。
+- 失败证据固定包含 Pod/Service/PVC、Events、Pod describe、当前和上一次容器日志、实际部署镜像、健康/版本响应和总结；保留受控失败入口供课程现场演示。
+- 五个 Java 服务公开 liveness/readiness/info，镜像含 OCI version/revision，日志为 ECS JSON；Gateway 建立 `X-Correlation-Id`，内部 REST 与交易/治理事件继续传递。治理结果另用 `commandEventId` 匹配原命令，避免把日志追踪号误作业务关联键。
+- 新增 5 份 `contracts/events/*.v1.schema.json` 和可执行兼容门禁：v1 必填字段不能删除，消费者允许新增元数据。修复 Account 资料事件新增 `correlationId/producer` 后 Marketplace 消费失败，以及治理回执因关联键复用而长期停在 PENDING 的真实 E2E 故障。
+- CI 聚合 Maven 与 Playwright JUnit 为统一 JSON/Markdown 报告；报告、截图、trace、Compose 日志和 Kubernetes 诊断均在失败时上传，任何失败仍以非零退出并阻止镜像/部署。
+- 本地验收：五个服务完整 `mvn verify` 全绿（含真实 MySQL 8.4、Redis、RabbitMQ Testcontainers）；前端 3/3；最终 Compose Playwright 15/15、UC01—UC08 运行证据 8/8；事件/CI 静态门禁、Bash 语法和 `git diff --check` 通过。三方只读复验无剩余 P0/P1。
+- 提交：`ci: build test and deploy independent microservices`（使用 `git log -1` 查看提交号）。主分支 CI 全绿后再创建 `microservices-end`，本地提交阶段不提前打标记。
+
+### 工作项 8：分支 CI E2E 假失败修复（2026-08-31）
+
+- GitHub Actions 运行 `33369355285` 的五个服务测试和契约门禁均通过，失败集中在 `Run isolated microservice environment`。
+- 本地用相同 Compose 命令复现：`私聊→未读→屏蔽` 在详情页用默认 5 秒等待 Session 恢复，冷启动时商品/消息接口单次约 3.3 秒，`/users/me` 尚未完成便被测试取消；trace 证明登录已设置 `SESSION` Cookie，不是会话丢失。
+- 私聊旅程总预算调整为 120 秒，两个详情页 Session 断言改为 30 秒分段轮询，仍严格断言买家 ID，不删除安全断言，也不把失败步骤设为可忽略。
+- 最小回归 `1/1` 通过（50.9 秒）；完整隔离 Compose 回归 `15/15` 通过（3.6 分钟），UC01—UC08 运行证据 `8/8`。
+
+### 工作项 8：MySQL 8.4.11 初始化失败修复（2026-08-31）
+
+- GitHub Actions 运行 `33373434134` 在隔离微服务环境启动阶段失败；artifact 中 MySQL 的首个错误为 `/usr/local/bin/docker-entrypoint.sh: line 341: MYSQL_ONETIME_PASSWORD: unbound variable`，RabbitMQ 启动日志和后续容器删除只是正常启动与失败清理。
+- 根因是 `deploy/mysql/init/01-databases.sh` 会被 MySQL 官方入口脚本 source，脚本内 `set -eu` 将 `nounset` 泄漏到父入口脚本，使官方未配置的可选变量变成致命错误；改为只启用 `errexit`。
+- 新增 MySQL sourced-init 安全契约门禁，禁止初始化脚本再次启用 `nounset`；Compose E2E 的阶段记录也改为仅在实际执行阶段时更新，避免 readiness 失败被误记成 database-seed。
+- 真实 Docker 复验使用全新 MySQL 8.4.11 数据卷：MySQL、RabbitMQ、Redis、Gateway、四个业务服务和 Web 全部 Healthy，数据库 seed 成功，Playwright `15/15`、UC01—UC08 运行证据 `8/8`，命令退出码为 0。
 ### 图片上传 HTTP 413 排障（2026-08-28）
 
 - Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。

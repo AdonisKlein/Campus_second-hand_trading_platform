@@ -1,5 +1,6 @@
 const { test, expect } = require('./fixtures/evidence');
 const { waitForVerificationCode } = require('./fixtures/mailpit');
+const { loginWithCredentials, sendVerificationCode } = require('./fixtures/app');
 
 test('注册→登录→退出→重置密码', async ({ page }) => {
   const suffix = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
@@ -11,23 +12,22 @@ test('注册→登录→退出→重置密码', async ({ page }) => {
   await page.goto('/register.html');
   await page.getByLabel('用户名').fill(username);
   await page.getByLabel('邮箱').fill(email);
-  await page.getByRole('button', { name: '发送验证码' }).click();
-  await expect(page.locator('#registerMessage')).toHaveText('验证码已发送，请查收邮箱');
+  await sendVerificationCode(page);
   await page.getByLabel('密码').fill(firstPassword);
   await page.getByLabel('验证码').fill(await waitForVerificationCode({ email }));
   await page.getByRole('button', { name: '注册', exact: true }).click();
 
   await expect(page).toHaveURL(/\/profile\.html$/);
   await expect(page.locator('#loginMessage')).toHaveText('注册成功，请使用邮箱和密码登录');
-  await page.locator('#loginForm input[name="email"]').fill(email);
-  await page.locator('#loginForm input[name="password"]').fill(firstPassword);
-  await page.getByRole('button', { name: '登录', exact: true }).click();
-  await expect(page.locator('#profileSection')).toBeVisible();
+  await loginWithCredentials(page, email, firstPassword);
   await expect(page.locator('#viewUsername')).toHaveText(username);
 
   page.once('dialog', dialog => dialog.accept());
+  const loggedOut = page.waitForResponse(response => response.url().endsWith('/api/auth/logout')
+    && response.request().method() === 'POST');
   await page.getByRole('button', { name: '退出登录' }).click();
-  await expect(page.locator('#loginForm')).toBeVisible();
+  expect((await loggedOut).ok()).toBeTruthy();
+  await expect(page.locator('#loginForm')).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole('link', { name: '忘记密码' }).click();
   await page.locator('#fpEmail').fill(email);
@@ -41,9 +41,6 @@ test('注册→登录→退出→重置密码', async ({ page }) => {
 
   await expect(page).toHaveURL(/\/profile\.html$/);
   await expect(page.locator('#loginMessage')).toHaveText('密码重置成功，请使用新密码登录');
-  await page.locator('#loginForm input[name="email"]').fill(email);
-  await page.locator('#loginForm input[name="password"]').fill(resetPassword);
-  await page.getByRole('button', { name: '登录', exact: true }).click();
-  await expect(page.locator('#profileSection')).toBeVisible();
+  await loginWithCredentials(page, email, resetPassword);
   await expect(page.locator('#viewUsername')).toHaveText(username);
 });
