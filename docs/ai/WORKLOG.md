@@ -461,6 +461,11 @@
 - 用相同 Kind v0.32.0、相同 `sha-7777c59` 镜像和独立集群复现；实时资源证明每个 Java 服务同时存在两个同镜像、不同环境版本的运行 ReplicaSet，另有一次 `:dev` 镜像 ReplicaSet，根因是 `apply`、`set image`、`set env` 连续触发三次 Deployment rollout。
 - CI Overlay 将六个应用 Deployment 初始副本设为 0；镜像和版本环境一次性配置完后统一扩为 1，基础设施仍正常启动。CI 与 Windows 本地 Kind 脚本共用相同启动约束，并加入静态顺序门禁，避免单节点上重复冷启动 Java Pod导致资源争抢和旧副本终止超时。
 - 最终用 Kind v0.32.0/Kubernetes v1.36.1 和原失败版本的六个 `sha-7777c59` GHCR 镜像从空集群复验：先等待 MySQL、Redis、RabbitMQ、Mailpit，再启动六个应用；10 个 Pod 全部 `1/1 Running`、应用无重启，rollout、readiness、版本号与 Web/Gateway 冒烟全部通过，脚本退出码 0。
+
+### 本地运行入口与历史 Kind 集群整理（2026-09-01）
+
+- 检查确认 `campus-ci` 是旧单体 Kind 集群，运行 `campus-backend`、Web、MySQL 和 Mailpit，不是当前 Gateway + 四业务微服务拓扑；已停止 `campus-ci-control-plane` 容器并保留集群/PVC，后续可 `docker start` 恢复或明确执行 `kind delete cluster` 永久删除。
+- 重写 `doc/软件部署文档.md`，以 Compose 微服务 + Mailpit 为日常推荐入口，新增独立 `campus-microservices` Kind 启动、访问、暂停、恢复、删除、测试和故障排查步骤；移除旧单体、单库和旧 seed 作为当前启动方式的错误说明。
 ### 图片上传 HTTP 413 排障（2026-08-28）
 
 - Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。
