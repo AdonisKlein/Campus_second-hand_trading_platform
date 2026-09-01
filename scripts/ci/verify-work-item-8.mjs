@@ -4,6 +4,8 @@ const read = path => fs.readFileSync(path, "utf8");
 const workflow = read(".github/workflows/ci.yml");
 const deploy = read("scripts/ci/deploy-kind.sh");
 const ciOverlay = read("k8s/overlays/ci/kustomization.yaml");
+const mysqlPlatform = read("k8s/base/platform.yaml");
+const composeMysqlInit = read("deploy/mysql/init/01-databases.sh");
 const services = ["api-gateway", "account-service", "marketplace-service", "trading-service", "governance-service"];
 const images = ["campus-gateway", "campus-account", "campus-marketplace", "campus-trading", "campus-governance", "campus-web"];
 const failures = [];
@@ -26,6 +28,12 @@ expect(workflow.includes("if: ${{ always() }}"), "failure artifacts must use alw
 expect(deploy.includes("--previous"), "diagnostics must capture previous container logs");
 expect(deploy.includes("pods-describe.txt") && deploy.includes("events.txt"), "diagnostics must capture pod descriptions and events");
 expect(deploy.includes("/actuator/info") && deploy.includes("/health/readiness"), "deployment must verify version and readiness");
+for (const [name, mysqlInit] of [["Kind", mysqlPlatform], ["Compose", composeMysqlInit]]) {
+  expect(
+    mysqlInit.includes("--protocol=socket --socket=/var/lib/mysql/mysql.sock"),
+    `${name} MySQL initialization must use the temporary server socket explicitly`
+  );
+}
 for (const deployment of ["gateway", "account-service", "marketplace-service", "trading-service", "governance-service", "web"]) {
   expect(
     ciOverlay.includes(`{name: ${deployment}, count: 0}`),

@@ -464,8 +464,15 @@
 
 ### 本地运行入口与历史 Kind 集群整理（2026-09-01）
 
-- 检查确认 `campus-ci` 是旧单体 Kind 集群，运行 `campus-backend`、Web、MySQL 和 Mailpit，不是当前 Gateway + 四业务微服务拓扑；已停止 `campus-ci-control-plane` 容器并保留集群/PVC，后续可 `docker start` 恢复或明确执行 `kind delete cluster` 永久删除。
+- 检查确认 `campus-ci` 是旧单体 Kind 集群，运行 `campus-backend`、Web、MySQL 和 Mailpit，不是当前 Gateway + 四业务微服务拓扑；确认无业务数据后已永久删除集群及 PVC。
 - 重写 `doc/软件部署文档.md`，以 Compose 微服务 + Mailpit 为日常推荐入口，新增独立 `campus-microservices` Kind 启动、访问、暂停、恢复、删除、测试和故障排查步骤；移除旧单体、单库和旧 seed 作为当前启动方式的错误说明。
+
+### 工作项 8：Kind MySQL 临时 socket 初始化修复（2026-09-01）
+
+- main CI `33462175148` 的服务测试、契约测试、Playwright E2E 和六个镜像构建全部通过，Kind 部署中的 Account 因数据库 `1045 Access denied` 进入 CrashLoopBackOff。
+- Kubernetes 诊断 artifact 的 MySQL 上一次容器日志证明，自定义初始化脚本默认连接 `/var/run/mysqld/mysqld.sock`，但 Kind 首次初始化临时服务实际监听 `/var/lib/mysql/mysql.sock`；脚本以 `ERROR 2002` 退出并留下未创建四个业务账号的半初始化 PVC。
+- Compose 与 Kind 两份初始化脚本统一显式使用 `--protocol=socket --socket=/var/lib/mysql/mysql.sock`；`.gitattributes` 固定所有 Shell 脚本为 LF，避免 Windows 检出产生 `/bin/sh^M`；工作项 8 静态门禁新增 socket 契约。
+- 本地使用独立 `campus-socket-fix` Kind 集群从空 PVC 复验：MySQL 和六个应用 Pod 均零重启，全部 rollout 成功，四库 Flyway、跨库权限拒绝、Web/Gateway 冒烟通过；临时集群随后已删除。
 ### 图片上传 HTTP 413 排障（2026-08-28）
 
 - Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。

@@ -5,7 +5,7 @@ data:
   01-databases.sh: |
     #!/bin/sh
     set -eu
-    mysql -uroot -p"$MYSQL_ROOT_PASSWORD" <<SQL
+    mysql --protocol=socket --socket=/var/lib/mysql/mysql.sock -uroot -p"$MYSQL_ROOT_PASSWORD" <<SQL
     CREATE DATABASE IF NOT EXISTS campus_account CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     CREATE DATABASE IF NOT EXISTS campus_marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     CREATE DATABASE IF NOT EXISTS campus_trading CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

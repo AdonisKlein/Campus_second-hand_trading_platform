@@ -3,7 +3,7 @@
 # process. Enabling `nounset` here would leak into that parent script and make
 # optional MySQL variables (for example MYSQL_ONETIME_PASSWORD) fatal.
 set -e
-mysql --protocol=socket -uroot -p"$MYSQL_ROOT_PASSWORD" <<SQL
+mysql --protocol=socket --socket=/var/lib/mysql/mysql.sock -uroot -p"$MYSQL_ROOT_PASSWORD" <<SQL
 CREATE DATABASE IF NOT EXISTS campus_account CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS campus_marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS campus_trading CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
