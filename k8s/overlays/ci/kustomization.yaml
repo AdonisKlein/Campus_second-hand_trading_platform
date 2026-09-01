@@ -12,3 +12,13 @@ secretGenerator:
       - .env.secret
 generatorOptions:
   disableNameSuffixHash: true
+replicas:
+  # Application Deployments are configured completely before their first Pod
+  # starts. This avoids apply -> set image -> set env creating three
+  # overlapping rollouts on a single-node Kind cluster.
+  - {name: gateway, count: 0}
+  - {name: account-service, count: 0}
+  - {name: marketplace-service, count: 0}
+  - {name: trading-service, count: 0}
+  - {name: governance-service, count: 0}
+  - {name: web, count: 0}

@@ -94,9 +94,15 @@ kubectl --context "${CONTEXT}" -n "${NAMESPACE}" set image deployment/web "web=$
 for deployment in "${DEPLOYMENTS[@]}"; do
   kubectl --context "${CONTEXT}" -n "${NAMESPACE}" set env deployment/"${deployment}" APP_VERSION="${IMAGE_TAG}" GIT_COMMIT="${GITHUB_SHA:-local}"
 done
+deployment_resources=()
+for deployment in "${DEPLOYMENTS[@]}"; do deployment_resources+=("deployment/${deployment}"); done
 
 kubectl --context "${CONTEXT}" -n "${NAMESPACE}" rollout status statefulset/campus-mysql --timeout=360s
-for deployment in redis rabbitmq mailpit account-service marketplace-service trading-service governance-service gateway web; do
+for deployment in redis rabbitmq mailpit; do
+  kubectl --context "${CONTEXT}" -n "${NAMESPACE}" rollout status deployment/"${deployment}" --timeout=360s
+done
+kubectl --context "${CONTEXT}" -n "${NAMESPACE}" scale "${deployment_resources[@]}" --replicas=1
+for deployment in account-service marketplace-service trading-service governance-service gateway web; do
   kubectl --context "${CONTEXT}" -n "${NAMESPACE}" rollout status deployment/"${deployment}" --timeout=360s
 done
 

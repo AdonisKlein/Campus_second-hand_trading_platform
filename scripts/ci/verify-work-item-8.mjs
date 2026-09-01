@@ -3,6 +3,7 @@ import fs from "node:fs";
 const read = path => fs.readFileSync(path, "utf8");
 const workflow = read(".github/workflows/ci.yml");
 const deploy = read("scripts/ci/deploy-kind.sh");
+const ciOverlay = read("k8s/overlays/ci/kustomization.yaml");
 const services = ["api-gateway", "account-service", "marketplace-service", "trading-service", "governance-service"];
 const images = ["campus-gateway", "campus-account", "campus-marketplace", "campus-trading", "campus-governance", "campus-web"];
 const failures = [];
@@ -25,6 +26,18 @@ expect(workflow.includes("if: ${{ always() }}"), "failure artifacts must use alw
 expect(deploy.includes("--previous"), "diagnostics must capture previous container logs");
 expect(deploy.includes("pods-describe.txt") && deploy.includes("events.txt"), "diagnostics must capture pod descriptions and events");
 expect(deploy.includes("/actuator/info") && deploy.includes("/health/readiness"), "deployment must verify version and readiness");
+for (const deployment of ["gateway", "account-service", "marketplace-service", "trading-service", "governance-service", "web"]) {
+  expect(
+    ciOverlay.includes(`{name: ${deployment}, count: 0}`),
+    `${deployment} must start at zero replicas while CI sets its immutable image and version`
+  );
+}
+const setEnvAt = deploy.indexOf('set env deployment/');
+const infrastructureRolloutAt = deploy.indexOf('for deployment in redis rabbitmq mailpit; do');
+const scaleAt = deploy.indexOf('scale "${deployment_resources[@]}" --replicas=1');
+const applicationRolloutAt = deploy.indexOf('for deployment in account-service marketplace-service');
+expect(setEnvAt >= 0 && infrastructureRolloutAt > setEnvAt && scaleAt > infrastructureRolloutAt && applicationRolloutAt > scaleAt,
+  "CI must configure applications, await infrastructure, scale applications once, then check application rollouts");
 
 for (const service of services) {
   const config = read(`services/${service}/src/main/resources/application.yml`);

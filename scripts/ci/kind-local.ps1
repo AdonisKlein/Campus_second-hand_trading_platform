@@ -127,10 +127,13 @@ $secrets = Assert-SecretFile
 
 kubectl --context "kind-$ClusterName" apply -k $overlay
 Assert-LastExit "Kubernetes apply"
+$applicationDeployments = @("gateway", "account-service", "marketplace-service", "trading-service", "governance-service", "web")
 Wait-Rollout statefulset campus-mysql 360s
 Wait-Rollout deployment redis 360s
 Wait-Rollout deployment rabbitmq 360s
 Wait-Rollout deployment mailpit 360s
+kubectl --context "kind-$ClusterName" -n campus-market scale ($applicationDeployments | ForEach-Object { "deployment/$_" }) --replicas=1
+Assert-LastExit "Application deployment scale-up"
 foreach ($deployment in @("account-service", "marketplace-service", "trading-service", "governance-service", "gateway")) {
     Wait-Rollout deployment $deployment 360s
 }

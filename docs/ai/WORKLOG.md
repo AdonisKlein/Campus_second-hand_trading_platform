@@ -454,6 +454,13 @@
 - 根因是 `deploy/mysql/init/01-databases.sh` 会被 MySQL 官方入口脚本 source，脚本内 `set -eu` 将 `nounset` 泄漏到父入口脚本，使官方未配置的可选变量变成致命错误；改为只启用 `errexit`。
 - 新增 MySQL sourced-init 安全契约门禁，禁止初始化脚本再次启用 `nounset`；Compose E2E 的阶段记录也改为仅在实际执行阶段时更新，避免 readiness 失败被误记成 database-seed。
 - 真实 Docker 复验使用全新 MySQL 8.4.11 数据卷：MySQL、RabbitMQ、Redis、Gateway、四个业务服务和 Web 全部 Healthy，数据库 seed 成功，Playwright `15/15`、UC01—UC08 运行证据 `8/8`，命令退出码为 0。
+
+### 工作项 8：Kind 重叠 rollout 超时修复（2026-09-01）
+
+- main CI `33377973124` 的测试、E2E 和六个镜像构建均通过，Kind 部署连续两次在 Account rollout 报“旧副本待终止”并超时。
+- 用相同 Kind v0.32.0、相同 `sha-7777c59` 镜像和独立集群复现；实时资源证明每个 Java 服务同时存在两个同镜像、不同环境版本的运行 ReplicaSet，另有一次 `:dev` 镜像 ReplicaSet，根因是 `apply`、`set image`、`set env` 连续触发三次 Deployment rollout。
+- CI Overlay 将六个应用 Deployment 初始副本设为 0；镜像和版本环境一次性配置完后统一扩为 1，基础设施仍正常启动。CI 与 Windows 本地 Kind 脚本共用相同启动约束，并加入静态顺序门禁，避免单节点上重复冷启动 Java Pod导致资源争抢和旧副本终止超时。
+- 最终用 Kind v0.32.0/Kubernetes v1.36.1 和原失败版本的六个 `sha-7777c59` GHCR 镜像从空集群复验：先等待 MySQL、Redis、RabbitMQ、Mailpit，再启动六个应用；10 个 Pod 全部 `1/1 Running`、应用无重启，rollout、readiness、版本号与 Web/Gateway 冒烟全部通过，脚本退出码 0。
 ### 图片上传 HTTP 413 排障（2026-08-28）
 
 - Nginx `/api/` 反向代理补充 `client_max_body_size 6m`，与 Spring 单文件 5MB、请求 6MB 限制保持一致；此前部署入口使用 Nginx 默认约 1MB 限制，较大图片会在后端之前直接返回 HTTP 413。

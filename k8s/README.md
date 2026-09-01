@@ -66,6 +66,10 @@ kubectl kustomize k8s/overlays/ci
 # 创建或更新资源
 kubectl apply -k k8s/overlays/ci
 
+# CI overlay 会先让应用保持 0 副本，避免镜像和版本配置变化触发重叠 rollout。
+# 手动配置完成镜像与 APP_VERSION/GIT_COMMIT 后，再统一启动应用：
+kubectl -n campus-market scale deployment/gateway deployment/account-service deployment/marketplace-service deployment/trading-service deployment/governance-service deployment/web --replicas=1
+
 # 等待某个新版本真正可接收请求
 kubectl -n campus-market rollout status deployment/account-service --timeout=300s
 
@@ -77,7 +81,7 @@ kubectl -n campus-market logs <pod-name> --all-containers
 
 Readiness 失败时 Pod 不接收流量；Liveness 连续失败时 Kubernetes 重启容器；Startup Probe 避免首次迁移和 Spring Boot 启动期间被误杀。
 
-`k8s/overlays/ci/.env.secret` 由本地脚本生成且被 Git 忽略。真实环境应由受保护的 CI Secret 或 Secret Manager 注入，不能提交实际密码。
+`k8s/overlays/ci/.env.secret` 由本地脚本生成且被 Git 忽略。真实环境应由受保护的 CI Secret 或 Secret Manager 注入，不能提交实际密码。CI 和本地一键脚本会自动完成“等待基础设施 → 应用扩容 → rollout”的顺序，手动执行时才需要使用上面的 `scale` 命令。
 
 ## 与工作项 8 的边界
 
