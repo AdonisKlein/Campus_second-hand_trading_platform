@@ -6,6 +6,7 @@
 2. `CONTEXT.md`：已确认的业务词汇，避免重新发明术语。
 3. `docs/ai/PROJECT_CONTEXT.md`：代码地图、关键 interface 和安全不变量。
 4. `docs/ai/WORKLOG.md`：已经完成的轮次、当前工作和后续事项。
+5. `docs/roadmap/2026-08-microservices-migration.md`：微服务工作项 1—11、数据归属和实验路线。
 
 ## 工作规则
 
@@ -18,12 +19,12 @@
 - 修改 interface 时同步更新 `docs/ai/PROJECT_CONTEXT.md`、Postman 契约和相关测试。
 - 独立 review、静态检查等边界清晰的子任务默认使用低成本/低 token 模型；只有复杂架构或疑难故障再升级模型。
 
+
 ## 常用验证
 
 ```powershell
-# 后端测试；项目目标为 JDK 25，本机兼容验收可临时覆盖为已安装的 JDK 24
-cd backend
-mvn test
+# 五个微服务独立验证；项目目标为 JDK 25
+powershell -ExecutionPolicy Bypass -File scripts/ci/verify-services.ps1
 
 # JavaScript 语法
 Get-ChildItem frontend/assets/js -Filter *.js | ForEach-Object { node --check $_.FullName }
@@ -31,6 +32,10 @@ Get-ChildItem frontend/assets/js -Filter *.js | ForEach-Object { node --check $_
 # Docker 本地部署
 docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build
 docker compose --env-file deploy/.env -f deploy/docker-compose.yml ps
+
+# Kind 微服务部署与状态
+powershell -ExecutionPolicy Bypass -File scripts/ci/kind-local.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts/ci/kind-local.ps1 status
 ```
 
 测试时 Docker 可用会启动真实 `mysql:8.4` Testcontainers，执行 Flyway 空库迁移与 Hibernate validate。不要用 Hibernate 自动建表替代迁移。
