@@ -1,5 +1,19 @@
 # AI 持续工作日志
 
+### 公开问答卖家回复（2026-09-01）
+
+- 公开留言接口支持 `replyToId`，仅对应商品发布者可回复，服务端校验问题归属并将回复发送给提问者。
+- 商品详情页为发布者展示“回复”操作，回复成功后刷新公开问答列表；普通用户仍只能提问、编辑和删除自己的留言。
+- 验证：Marketplace `mvn test -q -DskipTests` 编译通过，`git diff --check` 待复核。
+- 遗留：无。
+
+### 重置密码正则提示优化（2026-09-01）
+
+- 重置密码表单补充与后端一致的 6-12 位字母数字校验、长度约束和中文帮助提示。
+- 提交前在前端拦截不符合规则的密码，避免直接展示 Spring 原始 `newPassword` 正则错误，并自动聚焦密码输入框。
+- 验证：`node --check frontend/assets/js/profile.js`、`git diff --check` 通过。
+- 遗留：无。
+
 本文件记录已经落地的事实，不记录未经确认的设想。每轮完成后在顶部追加结果，包含验证证据和提交号。
 
 ## 当前状态
@@ -509,6 +523,39 @@
 
 - 将 `VerificationServiceTests` 移至与其 `com.campus.secondhand.user` 包声明一致的测试目录，避免增量/干净构建时 Surefire 找不到 `EmailVerificationRepository`。
 - 验证：`mvn test` 通过，35/35；前端 JavaScript 语法与 Node 契约测试此前已通过。
+- 遗留：无。
+
+### 本地测试数据导入脚本（2026-09-01）
+
+- 新增 `scripts/dev/demo-seed.sql`：为四库微服务环境导入 1 个管理员、2 个学生用户、3 个在售商品及搜索投影/标签。
+- 所有测试账号密码为 `abc123`；脚本仅适用于本地/测试环境，并在账号库或商品库已有业务数据时拒绝执行。
+- 验证：`git diff --check`；未运行 Maven/Docker（仅新增导入脚本）。
+- 遗留：无。
+
+### 部署文档补充测试数据导入说明（2026-09-01）
+
+- 在 `doc/软件部署文档.md` 末尾补充 PowerShell/Compose 导入命令、`utf8mb4` 字符集要求、乱码重导提示，以及测试账号和商品清单。
+- 验证：`git diff --check`；未运行 Maven/Docker（仅修改文档）。
+- 遗留：无。
+
+### 同步部署文档测试数据到导入脚本（2026-09-01）
+
+- 根据部署文档最新清单，将导入脚本账号用户名/昵称及 Marketplace 公开投影同步为 `admin`、`alice`、`bob` 与 `Admin`、`小艾`、`小博`。
+- 保留文档指定邮箱、商品、价格、标签和测试 ID。
+- 验证：`git diff --check`；未运行 Maven/Docker（仅调整测试数据脚本）。
+- 遗留：无。
+
+### 登录 403 恢复（2026-09-01）
+
+- 修复 `frontend/assets/js/api.js`：CSRF 获取失败时显式报错；写请求收到网关“请求校验失败”403 时清除缓存 token 并自动重新获取后重试一次，覆盖网关重启、Session/Redis 清理和多实例切换后的旧 token 情况。
+- 验证：网关 `mvn test` 通过；待运行前端 Node 契约与 JavaScript 语法检查。
+- 遗留：无。
+
+### 演示账号邮箱更新（2026-09-01）
+
+- 更新 `scripts/dev/demo-seed.sql`：仅删除旧演示账号/商品/投影/标签后重建，保留其他业务数据；邮箱改为 `alice@example.com`、`bob@examplee.com`、`admin@example.com`。
+- 同步部署文档中的账号清单和脚本清理说明。
+- 验证：`git diff --check`；未执行 Docker 导入，避免修改当前本地数据库。
 - 遗留：无。
 
 ## 接手检查清单

@@ -9,12 +9,15 @@ let authConfirmResolver = null;
 async function ensureCsrf() {
     if (csrfToken) return csrfToken;
     const response = await fetch(`${API_BASE}/auth/csrf`, { credentials: "include" });
+    if (!response.ok) throw new Error(`CSRF HTTP ${response.status}`);
     const payload = await response.json();
+    if (!payload?.success || !payload.data) throw new Error("CSRF token unavailable");
     csrfToken = payload.data;
     return csrfToken;
 }
 
 async function request(path, options = {}) {
+    const csrfRetry = options._csrfRetry === true;
     const requestGeneration = sessionGeneration;
     const method = (options.method || "GET").toUpperCase();
     const headers = { ...(options.headers || {}) };
@@ -50,6 +53,10 @@ async function request(path, options = {}) {
             showAccountStatusNotice(payload.message);
         }
         invalidateSession();
+    }
+    if (response.status === 403 && payload?.message === "请求校验失败" && !csrfRetry) {
+        csrfToken = null;
+        return request(path, { ...options, _csrfRetry: true });
     }
     if (!response.ok && !(payload && typeof payload === "object")) {
         payload = { success: false, message: `HTTP ${response.status}` };

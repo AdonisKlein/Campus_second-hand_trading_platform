@@ -175,9 +175,11 @@ async function loadMessages() {
     const currentUserId = currentUser?.id ? Number(currentUser.id) : null;
     messageList.innerHTML = messages.length ? messages.map(message => {
         const own = currentUserId === Number(message.senderId);
+        const seller = currentItem?.seller?.id && currentUserId === Number(currentItem.seller.id);
+        const reply = seller && !own ? '<button class="secondary message-action" type="button" data-action="reply">回复</button>' : '';
         return `<article class="message-item" data-message-id="${message.id}">
             <div class="message-header"><div class="message-meta"><span class="question-avatar" aria-hidden="true">问</span><div><strong>${escapeHtml(message.senderNickname || `用户 ${message.senderId}`)}</strong><time datetime="${escapeHtml(message.createdAt)}">${escapeHtml(formatDate(message.createdAt))}</time></div></div>
-            <div class="message-actions">${own ? '<button class="secondary message-action" type="button" data-action="edit">编辑</button><button class="secondary message-action danger" type="button" data-action="delete">删除</button>' : '<button class="secondary message-action" type="button" data-action="report">举报</button>'}</div></div>
+            <div class="message-actions">${reply}${own ? '<button class="secondary message-action" type="button" data-action="edit">编辑</button><button class="secondary message-action danger" type="button" data-action="delete">删除</button>' : '<button class="secondary message-action" type="button" data-action="report">举报</button>'}</div></div>
             <p class="message-content">${escapeHtml(message.content)}</p></article>`;
     }).join("") : '<p class="empty-state">还没有公开问题。你可以先问问配件、尺寸或使用情况。</p>';
 }
@@ -216,6 +218,14 @@ messageList.addEventListener("click", async event => {
         messageItem.querySelector("textarea").focus();
         return;
     }
+    if (action === "reply") {
+        const content = messageItem.querySelector(".message-content");
+        const form = createMessageEditForm("");
+        form.dataset.replyTo = messageId;
+        form.querySelector("button[type='submit']").textContent = "发送回复";
+        messageItem.appendChild(form); form.querySelector("textarea").focus();
+        return;
+    }
     if (action === "cancel") {
         messageItem.querySelector(".message-content").hidden = false;
         messageItem.querySelector(".message-actions").hidden = false;
@@ -233,7 +243,9 @@ messageList.addEventListener("submit", async event => {
     if (!form) return;
     event.preventDefault();
     const messageId = form.closest(".message-item").dataset.messageId;
-    const result = await request(`/messages/${messageId}`, { method: "PUT", body: JSON.stringify({ content: form.content.value }) });
+    const result = form.dataset.replyTo
+        ? await request("/messages", { method: "POST", body: JSON.stringify({ itemId: Number(itemId), replyToId: Number(form.dataset.replyTo), content: form.content.value }) })
+        : await request(`/messages/${messageId}`, { method: "PUT", body: JSON.stringify({ content: form.content.value }) });
     if (result.success) loadMessages(); else alert(result.message);
 });
 

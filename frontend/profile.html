@@ -53,8 +53,8 @@
                 <div class="inline-field">
                     <label>验证码<input name="code" maxlength="6" placeholder="6位数字" required></label>
                 </div>
-                <label>新密码<input name="newPassword" type="password" placeholder="6-12位字母和数字" required></label>
-                <label>确认新密码<input name="confirmPassword" type="password" placeholder="再次输入新密码" required></label>
+                <label>新密码<input name="newPassword" type="password" placeholder="6-12位字母和数字" minlength="6" maxlength="12" pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,12}" title="密码需为6-12位字母和数字，且同时包含字母和数字" required></label>
+                <label>确认新密码<input name="confirmPassword" type="password" placeholder="再次输入新密码" minlength="6" maxlength="12" required></label>
                 <button type="submit">重置密码</button>
             </div>
 

@@ -60,6 +60,11 @@ fpSendCodeBtn?.addEventListener("click", async () => {
 forgotPasswordForm?.addEventListener("submit", async event => {
     event.preventDefault();
     const data = { email: fpEmail.value.trim(), code: forgotPasswordForm.code.value.trim(), newPassword: forgotPasswordForm.newPassword.value };
+    if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,12}$/.test(data.newPassword)) {
+        fpMessage.textContent = "新密码需为6-12位字母和数字，且同时包含字母和数字";
+        forgotPasswordForm.newPassword.focus();
+        return;
+    }
     if (data.newPassword !== forgotPasswordForm.confirmPassword.value) { fpMessage.textContent = "两次输入的密码不一致"; return; }
     const result = await request("/auth/password/reset", { method: "POST", body: JSON.stringify(data) });
     if (result.success) { redirectToLoginWithMessage("密码重置成功，请使用新密码登录"); return; }
