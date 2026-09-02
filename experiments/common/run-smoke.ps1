@@ -27,7 +27,12 @@ function Wait-TcpPort([string]$HostName, [int]$Port, [int]$TimeoutSeconds) {
 try {
     & (Join-Path $PSScriptRoot "install-metrics-server.ps1") -Context $Context
 
-    $pwsh = (Get-Command pwsh -ErrorAction Stop).Source
+    # Reuse the host that launched the experiment. A student machine may only
+    # have Windows PowerShell 5.1 (`powershell.exe`) and not PowerShell 7 (`pwsh`).
+    $currentPowerShell = (Get-Process -Id $PID -ErrorAction Stop).Path
+    if ([string]::IsNullOrWhiteSpace($currentPowerShell)) {
+        throw "Cannot resolve the current PowerShell executable for the resource sampler."
+    }
     $samplerArguments = @(
         "-NoProfile", "-File", (Join-Path $PSScriptRoot "collect-resources.ps1"),
         "-OutputPath", (Join-Path $RunDirectory "resource-samples.csv"),
@@ -35,7 +40,7 @@ try {
         "-Context", $Context,
         "-Namespace", $Namespace
     )
-    $sampler = Start-Process -FilePath $pwsh -ArgumentList $samplerArguments -WindowStyle Hidden -PassThru
+    $sampler = Start-Process -FilePath $currentPowerShell -ArgumentList $samplerArguments -WindowStyle Hidden -PassThru
 
     $kubectl = (Get-Command kubectl -ErrorAction Stop).Source
     $forwardLog = Join-Path $RunDirectory "port-forward.log"

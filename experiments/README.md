@@ -16,3 +16,5 @@ powershell -ExecutionPolicy Bypass -File experiments/run.ps1 -Experiment perform
 - k6 固定为 Grafana 官方 GHCR `1.5.0` manifest digest `sha256:2072ea9eafa596532d9aee0cc0e0a50cfb0e7fb703981a46179af5f4f22c5ea4`，避免浮动标签和 Docker Hub 证书差异。
 
 基础 smoke 要求已有可访问的 Kind 集群；默认 context 为 `kind-campus-ci`，namespace 为 `campus-market`。它会安装固定版本 Metrics Server、自动建立 Web port-forward、用 Docker k6 请求 Gateway liveness，并保存资源采样与失败诊断。
+
+入口兼容 Windows PowerShell 5.1 (`powershell.exe`) 与 PowerShell 7 (`pwsh`)；后台资源采样器会复用启动入口的同一个 PowerShell host，不要求额外安装 PowerShell 7。

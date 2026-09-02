@@ -28,6 +28,12 @@
 - 遗留：B/C/D 分别实现 `experiments/hpa/run.ps1`、`experiments/fault/run.ps1`、`experiments/performance/run.ps1`；完整原始结果仅保留为课程附件或 CI artifact，不进入 Git。
 - 提交号：本轮提交后使用 `git log -1` 查看。
 
+### 云原生 smoke 兼容 Windows PowerShell 5.1（2026-09-02）
+
+- 修复 `run-smoke.ps1` 硬编码寻找 PowerShell 7 `pwsh` 的问题；资源采样器现在复用启动实验的当前 PowerShell 可执行文件，因此只有 Windows PowerShell 5.1 的开发机也能运行。
+- 回归测试直接约束真实调用点不得重新依赖 `Get-Command pwsh`；最终使用 `powershell.exe` 入口运行完整 Kind smoke 验收。
+- 提交号：本轮提交后使用 `git log -1` 查看。
+
 ### 文档去重与用例口径收敛（2026-08-31）
 
 - 将旧《测试文档》从重复的测试建设规划压缩为历史索引，明确《软件测试文档》《测试清单》《校园二手交易平台测试文档》《全量测试文档》和《需求追溯矩阵》的唯一职责。

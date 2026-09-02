@@ -59,6 +59,12 @@ test('k6 adapter pins the verified GHCR image digest and preserves native stderr
   assert.match(adapter, /Tee-Object -FilePath \$consolePath/);
 });
 
+test('smoke resource sampler reuses the current PowerShell host instead of requiring pwsh', () => {
+  const smoke = readFileSync(resolve(common, 'run-smoke.ps1'), 'utf8');
+  assert.match(smoke, /Get-Process\s+-Id\s+\$PID/);
+  assert.doesNotMatch(smoke, /Get-Command\s+pwsh/);
+});
+
 test('PowerShell JSON writers use UTF-8 without BOM and verifier accepts legacy BOM evidence', () => {
   for (const path of [
     resolve(common, '..', 'run.ps1'),
