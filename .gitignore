@@ -22,6 +22,9 @@ e2e/node_modules/
 e2e/test-results/
 test-results/
 
+# Generated cloud-native experiment evidence (archive externally, never commit secrets/log dumps)
+artifacts/cloud-native/
+
 # Local secrets and environment overrides
 .env
 .env.*

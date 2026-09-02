@@ -18,6 +18,16 @@
 
 ## 当前状态
 
+### 云原生实验成员 A：可复现实验基础（2026-09-02）
+
+- 建立 `experiments/run.ps1` 统一入口和 smoke/HPA/故障/性能四种实验契约；运行成功或失败都会生成环境、诊断、资源采样、日志、文件哈希和机器可读 `result.json`，失败保持非零退出码。
+- 固定并校验 Metrics Server v0.9.0 清单，Kind 安装器等待 Metrics API 就绪且重复执行不会重启已 Ready 的 Pod；固定官方 GHCR k6 镜像 digest，宿主机无需安装 k6。
+- 新增确定性基准数据生成器和 Schema；seed `20260902` 的正式规模为 2,500 用户、20,000 商品、50,000 公开留言。三份 CSV SHA-256 分别为 `0bbf1d00...fffae`、`3d15700e...3036`、`fac9853b...fb1a3`。
+- 修复 Windows PowerShell 5.1 `Set-Content -Encoding utf8` 写 BOM 导致 Node JSON 校验失败的问题；新 JSON 使用无 BOM UTF-8，校验器仍兼容既有 BOM 证据。
+- 验证：公共 Node 测试 7/7、全部实验 PowerShell 解析通过；受控 HPA 缺实现流程退出码 1 且 FAIL 证据通过校验；真实 `kind-campus-ci` smoke 中 Metrics API 和 Pod 资源采样成功、k6 3/3 请求成功、11 个证据文件哈希全部通过。
+- 遗留：B/C/D 分别实现 `experiments/hpa/run.ps1`、`experiments/fault/run.ps1`、`experiments/performance/run.ps1`；完整原始结果仅保留为课程附件或 CI artifact，不进入 Git。
+- 提交号：本轮提交后使用 `git log -1` 查看。
+
 ### 文档去重与用例口径收敛（2026-08-31）
 
 - 将旧《测试文档》从重复的测试建设规划压缩为历史索引，明确《软件测试文档》《测试清单》《校园二手交易平台测试文档》《全量测试文档》和《需求追溯矩阵》的唯一职责。

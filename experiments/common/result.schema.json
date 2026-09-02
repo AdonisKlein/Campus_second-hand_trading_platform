@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://campus.example/schemas/cloud-native-experiment-result-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "experiment", "status", "startedAt", "finishedAt", "gitCommit", "context", "namespace", "failure", "evidence"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "runId": {"type": "string", "minLength": 1},
+    "experiment": {"enum": ["smoke", "hpa", "fault", "performance"]},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "startedAt": {"type": "string", "format": "date-time"},
+    "finishedAt": {"type": "string", "format": "date-time"},
+    "gitCommit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "context": {"type": "string", "minLength": 1},
+    "namespace": {"type": "string", "minLength": 1},
+    "failure": {"type": ["string", "null"]},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "bytes"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}

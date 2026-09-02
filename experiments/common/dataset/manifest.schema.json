@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://campus.example/schemas/canonical-benchmark-dataset-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "seed", "anchorTime", "counts", "files"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "seed": {"type": "integer", "minimum": 1},
+    "anchorTime": {"type": "string", "format": "date-time"},
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["users", "items", "messages"],
+      "properties": {
+        "users": {"type": "integer", "minimum": 2},
+        "items": {"type": "integer", "minimum": 1},
+        "messages": {"type": "integer", "minimum": 1}
+      }
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["users.csv", "items.csv", "messages.csv"],
+      "properties": {
+        "users.csv": {"$ref": "#/$defs/file"},
+        "items.csv": {"$ref": "#/$defs/file"},
+        "messages.csv": {"$ref": "#/$defs/file"}
+      }
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "bytes"],
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "bytes": {"type": "integer", "minimum": 1}
+      }
+    }
+  }
+}

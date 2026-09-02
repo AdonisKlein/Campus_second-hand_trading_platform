@@ -157,6 +157,15 @@ scripts/ci/                    服务验证、测试报告和 Kind 本地部署�
 - Nginx 同源代理 `/api/` 到 Gateway；生产 TLS 需把 Session Cookie Secure 设为 true。
 - Flyway 分别从四个空库建表；本项目没有历史生产库升级负担。旧 `database/seed.sql` 不兼容微服务四库，不能导入。
 
+## 云原生实验公共 interface
+
+- 统一入口是 `experiments/run.ps1 -Experiment smoke|hpa|fault|performance`。入口负责生成 runId、采集环境、调用实验 adapter、收集 Kubernetes 诊断、计算证据 SHA-256 并写入 `result.json`；HPA、故障隔离和性能实验不得各自复制这套流程。
+- B/C/D 只需在各自目录提供参数一致的 `run.ps1`：`RunDirectory`、`Context`、`Namespace`、`BaseUrl`。实验失败必须抛出错误，由公共入口保留证据并返回非零退出码。
+- Metrics Server 固定为仓库内校验过 SHA-256 的 v0.9.0 清单；安装器等待 `metrics.k8s.io` 返回真实数据，不使用固定 sleep。资源采样统一写 `resource-samples.csv`。
+- k6 通过固定 digest 的官方 GHCR 镜像运行，宿主机无需安装 k6；控制台、机器可读 summary 和镜像 digest 都进入证据目录。
+- `experiments/common/dataset` 使用固定 seed 生成 2,500 用户、20,000 商品和 50,000 公开留言的逻辑基准数据。D 负责在不改变逻辑 ID/内容的前提下将它适配为两个版本的导入 SQL。
+- 完整运行产物位于被 Git 忽略的 `artifacts/cloud-native/<runId>/`，不提交本地环境或大体积原始结果。提交小型摘要前必须先执行 `verify-evidence.mjs`，且任何证据都不得包含 Secret、SMTP 密码或 `.env`。
+
 ## 已知非阻断债务
 
 - 未被商品引用的上传图片暂未自动回收；后续可增加临时上传记录与定时清理。
