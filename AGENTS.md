@@ -7,6 +7,7 @@
 3. `docs/ai/PROJECT_CONTEXT.md`：代码地图、关键 interface 和安全不变量。
 4. `docs/ai/WORKLOG.md`：已经完成的轮次、当前工作和后续事项。
 5. `docs/roadmap/2026-08-microservices-migration.md`：微服务工作项 1—11、数据归属和实验路线。
+6. `云原生实验与性能对比四人实施计划.md`：工作项 9—11 的四人文件归属、合并顺序和实验证据要求。
 
 ## 工作规则
 
@@ -18,6 +19,8 @@
 - 每个业务轮次结束时更新 `docs/ai/WORKLOG.md`，写清完成内容、验证证据、提交号和遗留项。
 - 修改 interface 时同步更新 `docs/ai/PROJECT_CONTEXT.md`、Postman 契约和相关测试。
 - 独立 review、静态检查等边界清晰的子任务默认使用低成本/低 token 模型；只有复杂架构或疑难故障再升级模型。
+- 云原生实验在 `codex/cloud-native-experiments` 集成；A/B/C/D 只修改分工计划规定的区域，共享实验入口和最终文档由 A 合并。
+- `midterm-check` 与 `microservices-end` 是性能实验基线，禁止在实验过程中移动；正式对比数据必须在同一台机器用同一数据和同一压力脚本产生。
 
 
 ## 常用验证
