@@ -309,17 +309,17 @@ jobs:
       - name: Sign in to GHCR
         shell: powershell
         env:
-          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
-          GHCR_READ_TOKEN: ${{ secrets.GHCR_READ_TOKEN }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if ([string]::IsNullOrWhiteSpace($env:GHCR_USERNAME)) {
-            throw 'Configure GHCR_USERNAME repository secret for the local runner.'
+            throw 'GitHub actor is empty.'
           }
-          if ([string]::IsNullOrWhiteSpace($env:GHCR_READ_TOKEN)) {
-            throw 'Configure GHCR_READ_TOKEN repository secret for the local runner.'
+          if ([string]::IsNullOrWhiteSpace($env:GHCR_TOKEN)) {
+            throw 'GITHUB_TOKEN is empty.'
           }
           Write-Host "Logging in to GHCR as $env:GHCR_USERNAME"
-          $env:GHCR_READ_TOKEN | docker login ghcr.io --username $env:GHCR_USERNAME --password-stdin
+          $env:GHCR_TOKEN | docker login ghcr.io --username $env:GHCR_USERNAME --password-stdin
       - name: Resolve immutable image tag
         shell: powershell
         run: |
