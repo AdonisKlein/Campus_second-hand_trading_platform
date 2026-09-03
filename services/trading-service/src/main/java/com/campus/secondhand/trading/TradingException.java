@@ -24,6 +24,11 @@ public class TradingException extends RuntimeException {
         return new TradingException(HttpStatus.CONFLICT, code, message);
     }
 
+    public static TradingException productUnavailable() {
+        return new TradingException(HttpStatus.SERVICE_UNAVAILABLE, "PRODUCT_SERVICE_UNAVAILABLE",
+                "商品服务暂时不可用，请稍后重试");
+    }
+
     public HttpStatus status() { return status; }
     public String code() { return code; }
 }

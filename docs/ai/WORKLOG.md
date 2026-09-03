@@ -18,6 +18,22 @@
 
 ## 当前状态
 
+### 云原生实验成员 C：Kind 故障隔离现场（2026-09-02）
+
+- 本机 Kind `v0.33.0` / `go1.26.7` `windows/amd64`，集群 `campus-ci`、context `kind-campus-ci`、namespace `campus-market`。Docker Desktop 需关闭 containerd snapshotter 与容器代理，否则 Kind 节点拉镜像与 `docker build` 会失败。
+- 命令：`powershell -ExecutionPolicy Bypass -File experiments/run.ps1 -Experiment fault`。公共入口 `result.json` 为 **PASS**，runId `fault-20260902T074227Z-22133ba3`，gitCommit `22133ba3`。
+- Marketplace 扩为 0 后 8 次新购买意向均为 HTTP 503、`PRODUCT_SERVICE_UNAVAILABLE`、`Retry-After: 1`，最大延迟 71ms。故障期间订单数保持 4，未写新单；Account/Governance/Trading 保持 Ready，Trading 未重启。Marketplace 恢复后新订单 id=5，熔断日志轨迹含 `CLOSED -> OPEN -> HALF_OPEN -> CLOSED`（本次 run 叠加上一轮同 Pod 日志）。
+- 证据目录（Git 忽略）：`artifacts/cloud-native/fault-20260902T074227Z-22133ba3/`，含 `fault-summary.json`、`circuit-transitions.txt`、`result.json`。adapter 侧 PowerShell 5.1 修复：seed 用相对路径 `kubectl cp`、登录 503 重试、商品 JSON UTF-8 bytes、熔断日志按行正则匹配。
+- 遗留：未提交。用户要求提交时建议信息 `experiment: demonstrate dependency fault isolation`。工作项 9（HPA）和 11（性能对比）仍待 B/D。
+
+### 云原生实验成员 C：依赖故障隔离（2026-09-02）
+
+- Trading 将 Marketplace 读取收口到 `MarketplaceDependency.executeRead`：300ms/800ms 超时、仅 GET 重试一次、Resilience4j 2.4.0 熔断（窗口 10、最少 5 次、失败率 50%、打开 15s、半开 2 次）。业务 404/4xx 不计入失败；网络/超时/5xx 计入。
+- 创建购买意向在 Marketplace 不可用时返回 HTTP 503、`PRODUCT_SERVICE_UNAVAILABLE`、固定文案「商品服务暂时不可用，请稍后重试」和 `Retry-After: 1`；不写订单、不写 Outbox。熔断不注册 health indicator，liveness/readiness 保持 UP。状态只打结构化日志，无新的公开管理接口。
+- Kind adapter 为 `experiments/fault/run.ps1`，兼容成员 A 的 `RunDirectory/Context/Namespace/BaseUrl` 参数；由 `experiments/run.ps1 -Experiment fault` 调用，不复制环境采集、诊断或 `result.json`。
+- 验证：Trading `mvn test` 27/27 通过（含 `MarketplaceDependencyTest` 7 项与 `MarketplaceFaultIsolationTest` 4 项）；`experiments/common/tests/verify-powershell.ps1` 与 `git diff --check` 通过。
+- Kind 现场已补跑并通过，见上一条。提交号在用户要求提交后用 `git log -1` 查看。
+
 ### 云原生实验成员 A：可复现实验基础（2026-09-02）
 
 - 建立 `experiments/run.ps1` 统一入口和 smoke/HPA/故障/性能四种实验契约；运行成功或失败都会生成环境、诊断、资源采样、日志、文件哈希和机器可读 `result.json`，失败保持非零退出码。

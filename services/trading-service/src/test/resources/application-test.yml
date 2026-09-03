@@ -22,3 +22,9 @@ campus:
     handover-minutes: 4320
     messaging-enabled: false
     expiry-scan-ms: 3600000
+management:
+  health:
+    rabbit:
+      enabled: false
+    circuitbreakers:
+      enabled: false

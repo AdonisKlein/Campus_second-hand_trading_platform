@@ -1,0 +1,8 @@
+{
+  "category": "生活用品",
+  "description": "故障隔离实验商品，支持校内当面验货。",
+  "region": "学院路校区",
+  "tags": ["支持验货"],
+  "existingTitlePrefix": "故障隔离商品",
+  "faultTitlePrefix": "故障隔离待购"
+}

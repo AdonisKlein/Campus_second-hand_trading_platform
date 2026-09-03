@@ -14,7 +14,7 @@ class TradingExceptionHandler {
     ResponseEntity<ApiResponse<Void>> trading(TradingException error) {
         var builder = ResponseEntity.status(error.status());
         if (error.status() == HttpStatus.SERVICE_UNAVAILABLE) builder.header("Retry-After", "1");
-        return builder.body(ApiResponse.fail(error.getMessage()));
+        return builder.body(ApiResponse.fail(error.code(), error.getMessage()));
     }
 
     @ExceptionHandler(AccessDeniedException.class)

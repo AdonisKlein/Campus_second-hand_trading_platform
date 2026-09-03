@@ -1,26 +1,22 @@
 package com.campus.secondhand.trading;
 
+import com.campus.secondhand.trading.dependency.MarketplaceDependency;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.netty.http.client.HttpClient;
-import io.netty.channel.ChannelOption;
 
 abstract class OwnedRemoteAdapter {
     private final WebClient client;
     private final TradingProperties properties;
 
     OwnedRemoteAdapter(WebClient.Builder builder, TradingProperties properties, String baseUrl) {
-        this.client = builder.clone().clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.dependencyConnectTimeoutMs())))
-                .baseUrl(baseUrl).build();
+        this.client = InternalWebClients.create(builder, baseUrl, properties.dependencyConnectTimeoutMs());
         this.properties = properties;
     }
 
@@ -29,7 +25,8 @@ abstract class OwnedRemoteAdapter {
             return client.get().uri(path, values)
                     .header("X-Internal-Service-Token", properties.internalServiceToken())
                     .retrieve().onStatus(HttpStatusCode::isError, response -> response.createException())
-                .bodyToMono(Map.class).timeout(Duration.ofMillis(properties.dependencyResponseTimeoutMs())).retry(1).block();
+                    .bodyToMono(Map.class).timeout(Duration.ofMillis(properties.dependencyResponseTimeoutMs()))
+                    .retry(1).block();
         } catch (WebClientResponseException.NotFound ignored) {
             return Map.of();
         } catch (RuntimeException error) {
@@ -68,15 +65,18 @@ class HttpAccountAdapter extends OwnedRemoteAdapter implements AccountPort,
 }
 
 @Component
-class HttpMarketplaceAdapter extends OwnedRemoteAdapter implements MarketplacePort,
+class HttpMarketplaceAdapter implements MarketplacePort,
         com.campus.secondhand.trading.chat.MarketplacePort {
-    HttpMarketplaceAdapter(WebClient.Builder builder, TradingProperties properties) {
-        super(builder, properties, properties.marketplaceUri());
+    private final MarketplaceDependency marketplace;
+
+    HttpMarketplaceAdapter(MarketplaceDependency marketplace) {
+        this.marketplace = marketplace;
     }
 
     @Override
     public Optional<ItemSnapshot> find(long itemId) {
-        Object raw = get("/internal/items/{id}/trade-snapshot", itemId).get("data");
+        Object raw = marketplace.executeRead("trade-snapshot", "/internal/items/{id}/trade-snapshot", itemId)
+                .get("data");
         if (!(raw instanceof Map<?, ?> data)) return Optional.empty();
         return Optional.of(new ItemSnapshot(((Number) data.get("id")).longValue(),
                 ((Number) data.get("sellerId")).longValue(), String.valueOf(data.get("title")),

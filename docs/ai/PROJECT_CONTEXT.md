@@ -1,6 +1,6 @@
 # AI 项目上下文
 
-更新日期：2026-08-31
+更新日期：2026-09-02
 
 ## 微服务迁移工作区
 
@@ -11,7 +11,7 @@
 - Account 独占自己的 `users` 与 `email_verification` 数据库结构；内部密码验证和安全状态查询要求共享内部服务 token，外部资料/管理员接口要求 Gateway JWT。
 - 商品、图片、公开问答、搜索与商品管理路径由 Gateway 转发 Marketplace；订单和私聊路径转发 Trading；举报路径转发 Governance。Gateway 不再包含单体 URI 或兜底路由。
 - Marketplace 独占 `items`、`item_tags`、`messages`、`searchable_user_projection`；Account/Trading 依赖位于 `AccountPublicPort`、`TradingInquiryPort`，生产 adapter 使用 300ms/800ms 超时，测试 adapter 可替换。搜索只读本地公开投影，不查询 Account 数据库。
-- Trading 独占 `trade_orders`、`chat_conversations`、`chat_messages`、`chat_blocks` 及自己的 Inbox/Outbox。`TradingWorkflow` 负责购买意向与 Saga 状态机，`DirectChat` 负责会话、未读、屏蔽和消息；Account/Marketplace 通过 REST port 查询安全快照，商品预留、释放和售出通过 RabbitMQ 事件完成。
+- Trading 独占 `trade_orders`、`chat_conversations`、`chat_messages`、`chat_blocks` 及自己的 Inbox/Outbox。`TradingWorkflow` 负责购买意向与 Saga 状态机，`DirectChat` 负责会话、未读、屏蔽和消息；Account/Marketplace 通过 REST port 查询安全快照，商品预留、释放和售出通过 RabbitMQ 事件完成。Marketplace 读取只经过 `MarketplaceDependency.executeRead`：300ms 连接超时、800ms 响应超时、仅 GET 重试一次、Resilience4j `marketplaceReads` 熔断；依赖故障返回 `503 PRODUCT_SERVICE_UNAVAILABLE` 且不写订单/Outbox。熔断状态不进入 liveness/readiness。
 - Governance 独占 `content_reports`、`report_actions` 及自己的 Inbox/Outbox。`ContentGovernance` 区分管理员决定和动作交付状态；举报对象通过 Account/Marketplace 快照 port 读取，治理动作通过 RabbitMQ 交给数据所有者幂等执行。
 - 工作项 6 已完成默认微服务运行拓扑：Compose/Kind 均包含 Gateway、四个业务服务、MySQL 四库四账号、Redis、RabbitMQ 和 Web。`scripts/dev/microservices.ps1` 会验证容器健康、Flyway、跨库拒绝和同源入口；`scripts/ci/kind-local.ps1` 负责本地 Kind 构建、部署与冒烟。
 - `contracts/http/public-api-v1.tsv` 冻结当前公开 method + path；`contracts/events/*.v1.schema.json` 冻结 5 类 RabbitMQ 事件。事件必填字段不能在 v1 删除，消费者必须忽略新增元数据；`verify-event-contracts.mjs` 是对应门禁。
@@ -111,6 +111,8 @@ scripts/ci/                    服务验证、测试报告和 Kind 本地部署�
 - 商品锁顺序先于订单锁；买卖身份由 Session 和商品推导；合法动作由订单状态和参与方共同决定；意向过期不修改商品，待交接预留取消或过期才恢复在售。
 - Controller、定时任务和测试都必须穿过这个 interface，不要直接改订单状态。
 - `TradeDesk` 按“我买到的 / 我卖出的”和交易阶段返回统计、商品分组、安全的对方公开资料、有效状态、剩余时间、时间线和关闭原因。邮箱、手机号等账号资料不得进入订单投影。
+- Marketplace 远程读取 seam：`MarketplaceDependency.executeRead(operation, path, uriVariables)`。调用方不得自建 WebClient 超时、重试或熔断。公开失败契约为 HTTP 503、`code=PRODUCT_SERVICE_UNAVAILABLE`、固定文案「商品服务暂时不可用，请稍后重试」、`Retry-After: 1`。业务 404/4xx 不计入熔断；网络超时和 5xx 计入。状态变化只写结构化日志 `marketplace circuit transition from={} to={}`，不新增公开管理接口。
+- Kind 故障实验 adapter 是 `experiments/fault/run.ps1`，由 `experiments/run.ps1 -Experiment fault` 调用；停止 Marketplace 后新购买意向必须稳定 503，已有订单仍从 Trading 自己的库读取，Account/Governance/Trading 保持 Ready，恢复后无需重启 Trading。
 
 ### 商品详情 module（第十二轮）
 
@@ -171,4 +173,4 @@ scripts/ci/                    服务验证、测试报告和 Kind 本地部署�
 - 未被商品引用的上传图片暂未自动回收；后续可增加临时上传记录与定时清理。
 - 文件系统 adapter 适合当前单机部署；多实例部署前应替换为 MinIO/S3 adapter。
 - Windows/移动原生客户端的短 access token + rotation refresh token 尚未实现。
-- 微服务工作项 1—8 的代码已完成；`microservices-end` 只能在 main 分支 CI 的 Kind 部署与冒烟全绿后创建。下一阶段是暂缓的 HPA、依赖故障隔离和单体/微服务性能对比实验。
+- 微服务工作项 1—8 的代码已完成；`microservices-end` 只能在 main 分支 CI 的 Kind 部署与冒烟全绿后创建。工作项 10 的 Trading 熔断、`experiments/fault` adapter 与本机 Kind `v0.33.0` 现场实验（`fault-20260902T074227Z-22133ba3` PASS）已在 `codex/cloud-native-experiments` 落地。工作项 9（HPA）和 11（性能对比）仍待 B/D。

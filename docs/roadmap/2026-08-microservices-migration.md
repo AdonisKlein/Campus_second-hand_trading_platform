@@ -10,7 +10,7 @@
 
 - Account、Marketplace、Trading 与 Governance 四个业务服务均已提取，Gateway 已删除单体兜底路由。
 - 微服务版已经具备独立 Maven 验证、API/MySQL/Redis/RabbitMQ 集成测试、8 个用例追溯、Playwright E2E、版本化事件契约、统一测试报告、版本化镜像、Kind 部署、健康检查和失败证据收集。
-- 业务微服务代码完成度为 `4/4`；工作项 1—8 的代码已落地。HPA、故障实验和性能对比尚未开始。
+- 业务微服务代码完成度为 `4/4`；工作项 1—8 的代码已落地。工作项 10 的 Trading 熔断与故障实验 adapter 已在 `codex/cloud-native-experiments` 实现，Kind 现场运行仍待本机集群。HPA 与性能对比尚未开始。
 - `monolith-start` 是不可移动的改造前版本标记；微服务工作项 1—8 全绿后创建 `microservices-end`。
 
 ## 2. 最终服务划分
@@ -162,6 +162,7 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 停止 Marketplace 或注入延迟。
 - Trading 使用超时、限次重试和熔断，返回 `503 PRODUCT_SERVICE_UNAVAILABLE` 且不创建订单。
 - 证明 Account、Governance 和既有交易读取不跟随崩溃。
+- 实现状态：Trading `MarketplaceDependency` + Resilience4j `marketplaceReads` 与 `experiments/fault/run.ps1` 已在 `codex/cloud-native-experiments` 落地；公开契约为 503 / `PRODUCT_SERVICE_UNAVAILABLE` / `Retry-After: 1`。Kind 现场实验需已有 `kind-campus-ci` 集群后执行 `experiments/run.ps1 -Experiment fault`。合并前以该现场证据和 `git log -1` 为准。
 
 ### 工作项 11：单体与微服务性能对比
 

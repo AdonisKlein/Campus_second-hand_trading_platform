@@ -33,6 +33,26 @@ campus:
     messaging-enabled: ${TRADING_MESSAGING_ENABLED:false}
     dependency-connect-timeout-ms: ${DEPENDENCY_CONNECT_TIMEOUT_MS:300}
     dependency-response-timeout-ms: ${DEPENDENCY_RESPONSE_TIMEOUT_MS:800}
+resilience4j:
+  circuitbreaker:
+    configs:
+      marketplace:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 15s
+        permittedNumberOfCallsInHalfOpenState: 2
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        registerHealthIndicator: false
+        recordExceptions:
+          - com.campus.secondhand.trading.dependency.MarketplaceFailureException
+        ignoreExceptions:
+          - com.campus.secondhand.trading.dependency.MarketplaceBusinessException
+    instances:
+      marketplaceReads:
+        baseConfig: marketplace
+        registerHealthIndicator: false
 management:
   info:
     env:
@@ -45,6 +65,9 @@ management:
     health:
       probes:
         enabled: true
+  health:
+    circuitbreakers:
+      enabled: false
 info:
   app:
     name: ${spring.application.name}

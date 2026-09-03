@@ -1,6 +1,6 @@
 # Kubernetes / Kind 微服务部署
 
-`k8s/base` 是环境无关的微服务运行拓扑，`k8s/overlays/ci` 叠加本地/CI 使用的 Mailpit 和配置。Kustomize 已内置在 `kubectl` 中。
+`k8s/base` 是环境无关的微服务运行拓扑，`k8s/overlays/ci` 叠加本地/CI 使用的 Mailpit 和配置。`k8s/overlays/fault` 在 CI overlay 上为故障隔离实验补齐副本与资源限制，默认仍由 `scripts/ci/kind-local.ps1` 部署 CI overlay。Kustomize 已内置在 `kubectl` 中。
 
 ## Base 中包含什么
 

@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: gateway}
+spec:
+  template:
+    spec:
+      containers:
+        - name: gateway
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: account-service}
+spec:
+  template:
+    spec:
+      containers:
+        - name: account
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: marketplace-service}
+spec:
+  template:
+    spec:
+      containers:
+        - name: marketplace
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: trading-service}
+spec:
+  template:
+    spec:
+      containers:
+        - name: trading
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: governance-service}
+spec:
+  template:
+    spec:
+      containers:
+        - name: governance
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: web}
+spec:
+  template:
+    spec:
+      containers:
+        - name: web
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 200m, memory: 128Mi}
