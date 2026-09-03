@@ -1,0 +1,17 @@
+{
+  "itemId": 20001,
+  "imageUrl": "/media/product-images/9001/584ea625-c388-41b8-8ad2-8ae26ff49b9a.png",
+  "checks": {
+    "/media/product-images/9001/584ea625-c388-41b8-8ad2-8ae26ff49b9a.png": {
+      "status": 401,
+      "contentType": "application/json",
+      "bytes": 54
+    },
+    "/api/media/product-images/9001/584ea625-c388-41b8-8ad2-8ae26ff49b9a.png": {
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 180
+    }
+  },
+  "checkedAt": "2026-09-03T09:51:17+0800"
+}

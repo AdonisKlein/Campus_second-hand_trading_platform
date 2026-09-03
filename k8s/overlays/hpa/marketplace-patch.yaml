@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketplace-service
+spec:
+  template:
+    spec:
+      containers:
+        - name: marketplace
+          env:
+            - name: IMAGE_STORAGE
+              value: minio
+            - name: MINIO_ENDPOINT
+              value: http://minio:9000
+            - name: MINIO_ACCESS_KEY
+              value: minioadmin
+            - name: MINIO_SECRET_KEY
+              value: minioadmin
+            - name: MINIO_BUCKET
+              value: campus-product-images
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 1536Mi
+          volumeMounts:
+            - name: media
+              $patch: delete
+      volumes:
+        - name: media
+          $patch: delete

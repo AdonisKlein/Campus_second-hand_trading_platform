@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: campus-market
+resources:
+  - ../ci
+  - hpa.yaml
+  - minio/minio-deployment.yaml
+  - minio/minio-pvc.yaml
+patches:
+  - path: marketplace-patch.yaml
+replicas:
+  - {name: gateway, count: 1}
+  - {name: account-service, count: 1}
+  - {name: marketplace-service, count: 1}
+  - {name: trading-service, count: 1}
+  - {name: governance-service, count: 1}
+  - {name: web, count: 1}

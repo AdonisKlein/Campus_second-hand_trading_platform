@@ -1,0 +1,30 @@
+18m         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa      New size: 5; reason: cpu resource utilization (percentage of request) above target
+18m         Normal    SuccessfulCreate               replicaset/marketplace-service-84786c7f9     Created pod: marketplace-service-84786c7f9-cfgxc
+18m         Normal    Scheduled                      pod/marketplace-service-84786c7f9-vfwvt      Successfully assigned campus-market/marketplace-service-84786c7f9-vfwvt to campus-microservices-control-plane
+18m         Normal    ScalingReplicaSet              deployment/marketplace-service               Scaled up replica set marketplace-service-84786c7f9 from 3 to 5
+18m         Normal    Created                        pod/marketplace-service-84786c7f9-cfgxc      Container created
+18m         Normal    Started                        pod/marketplace-service-84786c7f9-vfwvt      Container started
+18m         Normal    Pulled                         pod/marketplace-service-84786c7f9-vfwvt      Container image "campus-marketplace-service:dev" already present on machine and can be accessed by the pod
+18m         Normal    Created                        pod/marketplace-service-84786c7f9-vfwvt      Container created
+18m         Normal    Pulled                         pod/marketplace-service-84786c7f9-cfgxc      Container image "campus-marketplace-service:dev" already present on machine and can be accessed by the pod
+18m         Normal    Started                        pod/marketplace-service-84786c7f9-cfgxc      Container started
+17m         Warning   Unhealthy                      pod/marketplace-service-84786c7f9-vfwvt      Startup probe failed: Get "http://10.244.0.27:8082/actuator/health/liveness": dial tcp 10.244.0.27:8082: connect: connection refused
+17m         Warning   Unhealthy                      pod/marketplace-service-84786c7f9-cfgxc      Startup probe failed: Get "http://10.244.0.28:8082/actuator/health/liveness": dial tcp 10.244.0.28:8082: connect: connection refused
+15m         Warning   Unhealthy                      pod/rabbitmq-684b985b94-qllb8                Liveness probe failed: command timed out: "rabbitmq-diagnostics -q ping" timed out after 5s
+15m         Warning   Unhealthy                      pod/rabbitmq-684b985b94-qllb8                Readiness probe failed: command timed out: "rabbitmq-diagnostics -q ping" timed out after 5s
+14m         Normal    Killing                        pod/rabbitmq-684b985b94-qllb8                Container rabbitmq failed liveness probe, will be restarted
+13m         Warning   Unhealthy                      pod/rabbitmq-684b985b94-qllb8                Startup probe failed: command timed out: "rabbitmq-diagnostics -q ping" timed out after 5s
+10m         Warning   Unhealthy                      pod/campus-mysql-0                           Liveness probe failed: command timed out: "sh -c mysqladmin ping -h 127.0.0.1 -uroot -p\"$MYSQL_ROOT_PASSWORD\" --silent" timed out after 1s
+7m21s       Normal    SuccessfulDelete               replicaset/marketplace-service-84786c7f9     Deleted pod: marketplace-service-84786c7f9-cfgxc
+7m21s       Normal    SuccessfulDelete               replicaset/marketplace-service-84786c7f9     Deleted pod: marketplace-service-84786c7f9-vfwvt
+7m21s       Normal    SuccessfulDelete               replicaset/marketplace-service-84786c7f9     Deleted pod: marketplace-service-84786c7f9-g8zdk
+7m21s       Normal    Killing                        pod/marketplace-service-84786c7f9-g8zdk      Stopping container marketplace
+7m21s       Normal    ScalingReplicaSet              deployment/marketplace-service               Scaled down replica set marketplace-service-84786c7f9 from 5 to 2
+7m21s       Normal    Killing                        pod/marketplace-service-84786c7f9-vfwvt      Stopping container marketplace
+7m21s       Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa      New size: 2; reason: All metrics below target
+7m21s       Normal    Killing                        pod/marketplace-service-84786c7f9-cfgxc      Stopping container marketplace
+7m6s        Normal    SuccessfulDelete               replicaset/marketplace-service-84786c7f9     Deleted pod: marketplace-service-84786c7f9-847p9
+7m6s        Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa      New size: 1; reason: All metrics below target
+7m6s        Normal    ScalingReplicaSet              deployment/marketplace-service               Scaled down replica set marketplace-service-84786c7f9 from 2 to 1
+7m6s        Normal    Killing                        pod/marketplace-service-84786c7f9-847p9      Stopping container marketplace
+57s         Warning   Unhealthy                      pod/mailpit-b56cc6ccd-f79s4                  Readiness probe failed: Get "http://10.244.0.7:8025/api/v1/info": context deadline exceeded (Client.Timeout exceeded while awaiting headers)

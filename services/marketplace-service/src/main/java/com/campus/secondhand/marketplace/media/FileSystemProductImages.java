@@ -13,9 +13,7 @@ import javax.imageio.*;
 import javax.imageio.stream.*;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
-@Service
 public class FileSystemProductImages implements ProductImages {
     private static final long MAX_UPLOAD_BYTES=5L*1024*1024,MAX_OWNER_BYTES=100L*1024*1024,MAX_PIXELS=12_000_000L;
     private static final int MAX_EDGE=8_000;

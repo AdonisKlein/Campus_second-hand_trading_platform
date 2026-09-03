@@ -1,0 +1,20 @@
+10h         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa    New size: 3; reason: cpu resource utilization (percentage of request) above target
+10h         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled up replica set marketplace-service-84786c7f9 from 1 to 3
+10h         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa    New size: 5; reason: cpu resource utilization (percentage of request) above target
+10h         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled up replica set marketplace-service-84786c7f9 from 3 to 5
+10h         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa    New size: 2; reason: All metrics below target
+10h         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled down replica set marketplace-service-84786c7f9 from 5 to 2
+10h         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa    New size: 1; reason: All metrics below target
+10h         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled down replica set marketplace-service-84786c7f9 from 2 to 1
+33m         Warning   FailedComputeMetricsReplicas   horizontalpodautoscaler/marketplace-hpa    invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: unable to get metrics for resource cpu: unable to fetch metrics from resource metrics API: the server is currently unable to handle the request (get pods.metrics.k8s.io)
+33m         Warning   FailedGetResourceMetric        horizontalpodautoscaler/marketplace-hpa    failed to get cpu utilization: unable to get metrics for resource cpu: unable to fetch metrics from resource metrics API: the server is currently unable to handle the request (get pods.metrics.k8s.io)
+27m         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled up replica set marketplace-service-84786c7f9 from 1 to 5
+16m         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled down replica set marketplace-service-84786c7f9 from 5 to 1
+13m         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled up replica set marketplace-service-84786c7f9 from 1 to 2
+13m         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa    New size: 2; reason: cpu resource utilization (percentage of request) above target
+12m         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled up replica set marketplace-service-84786c7f9 from 2 to 5
+12m         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa    New size: 5; reason: cpu resource utilization (percentage of request) above target
+73s         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled down replica set marketplace-service-84786c7f9 from 5 to 4
+73s         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa    New size: 4; reason: All metrics below target
+58s         Normal    ScalingReplicaSet              deployment/marketplace-service             Scaled down replica set marketplace-service-84786c7f9 from 4 to 1
+58s         Normal    SuccessfulRescale              horizontalpodautoscaler/marketplace-hpa    New size: 1; reason: All metrics below target

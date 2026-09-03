@@ -1,0 +1,11 @@
+# Metrics Server v0.9.0 (upstream Apache-2.0, kubernetes-sigs/metrics-server)
+# https://github.com/kubernetes-sigs/metrics-server/tree/v0.9.0/manifests/base
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - apiservice.yaml
+  - deployment.yaml
+  - rbac.yaml
+  - service.yaml
+patches:
+  - path: kind-patch.yaml

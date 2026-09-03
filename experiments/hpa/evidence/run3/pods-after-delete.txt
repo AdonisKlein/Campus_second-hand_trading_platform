@@ -1,0 +1,5 @@
+marketplace-service-84786c7f9-4jvxm   1/1   Running   0     3m5s
+marketplace-service-84786c7f9-5xsd8   1/1   Running   0     4m35s
+marketplace-service-84786c7f9-sx24w   1/1   Running   0     3m5s
+marketplace-service-84786c7f9-zc8jl   0/1   Running   0     28s
+marketplace-service-84786c7f9-zhn6f   1/1   Running   0     3m5s

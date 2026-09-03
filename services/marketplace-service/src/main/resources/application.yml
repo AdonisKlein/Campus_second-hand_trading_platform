@@ -36,6 +36,13 @@ campus:
   governance-events:
     enabled: ${GOVERNANCE_EVENTS_ENABLED:false}
     exchange: ${GOVERNANCE_EVENTS_EXCHANGE:campus.governance}
+  image:
+    storage: ${IMAGE_STORAGE:filesystem}   # 可选值: filesystem 或 minio
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://minio:9000}
+    access-key: ${MINIO_ACCESS_KEY:minioadmin}
+    secret-key: ${MINIO_SECRET_KEY:minioadmin}
+    bucket: ${MINIO_BUCKET:campus-product-images}
 management:
   info:
     env:

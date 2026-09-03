@@ -1,0 +1,62 @@
+[
+  {
+    "attempt": 1,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 2,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 3,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 4,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 5,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 6,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 7,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 8,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 9,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  },
+  {
+    "attempt": 10,
+    "status": 200,
+    "bytes": 180,
+    "type": "image/png"
+  }
+]

@@ -1,5 +1,69 @@
 # AI 持续工作日志
 
+### HPA 现场实验三轮收口与跨副本图片证据（2026-09-03，codex/experiment-hpa）
+
+- 完成 run2/run3 两轮正式实验（独立证据目录），每轮执行相同的 k6 分阶段加压
+  （20→50→100→150 VU 各 2 分钟），压力停止后均经 120s 稳定窗口缩回 1 副本。
+- 三轮汇总：run1 31204 次请求 0 失败（desired 1→3→5→1，CPU 利用率峰值 381%）；run2
+  33752 次请求 0 失败（1→5→1，峰值 748%）；run3 36136 次请求 1 次失败 0.00%（2→5→1，
+  峰值 347%，起点为 2 因图片准备请求触发提前扩容）。P95 延迟 2.48–2.70s，高并发下
+  5 副本 CPU 仍饱和，但错误率 ≈0。
+- 证据目录：`experiments/hpa/evidence/run1|run2|run3/`，含 5 秒采样 CSV（hpa-target 即
+  CPU% 时间线，hpa-desired 即副本时间线）、k6-summary.json、HPA before/after YAML、
+  describe 与事件文本、k6 控制台日志。
+- MinIO 跨副本图片证据：创建专用学生账号 `hpa-seller@example.test`（id 9001，密码 abc123，
+  仅用于实验，属可丢弃的 kind 集群测试数据）；1 副本时经网关上传 64×64 PNG 并发布商品
+  （item 20001），图片存 MinIO（/media/product-images/9001/…）；run3 扩容到 5 副本后删除
+  上传时唯一在线的旧 Pod，随后 10/10 次 GET 均 200 且字节一致（180B），证明新副本从共享
+  MinIO 读取。证据：`evidence/run3/image-state.json`、`image-cross-replica-checks.json`、
+  `pods-before/after-delete.txt`；辅助脚本 `experiments/hpa/image-evidence.py`。
+- 采样脚本小幅修复：容器名过滤未命中时回退到首个容器，保证 CSV 内存列在成员 A 统一
+  采样工具整合前也能工作。
+- 遗留：集群为临时 kind 环境（重启后服务自动恢复）；结果目录与成员 A 的公共实验基础
+  整合、最终提交按小组节奏处理。
+
+### HPA 现场实验首轮闭环（2026-09-02，codex/experiment-hpa）
+
+- 在 kind 集群 `kind-campus-microservices` 完成全量部署：6 个镜像构建/加载、全部
+  Deployment rollout、Metrics Server v0.9.0 就绪（`kubectl top` 可用）。期间修复父级
+  overlay 的 namespace 覆盖导致 metrics-server 被放进 campus-market 的问题：metrics-server
+  改为独立 kustomization 应用（不链入父级 resources）。
+- 预置数据修复：`seed-marketplace.py` 两个 bug —— `values_sql()` 对逗号分隔字符串执行
+  `",".join()` 把列名拆成单字符、items 插入把中文校区名（未加引号）当成列名；修复后导入
+  20000 商品 / 50 卖家 / 1894 标签并校验行数一致。
+- k6 脚本修复：ramping-vus 阶段字段应为 `target`（README 原误作 `to`）；k6 运行时无
+  `URLSearchParams` 全局对象，改手拼查询串；Docker 容器内访问宿主机端口转发需用
+  `host.docker.internal` 并让 `kubectl port-forward` 监听 `0.0.0.0`。
+- 运行（`experiments/hpa/evidence/run1/`）：5 秒采样全程记录；k6 分阶段加压
+  20→50→100→150 VU（各 2 分钟）；HPA desired 时间线 1→2→3→5（CPU 峰值 164%/60%），
+  压力停止约 4 分钟后经 120s 稳定窗口缩回 1 副本。
+- 结果：31204 次搜索请求全部 200（0 失败），平均延迟约 1.02s、P95 约 2.64s（高并发下
+  5 副本仍 CPU 饱和），接收数据约 296MB。证据：hpa-before/after.yaml、hpa-describe.txt、
+  events.txt、resource-samples.csv、k6-summary.json、k6-console.txt。
+- 遗留：后续 run2/run3 与跨副本图片证据见 2026-09-03 收口条目。
+
+### HPA 前置代码与清单收口（2026-09-02，codex/experiment-hpa）
+
+- 修正 `MinioProductImages`：去掉错误的 `@Service` 双实例注册；图片 URL 与既有存储口径统一为
+  `/media/product-images/{ownerId}/{file}`（此前误用 `/api/media/...`，会被商品校验拒绝）；
+  存储前用 ImageIO 校验真实 JPG/PNG 内容与像素上限，桶改为首次写入时懒创建，读取缺失对象返回
+  404、MinIO 不可用返回 503，文件名按 UUID+扩展名校验。
+- 在 `ProductImagesConfiguration` 上注册 `MinioProperties`；`application.yml` 默认存储改回
+  `filesystem`，避免未设置 `IMAGE_STORAGE` 的本地/测试环境启动即连 MinIO。
+- MinIO 镜像固定为可拉取的 digest（原 WIP 中的 `RELEASE.2025-09-03T04-54-03Z` 标签在镜像仓库
+  不存在，会导致 ImagePullBackOff）。
+- 新增 HPA overlay：`k8s/overlays/hpa/` 包含 MinIO（Service/Deployment/PVC）、Marketplace
+  环境与资源补丁（CPU request 200m、上限 2 核、移除 media PVC 挂载）、`autoscaling/v2` HPA
+  （1—5 副本、CPU 60%、缩容稳定窗口 120s），并链入 `overlays/ci`；`kubectl kustomize` 渲染通过。
+- 加入官方 Metrics Server v0.9.0 清单（`k8s/overlays/hpa/metrics-server/`，来源
+  kubernetes-sigs/metrics-server，Apache-2.0），补 Kind 所需 `--kubelet-insecure-tls=true` 参数。
+- 新增 `experiments/hpa/`：README（完整复现步骤）、`load.js`（k6 搜索加压，阶段/恒速两种）、
+  `sample-resources.ps1`（5 秒副本+CPU/内存+HPA 采样）、`seed-marketplace.py`（固定种子
+  20260826 生成 50 卖家 + 20000 商品确定性 SQL）。
+- 验证：Marketplace `mvn verify` 通过，单元 27 + 集成 3（含新 `MinioProductImagesIT`：真实
+  MinIO 容器跨实例读写、缺失 404）；`git diff --check` 待最终复核。
+- 遗留：HPA 现场实验尚未运行（需在 kind 上重建镜像并执行加压，见 `experiments/hpa/README.md`）。
+
 ### 公开问答卖家回复（2026-09-01）
 
 - 公开留言接口支持 `replyToId`，仅对应商品发布者可回复，服务端校验问题归属并将回复发送给提问者。

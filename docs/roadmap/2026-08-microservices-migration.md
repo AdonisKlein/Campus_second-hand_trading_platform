@@ -1,6 +1,6 @@
 # 校园二手平台微服务改造路线图
 
-更新日期：2026-08-31
+更新日期：2026-09-02
 实施分支：`codex/microservices-refactor`  
 单体基线：`monolith-start` → `9be9e6502af2642235049698b1f2a8f55da9611b`
 
@@ -10,7 +10,9 @@
 
 - Account、Marketplace、Trading 与 Governance 四个业务服务均已提取，Gateway 已删除单体兜底路由。
 - 微服务版已经具备独立 Maven 验证、API/MySQL/Redis/RabbitMQ 集成测试、8 个用例追溯、Playwright E2E、版本化事件契约、统一测试报告、版本化镜像、Kind 部署、健康检查和失败证据收集。
-- 业务微服务代码完成度为 `4/4`；工作项 1—8 的代码已落地。HPA、故障实验和性能对比尚未开始。
+- 业务微服务代码完成度为 `4/4`；工作项 1—8 的代码已落地。HPA 现场实验三轮已闭环
+  （扩到 ≥2 再缩回 1，证据在 `experiments/hpa/evidence/run1|run2|run3/`）；故障实验
+  和性能对比尚未开始。
 - `monolith-start` 是不可移动的改造前版本标记；微服务工作项 1—8 全绿后创建 `microservices-end`。
 
 ## 2. 最终服务划分
@@ -156,6 +158,13 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - Marketplace 图片 adapter 先切换 MinIO，使实例无本地状态。
 - Metrics Server + `autoscaling/v2` HPA，副本 1—5，CPU 目标约 60%。
 - k6 对搜索接口加压并记录副本、吞吐、平均/P95、错误率、CPU 和内存。
+
+当前状态（2026-09-02/03，分支 `codex/experiment-hpa`）：现场实验三轮全部满足验收条件
+（HPA 从 1 副本扩到 ≥2 再缩回 1，未使用手动 scale 冒充），每轮 3.1–3.6 万次搜索请求、
+错误率 0–0.00%（run3 的唯一失败恰为删除旧 Pod 做跨副本验证的一瞬），P95 延迟约 2.5s。
+MinIO 跨副本图片证据完成：删除上传时唯一旧 Pod 后 10/10 GET 200，证明实例无本地状态。
+证据目录 `experiments/hpa/evidence/run1|run2|run3/`（采样 CSV 时间线、HPA/事件、k6
+汇总）与图片证据文件（run3/image-*）。待与成员 A 公共实验基础整合并附提交号后正式收口。
 
 ### 工作项 10：依赖故障隔离
 
