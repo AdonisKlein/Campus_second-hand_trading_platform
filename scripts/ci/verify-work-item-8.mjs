@@ -8,6 +8,7 @@ const mysqlPlatform = read("k8s/base/platform.yaml");
 const composeMysqlInit = read("deploy/mysql/init/01-databases.sh");
 const cloudDeploy = read("scripts/deploy/cloud-deploy.sh");
 const cloudProvision = read("scripts/deploy/cloud-provision.sh");
+const baseCompose = read("deploy/docker-compose.yml");
 const cloudCompose = read("deploy/docker-compose.production.yml");
 const webNginx = read("frontend/deploy/nginx.conf");
 const services = ["api-gateway", "account-service", "marketplace-service", "trading-service", "governance-service"];
@@ -51,6 +52,10 @@ expect(cloudProvision.includes("refusing to overwrite") && cloudProvision.includ
 expect(cloudProvision.includes('DEPLOY_USER') && cloudProvision.includes('chown "${DEPLOY_USER}:${DEPLOY_USER}"'),
   "cloud provisioning must grant the non-root deployment account access to its release state");
 expect(cloudCompose.includes("limits: {memory:"), "production Compose must constrain container memory on the shared host");
+expect(baseCompose.includes("mysqladmin ping -h 127.0.0.1 -P 3306") && !baseCompose.includes("mysqladmin ping -h localhost"),
+  "MySQL readiness must use the final TCP listener, not the temporary init socket");
+expect(cloudCompose.includes("-Xmx112m") && cloudCompose.includes("SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE"),
+  "small-host production overlay must cap JVM heaps and database connection pools");
 for (const image of ["campus-mysql", "campus-redis", "campus-rabbitmq"]) {
   expect(workflow.includes(`image: ${image}`) && cloudCompose.includes(`/${image}:\${IMAGE_TAG}`),
     `cloud dependencies must mirror ${image} through GHCR instead of pulling Docker Hub on the server`);

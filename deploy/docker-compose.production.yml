@@ -2,12 +2,14 @@ services:
   mysql:
     image: ${IMAGE_NAMESPACE}/campus-mysql:${IMAGE_TAG}
     command:
-      - --innodb-buffer-pool-size=192M
-      - --max-connections=100
+      - --innodb-buffer-pool-size=96M
+      - --max-connections=30
+      - --table-open-cache=200
+      - --performance-schema=OFF
     deploy:
       resources:
-        limits: {memory: 640M}
-        reservations: {memory: 256M}
+        limits: {memory: 384M}
+        reservations: {memory: 192M}
 
   redis:
     image: ${IMAGE_NAMESPACE}/campus-redis:${IMAGE_TAG}
@@ -22,48 +24,64 @@ services:
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 1:1 +sbwt none +sbwtdcpu none +sbwtdio none"
     deploy:
       resources:
-        limits: {memory: 384M}
-        reservations: {memory: 128M}
+        limits: {memory: 256M}
+        reservations: {memory: 96M}
 
   api-gateway:
     environment:
-      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError -Dreactor.netty.ioWorkerCount=2"
     deploy:
       resources:
-        limits: {memory: 320M}
-        reservations: {memory: 128M}
+        limits: {memory: 288M}
+        reservations: {memory: 96M}
 
   account-service:
     environment:
-      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
+      SERVER_TOMCAT_THREADS_MAX: "16"
+      SERVER_TOMCAT_THREADS_MIN_SPARE: "1"
     deploy:
       resources:
-        limits: {memory: 320M}
-        reservations: {memory: 128M}
+        limits: {memory: 288M}
+        reservations: {memory: 96M}
 
   marketplace-service:
     environment:
-      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
+      SERVER_TOMCAT_THREADS_MAX: "16"
+      SERVER_TOMCAT_THREADS_MIN_SPARE: "1"
     deploy:
       resources:
-        limits: {memory: 384M}
-        reservations: {memory: 160M}
+        limits: {memory: 288M}
+        reservations: {memory: 96M}
 
   trading-service:
     environment:
-      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
+      SERVER_TOMCAT_THREADS_MAX: "16"
+      SERVER_TOMCAT_THREADS_MIN_SPARE: "1"
     deploy:
       resources:
-        limits: {memory: 384M}
-        reservations: {memory: 160M}
+        limits: {memory: 288M}
+        reservations: {memory: 96M}
 
   governance-service:
     environment:
-      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
+      SERVER_TOMCAT_THREADS_MAX: "16"
+      SERVER_TOMCAT_THREADS_MIN_SPARE: "1"
     deploy:
       resources:
-        limits: {memory: 320M}
-        reservations: {memory: 128M}
+        limits: {memory: 288M}
+        reservations: {memory: 96M}
 
   web:
     deploy:
