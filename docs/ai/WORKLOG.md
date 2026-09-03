@@ -565,6 +565,16 @@
 - 验证：`git diff --check`；未执行 Docker 导入，避免修改当前本地数据库。
 - 遗留：无。
 
+### 微服务公开接口测试闭环（2026-09-03）
+
+- 以 `contracts/http/public-api-v1.tsv` 为唯一公开接口清单，新增 `contracts/testing/public-api-coverage.json`，为全部 45 个 method + path 分别登记成功、备选/参数异常、未登录/越权三类测试证据。
+- 新增 `scripts/ci/verify-public-api-coverage.mjs` 并接入 CI；接口增删、证据文件/测试名失效或任一证据类别缺失时，流水线在镜像构建和部署前失败。
+- 补齐 Gateway、Account、Marketplace、Trading、Governance 的公开接口测试，覆盖验证码邮件、注册/重置事务结果、资料与账号治理、商品库存和图片、留言管理、订单、私聊及举报治理，并对关键写操作断言身份来源和数据库最终状态。
+- 本地完整验证：五个服务独立 `mvn verify` 全绿；45/45 公开接口三类证据门禁通过；UC01—UC08 追溯通过；Compose 微服务 + Mailpit 的 Playwright E2E `15/15` 通过。
+- 独立审查后继续补入 Trading/Governance 的公开 HTTP → 真实业务服务 → H2/Flyway 持久化测试，断言订单、举报、治理审计及 Outbox 最终状态；覆盖门禁同时加强为校验 HTTP method、请求调用和可执行断言。复审无未处理 P0/P1。
+- 统一报告为单元测试 `44/44`、API/集成测试 `59/59`、E2E `15/15`，总计 `118/118`，失败/错误/跳过均为 0；本地报告目录说明已补入 `scripts/ci/README.md`。
+- 提交号：本轮提交后使用 `git log -1` 查看。遗留：公开接口矩阵验证的是测试证据存在性和路由引用，业务断言质量仍需代码审查维护，不能以矩阵替代测试本身。
+
 ## 接手检查清单
 
 1. `git status --short` 确认没有覆盖其他人的未提交修改。

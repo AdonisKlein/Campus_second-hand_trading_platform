@@ -116,6 +116,24 @@ class GatewayAuthWebTest {
                 .jsonPath("$.success").isEqualTo(false);
     }
 
+    @Test
+    void logoutEndpointRequiresAuthenticatedSession() {
+        client.post().uri("/api/auth/logout")
+                .exchange().expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void loginValidationHasStableContract() {
+        Csrf invalidCsrf = csrf();
+        client.post().uri("/api/auth/login")
+                .cookie("XSRF-TOKEN", invalidCsrf.cookie())
+                .header("X-XSRF-TOKEN", invalidCsrf.token())
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .bodyValue("{\"email\":\"bad\",\"password\":\"\"}")
+                .exchange().expectStatus().isBadRequest();
+
+    }
+
     private Csrf csrf() {
         AtomicReference<String> token = new AtomicReference<>();
         EntityExchangeResult<byte[]> result = client.get().uri("/api/auth/csrf")

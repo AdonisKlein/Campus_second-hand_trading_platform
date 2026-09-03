@@ -91,7 +91,8 @@ function classify(file) {
   const normalized = file.replaceAll('\\', '/').toLowerCase();
   if (normalized.includes('failsafe') || normalized.includes('/integration')) return 'integration';
   if (normalized.includes('/e2e') || normalized.includes('playwright')) return 'e2e';
-  if (normalized.includes('apitest') || normalized.includes('gatewayauthwebtest')) return 'integration';
+  if (normalized.includes('apitest') || normalized.includes('apipersistence')
+      || normalized.includes('gatewayauthwebtest')) return 'integration';
   return 'unit';
 }
 
