@@ -308,11 +308,18 @@ jobs:
         uses: actions/checkout@v4
       - name: Sign in to GHCR
         shell: powershell
+        env:
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          GHCR_READ_TOKEN: ${{ secrets.GHCR_READ_TOKEN }}
         run: |
-          if ([string]::IsNullOrWhiteSpace('${{ secrets.GHCR_USERNAME }}') -or [string]::IsNullOrWhiteSpace('${{ secrets.GHCR_READ_TOKEN }}')) {
-            throw 'Configure GHCR_USERNAME and GHCR_READ_TOKEN repository secrets for the local runner.'
+          if ([string]::IsNullOrWhiteSpace($env:GHCR_USERNAME)) {
+            throw 'Configure GHCR_USERNAME repository secret for the local runner.'
           }
-          '${{ secrets.GHCR_READ_TOKEN }}' | docker login ghcr.io -u '${{ secrets.GHCR_USERNAME }}' --password-stdin
+          if ([string]::IsNullOrWhiteSpace($env:GHCR_READ_TOKEN)) {
+            throw 'Configure GHCR_READ_TOKEN repository secret for the local runner.'
+          }
+          Write-Host "Logging in to GHCR as $env:GHCR_USERNAME"
+          $env:GHCR_READ_TOKEN | docker login ghcr.io --username $env:GHCR_USERNAME --password-stdin
       - name: Resolve immutable image tag
         shell: powershell
         run: |
