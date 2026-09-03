@@ -286,3 +286,44 @@ jobs:
           name: kubernetes-diagnostics-${{ github.run_id }}
           if-no-files-found: warn
           path: test-results/k8s-deploy/**
+
+  deploy-local-kind:
+    name: Deploy to local Kind
+    needs: build-images
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: [self-hosted, windows, campus-local]
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    env:
+      IMAGE_NAMESPACE: ghcr.io/adonisklein
+      KIND_CLUSTER_NAME: campus-ci
+      K8S_NAMESPACE: campus-market
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Sign in to GHCR
+        shell: powershell
+        run: |
+          if ([string]::IsNullOrWhiteSpace('${{ secrets.GHCR_USERNAME }}') -or [string]::IsNullOrWhiteSpace('${{ secrets.GHCR_READ_TOKEN }}')) {
+            throw 'Configure GHCR_USERNAME and GHCR_READ_TOKEN repository secrets for the local runner.'
+          }
+          '${{ secrets.GHCR_READ_TOKEN }}' | docker login ghcr.io -u '${{ secrets.GHCR_USERNAME }}' --password-stdin
+      - name: Resolve immutable image tag
+        shell: powershell
+        run: |
+          "IMAGE_TAG=sha-$('${{ github.sha }}'.Substring(0, 7))" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Update existing local Kind cluster
+        shell: powershell
+        run: |
+          powershell -ExecutionPolicy Bypass -File scripts/ci/deploy-kind-local.ps1 `
+            -ImageNamespace $env:IMAGE_NAMESPACE `
+            -ImageTag $env:IMAGE_TAG `
+            -ClusterName $env:KIND_CLUSTER_NAME `
+            -Namespace $env:K8S_NAMESPACE
+      - name: Show deployed image versions
+        shell: powershell
+        run: |
+          kubectl --context "kind-$env:KIND_CLUSTER_NAME" -n $env:K8S_NAMESPACE get deployments `
+            -o custom-columns=NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image

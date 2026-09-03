@@ -18,6 +18,13 @@
 
 ## 当前状态
 
+### 本机 Kind 自动 CD（2026-09-03）
+
+- 新增 `scripts/ci/deploy-kind-local.ps1`，在已有 `kind-campus-ci` 集群中拉取 GHCR 的 SHA 镜像，更新六个 Deployment，等待 rollout，并执行 Web smoke check；不会删除或重建本地集群。
+- GitHub Actions 新增 `deploy-local-kind` Job，仅响应 `main` Push，在 Windows self-hosted Runner 上执行；通过 `GHCR_USERNAME` 和 `GHCR_READ_TOKEN` 仓库 Secret 登录 GHCR。
+- 验证：待执行 PowerShell 脚本语法检查、GitHub Actions 远程运行和本机 Runner 验收；本轮尚未提交。
+- 遗留：需要在本机注册带有 `self-hosted`、`windows`、`campus-local` 标签的 Runner，并配置 GHCR 只读 Secret。
+
 ### 文档去重与用例口径收敛（2026-08-31）
 
 - 将旧《测试文档》从重复的测试建设规划压缩为历史索引，明确《软件测试文档》《测试清单》《校园二手交易平台测试文档》《全量测试文档》和《需求追溯矩阵》的唯一职责。
