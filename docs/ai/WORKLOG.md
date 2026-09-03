@@ -19,6 +19,7 @@
   `pods-before/after-delete.txt`；辅助脚本 `experiments/hpa/image-evidence.py`。
 - 采样脚本小幅修复：容器名过滤未命中时回退到首个容器，保证 CSV 内存列在成员 A 统一
   采样工具整合前也能工作。
+- 提交：`47f2dd6`（分支 `codex/experiment-hpa`，已推送 origin，等待 CI 与成员 A 整合）。
 - 遗留：集群为临时 kind 环境（重启后服务自动恢复）；结果目录与成员 A 的公共实验基础
   整合、最终提交按小组节奏处理。
 
