@@ -105,6 +105,8 @@ jobs:
           npm run test:e2e:traceability
       - name: Verify versioned event contracts
         run: node scripts/ci/verify-event-contracts.mjs
+      - name: Verify every public API has three-part test evidence
+        run: node scripts/ci/verify-public-api-coverage.mjs
       - name: Run frontend contract tests
         run: node --test frontend/tests/*.test.js
       - name: Check frontend JavaScript syntax

@@ -22,6 +22,15 @@
 node scripts/ci/test-report.mjs --output test-results/summary
 ```
 
+本地报告位置：
+
+- 单元和基于 MockMvc/WebTestClient 的 API 测试：`services/<服务名>/target/surefire-reports/`；`TEST-*.xml` 供工具读取，同名 `.txt` 适合直接查看。
+- 使用 Testcontainers 的 MySQL、Redis、RabbitMQ 集成测试：`services/<服务名>/target/failsafe-reports/`。
+- Playwright 端到端测试：`e2e/test-results/junit.xml`；可视化 HTML 为 `e2e/test-results/playwright-report/index.html`。
+- 全部测试的中文统计入口：`test-results/summary/test-report.md`；机器可读版本为同目录的 `test-report.json`。
+
+这些目录由测试命令生成，通常已加入 `.gitignore`，不需要提交。重新执行测试后内容会被覆盖。
+
 没有发现任何测试结果时脚本仍会写出诊断报告，但默认返回非零，防止流水线把“测试没有执行”误判成成功。仅在调试报告模板时可以显式使用 `--allow-empty`。
 
 CI 可显式传入元数据和报告目录：

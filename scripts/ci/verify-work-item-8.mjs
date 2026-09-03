@@ -23,6 +23,7 @@ expect(workflow.includes("needs: contract-and-frontend-tests"), "E2E must depend
 expect(workflow.includes("test-summary:") && workflow.includes("unified-test-report"), "CI must publish a unified machine/human-readable test report");
 expect(workflow.includes("needs: [e2e-tests, test-summary]"), "images must depend on E2E and the unified report");
 expect(workflow.includes("verify-event-contracts.mjs"), "CI must validate versioned RabbitMQ event contracts");
+expect(workflow.includes("verify-public-api-coverage.mjs"), "CI must reject incomplete public API test evidence");
 expect(workflow.includes("sha-${GITHUB_SHA::7}"), "images need immutable short-SHA tags");
 expect(workflow.includes("if: ${{ always() }}"), "failure artifacts must use always()");
 expect(deploy.includes("--previous"), "diagnostics must capture previous container logs");
