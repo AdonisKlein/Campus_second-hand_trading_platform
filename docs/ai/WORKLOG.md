@@ -27,6 +27,7 @@
 - 云端实机准备：`campus.derawaze.top` A 记录已解析到目标服务器；新增 4 GiB `/swapfile` 并持久化，安装 Docker Engine 26.1.3、Compose 2.27.0 与 Certbot 1.22.0。Docker 官方源在该主机发生 TLS 连接失败，备份 repo 后改用已验证可达的阿里云 Docker CE 镜像完成安装。
 - 宿主机 Nginx 已备份并加载独立 `campus.derawaze.top` 虚拟主机，博客域名仍返回 200；Let's Encrypt HTTPS 证书已签发并通过公网 TLS 校验，平台未启动时子域名按预期返回 502。生产 `.env` 由服务器本地脚本生成强随机值且权限为 `600`，邮件在 SMTP 凭据配置前保持关闭。
 - 创建非 root 的 `campus-deploy` 发布账号并验证其可通过专用无口令密钥登录、运行 Compose 和读取生产配置；GitHub 的 `CLOUD_SSH_KEY` 已替换为该专用密钥，本机临时私钥随后删除。首次错误密钥因生成命令把引号写成了口令而无法用于 BatchMode，已用真实无人值守 SSH 验证锁定并修复。
+- 分支首次真实 CD 的全部测试、六个应用镜像和 Kind 部署均通过；云端阶段在 `compose pull` 暴露服务器无法连接 Docker Hub。生产 Overlay 随后改为由 CI 将固定版本 MySQL、Redis、RabbitMQ 原样镜像至 GHCR，使服务器部署只依赖已验证可达的 GHCR，不修改全机镜像源。
 - 新增 `CLOUD_DEPLOY_REF` 仓库变量作为唯一部署分支选择器，临时验收可只部署 `codex/cloud-server-deployment`，以后切换 `main` 无需改工作流。
 - 初始盘点发现 2 vCPU、1.8 GiB RAM、无 Swap、Docker 未安装，Nginx 80 与 MySQL 3306 正在服务博客；上述一次性演示前置项现已补齐。正式发布触发前仅需完成本分支验证提交，并将 `CLOUD_DEPLOY_ENABLED` 打开。
 - 验证：生产 Compose 合并配置通过，确认六个 SHA 应用镜像且只有 Web 暴露 `127.0.0.1:18080`；`actionlint 1.7.12`、部署 Shell 语法、工作项 8 静态契约、前端 Node 测试 3/3、容器内两份 Nginx `nginx -t` 和完整 Compose Playwright E2E 15/15 均通过。服务器与客户端扫描得到的 ED25519 host key 指纹一致，`git diff --check` 通过。云服务器未发生任何写操作，博客未停止。

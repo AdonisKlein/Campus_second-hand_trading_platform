@@ -125,10 +125,10 @@ Repository Secrets：
 `CLOUD_DEPLOY_ENABLED=true` 后，每次推送 `CLOUD_DEPLOY_REF` 指定的分支会依次执行：
 
 1. 五个服务测试、契约/前端测试和 Playwright E2E。
-2. 构建并推送六个 `sha-xxxxxxx` 镜像。
+2. 构建并推送六个应用镜像及三个基础依赖镜像，全部使用同一 `sha-xxxxxxx` 标签。
 3. 在 GitHub 临时 Kind 集群完成一次完整部署与健康检查。
 4. 上传只包含 Compose 配置和部署脚本的不可变 release。
-5. 云主机匿名拉取公开 GHCR 镜像，以 `--no-build` 启动。
+5. 云主机匿名拉取公开 GHCR 镜像，以 `--no-build` 启动。由于该主机访问 Docker Hub 曾超时，CI 还会把固定版本的 MySQL、Redis、RabbitMQ 基础镜像原样镜像到同一 GHCR SHA 标签，生产主机不再依赖 Docker Hub。
 6. 检查容器健康、Gateway readiness 和提交版本号。
 7. 失败时保存 Compose 日志、容器资源和宿主机内存/磁盘证据；已有成功版本时尝试回滚应用镜像。
 

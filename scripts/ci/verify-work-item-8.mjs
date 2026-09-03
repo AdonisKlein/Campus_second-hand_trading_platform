@@ -51,6 +51,10 @@ expect(cloudProvision.includes("refusing to overwrite") && cloudProvision.includ
 expect(cloudProvision.includes('DEPLOY_USER') && cloudProvision.includes('chown "${DEPLOY_USER}:${DEPLOY_USER}"'),
   "cloud provisioning must grant the non-root deployment account access to its release state");
 expect(cloudCompose.includes("limits: {memory:"), "production Compose must constrain container memory on the shared host");
+for (const image of ["campus-mysql", "campus-redis", "campus-rabbitmq"]) {
+  expect(workflow.includes(`image: ${image}`) && cloudCompose.includes(`/${image}:\${IMAGE_TAG}`),
+    `cloud dependencies must mirror ${image} through GHCR instead of pulling Docker Hub on the server`);
+}
 expect(webNginx.includes("$http_x_forwarded_proto") && webNginx.includes("$upstream_forwarded_proto"),
   "the Web proxy must preserve the original HTTPS scheme from the host Nginx");
 expect(deploy.includes("--previous"), "diagnostics must capture previous container logs");

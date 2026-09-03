@@ -1,5 +1,6 @@
 services:
   mysql:
+    image: ${IMAGE_NAMESPACE}/campus-mysql:${IMAGE_TAG}
     command:
       - --innodb-buffer-pool-size=192M
       - --max-connections=100
@@ -9,12 +10,14 @@ services:
         reservations: {memory: 256M}
 
   redis:
+    image: ${IMAGE_NAMESPACE}/campus-redis:${IMAGE_TAG}
     deploy:
       resources:
         limits: {memory: 128M}
         reservations: {memory: 32M}
 
   rabbitmq:
+    image: ${IMAGE_NAMESPACE}/campus-rabbitmq:${IMAGE_TAG}
     environment:
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 1:1 +sbwt none +sbwtdcpu none +sbwtdio none"
     deploy:

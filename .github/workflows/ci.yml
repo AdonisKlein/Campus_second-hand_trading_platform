@@ -215,6 +215,11 @@ jobs:
           - {image: campus-trading, context: services/trading-service}
           - {image: campus-governance, context: services/governance-service}
           - {image: campus-web, context: frontend}
+          # Production host cannot reach Docker Hub reliably. These thin,
+          # version-pinned mirrors keep every cloud pull on the same GHCR path.
+          - {image: campus-mysql, context: deploy/images/mysql}
+          - {image: campus-redis, context: deploy/images/redis}
+          - {image: campus-rabbitmq, context: deploy/images/rabbitmq}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
