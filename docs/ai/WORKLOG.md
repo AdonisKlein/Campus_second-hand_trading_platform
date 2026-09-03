@@ -18,6 +18,12 @@
 
 ## 当前状态
 
+### 公开 GHCR 镜像取消本机 CD 登录（2026-09-03）
+
+- 移除本机 CD Job 对 `GITHUB_TOKEN` 的 GHCR 登录步骤；公开镜像由 `deploy-kind-local.ps1` 直接匿名拉取。
+- 保留 `packages: read` 权限，避免公开 Package 的 Token 登录在 self-hosted Runner 上产生无关认证失败。
+- 验证：待执行本地契约检查和 GitHub Actions 远程验收。
+
 ### 本机 Kind CD 使用 GitHub Actions Token（2026-09-03）
 
 - 本机 CD 的 GHCR 登录改用 `github.actor` 与 `secrets.GITHUB_TOKEN`，不再依赖个人 `GHCR_USERNAME`/`GHCR_READ_TOKEN` Secret。

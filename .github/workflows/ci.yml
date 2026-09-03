@@ -306,20 +306,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Sign in to GHCR
-        shell: powershell
-        env:
-          GHCR_USERNAME: ${{ github.actor }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if ([string]::IsNullOrWhiteSpace($env:GHCR_USERNAME)) {
-            throw 'GitHub actor is empty.'
-          }
-          if ([string]::IsNullOrWhiteSpace($env:GHCR_TOKEN)) {
-            throw 'GITHUB_TOKEN is empty.'
-          }
-          Write-Host "Logging in to GHCR as $env:GHCR_USERNAME"
-          $env:GHCR_TOKEN | docker login ghcr.io --username $env:GHCR_USERNAME --password-stdin
       - name: Resolve immutable image tag
         shell: powershell
         run: |
