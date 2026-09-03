@@ -1,0 +1,69 @@
+services:
+  mysql:
+    command:
+      - --innodb-buffer-pool-size=192M
+      - --max-connections=100
+    deploy:
+      resources:
+        limits: {memory: 640M}
+        reservations: {memory: 256M}
+
+  redis:
+    deploy:
+      resources:
+        limits: {memory: 128M}
+        reservations: {memory: 32M}
+
+  rabbitmq:
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 1:1 +sbwt none +sbwtdcpu none +sbwtdio none"
+    deploy:
+      resources:
+        limits: {memory: 384M}
+        reservations: {memory: 128M}
+
+  api-gateway:
+    environment:
+      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+    deploy:
+      resources:
+        limits: {memory: 320M}
+        reservations: {memory: 128M}
+
+  account-service:
+    environment:
+      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+    deploy:
+      resources:
+        limits: {memory: 320M}
+        reservations: {memory: 128M}
+
+  marketplace-service:
+    environment:
+      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+    deploy:
+      resources:
+        limits: {memory: 384M}
+        reservations: {memory: 160M}
+
+  trading-service:
+    environment:
+      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+    deploy:
+      resources:
+        limits: {memory: 384M}
+        reservations: {memory: 160M}
+
+  governance-service:
+    environment:
+      JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError"
+    deploy:
+      resources:
+        limits: {memory: 320M}
+        reservations: {memory: 128M}
+
+  web:
+    deploy:
+      resources:
+        limits: {memory: 96M}
+        reservations: {memory: 32M}

@@ -6,6 +6,9 @@ const deploy = read("scripts/ci/deploy-kind.sh");
 const ciOverlay = read("k8s/overlays/ci/kustomization.yaml");
 const mysqlPlatform = read("k8s/base/platform.yaml");
 const composeMysqlInit = read("deploy/mysql/init/01-databases.sh");
+const cloudDeploy = read("scripts/deploy/cloud-deploy.sh");
+const cloudCompose = read("deploy/docker-compose.production.yml");
+const webNginx = read("frontend/deploy/nginx.conf");
 const services = ["api-gateway", "account-service", "marketplace-service", "trading-service", "governance-service"];
 const images = ["campus-gateway", "campus-account", "campus-marketplace", "campus-trading", "campus-governance", "campus-web"];
 const failures = [];
@@ -26,6 +29,23 @@ expect(workflow.includes("verify-event-contracts.mjs"), "CI must validate versio
 expect(workflow.includes("verify-public-api-coverage.mjs"), "CI must reject incomplete public API test evidence");
 expect(workflow.includes("sha-${GITHUB_SHA::7}"), "images need immutable short-SHA tags");
 expect(workflow.includes("if: ${{ always() }}"), "failure artifacts must use always()");
+expect(!workflow.includes("deploy-local-kind:") && !workflow.includes("runs-on: [self-hosted, windows, campus-local]"),
+  "CI must not depend on the retired developer-machine Kind runner");
+expect(workflow.includes("deploy-cloud:") && workflow.includes("needs: [build-images, deploy-kind]"),
+  "cloud CD must wait for immutable images and the disposable Kind deployment gate");
+expect(workflow.includes("CLOUD_DEPLOY_ENABLED == 'true'"),
+  "cloud CD must remain explicitly disabled until the shared host is provisioned");
+expect(cloudDeploy.includes("SESSION_COOKIE_SECURE=true") && cloudDeploy.includes("CORS_ORIGINS=https://"),
+  "cloud deployment must reject insecure browser session settings");
+expect(cloudDeploy.includes("127.0.0.1") && cloudDeploy.includes("--no-build") && cloudDeploy.includes("--wait"),
+  "cloud deployment must use loopback exposure, immutable images and health-gated Compose rollout");
+expect(cloudDeploy.includes('"https://${CLOUD_DOMAIN}/api/actuator/health/readiness"'),
+  "cloud deployment must verify the public HTTPS route, DNS and host reverse proxy");
+expect(cloudDeploy.includes("current-image-tag") && cloudDeploy.includes("Rolling back application images"),
+  "cloud deployment must retain an application-image rollback path");
+expect(cloudCompose.includes("limits: {memory:"), "production Compose must constrain container memory on the shared host");
+expect(webNginx.includes("$http_x_forwarded_proto") && webNginx.includes("$upstream_forwarded_proto"),
+  "the Web proxy must preserve the original HTTPS scheme from the host Nginx");
 expect(deploy.includes("--previous"), "diagnostics must capture previous container logs");
 expect(deploy.includes("pods-describe.txt") && deploy.includes("events.txt"), "diagnostics must capture pod descriptions and events");
 expect(deploy.includes("/actuator/info") && deploy.includes("/health/readiness"), "deployment must verify version and readiness");

@@ -229,6 +229,12 @@ powershell -ExecutionPolicy Bypass -File scripts/ci/kind-local.ps1 status
 
 使用 `scripts/ci/kind-local.ps1 forward-web` 和 `forward-mail` 分别把 Web、Mailpit 临时转发到 `http://127.0.0.1:18080`、`http://127.0.0.1:18025`。完成后使用 `scripts/ci/kind-local.ps1 down` 删除本地集群。详细说明见 [k8s/README.md](k8s/README.md)。
 
+## 阿里云服务器部署
+
+生产/远程验收采用版本化 GHCR 镜像和 Docker Compose，不再依赖开发者电脑上的 self-hosted Runner 或本地 Kind。当前约定平台使用 `campus.derawaze.top`，容器 Web 只绑定云主机 `127.0.0.1:18080`，宿主机 Nginx 按子域名反向代理，因此不会占用博客的 `derawaze.top` 与 `www.derawaze.top`。
+
+首次部署需要先完成云主机内存、Docker、DNS、HTTPS、生产 `.env` 和 GitHub `production` Environment 配置。完整准备、自动 CD、验收、停止与回滚步骤见 [阿里云共享主机部署说明](deploy/cloud/README.md)。`CLOUD_DEPLOY_ENABLED` 在主机准备完成前必须保持 `false`。
+
 ## 主要目录
 
 ```text

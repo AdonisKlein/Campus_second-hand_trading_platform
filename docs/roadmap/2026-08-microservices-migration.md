@@ -136,7 +136,7 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 按最新版 `doc/业务场景用例清单` 的 UC01—UC08 建立机器可读映射和运行证据门禁；本地最终报告 92/92（单元 44、API/集成 33、E2E 15）。
 - 提交：`7e71804 test: cover microservice contracts and all business journeys`
 
-### 工作项 8：独立 CI/CD 与可观测性 — 实现完成，待主分支 CI 验收
+### 工作项 8：独立 CI/CD 与可观测性 — 已完成，云端 CD 待主机准备后验收
 
 - 流水线已经按五个独立 Maven 工程 → 契约/前端 → 微服务 E2E → 六个 SHA 镜像 → Kind 全拓扑 → 健康/版本冒烟建立严格 `needs` 门禁。
 - Gateway、Account、Marketplace、Trading、Governance 分别发布 `health/info`，镜像和运行环境暴露提交 SHA，控制台使用 ECS JSON 结构化日志。
@@ -146,6 +146,7 @@ API Gateway、前端、MySQL、Redis 和 RabbitMQ 不计入四个业务服务。
 - 分支首次运行暴露私聊旅程仍使用 5 秒默认断言超时；trace 确认 Session Cookie 正常、请求只是受冷启动负载影响尚未完成。现已改为该旅程 120 秒总预算和 30 秒 Session 恢复断言，最小回归 1/1、完整 Compose 15/15 再次通过，等待新提交的 GitHub Actions 复验。
 - 主分支全绿后再创建 `microservices-end`，当前不得提前移动或创建该标记。
 - 提交：`ci: build test and deploy independent microservices`（使用 `git log -1` 查看提交号）
+- 后续部署调整：撤销开发者电脑 self-hosted Runner 上的自动 Kind CD；GitHub 托管 Runner 的临时 Kind 仍作为部署门禁。门禁通过后可将同一组 SHA 镜像发布到 `campus.derawaze.top` 的阿里云 Compose 环境，云端开关在服务器资源、DNS、HTTPS 和 Secret 准备完成前保持关闭。
 
 ## 5. 暂缓的实验工作项
 

@@ -16,8 +16,9 @@
 - 工作项 6 已完成默认微服务运行拓扑：Compose/Kind 均包含 Gateway、四个业务服务、MySQL 四库四账号、Redis、RabbitMQ 和 Web。`scripts/dev/microservices.ps1` 会验证容器健康、Flyway、跨库拒绝和同源入口；`scripts/ci/kind-local.ps1` 负责本地 Kind 构建、部署与冒烟。
 - `contracts/http/public-api-v1.tsv` 冻结当前公开 method + path；`contracts/events/*.v1.schema.json` 冻结 5 类 RabbitMQ 事件。事件必填字段不能在 v1 删除，消费者必须忽略新增元数据；`verify-event-contracts.mjs` 是对应门禁。
 - `scripts/ci/verify-services.ps1` 是逐个验证五个工程独立构建的入口。任一工程失败立即返回非零。
-- `.github/workflows/ci.yml` 已切换为微服务发布 seam：五服务独立 `mvn verify` → 契约/前端 → Compose Playwright → 统一 JSON/Markdown 测试报告 → 六个 `sha-xxxxxxx` GHCR 镜像 → main 分支 Kind 部署与冒烟。PR 只测试不发布，任一前置失败都会阻止镜像和部署。
+- `.github/workflows/ci.yml` 已切换为微服务发布 seam：五服务独立 `mvn verify` → 契约/前端 → Compose Playwright → 统一 JSON/Markdown 测试报告 → 六个 `sha-xxxxxxx` GHCR 镜像 → main 分支临时 Kind 部署与冒烟 → 可开关的阿里云 Compose CD。PR 只测试不发布，任一前置失败都会阻止镜像和部署。
 - `scripts/ci/deploy-kind.sh` 是 CI 部署与诊断 seam：部署 Gateway、四服务和 Web，验证 readiness、liveness 与 `/actuator/info` 的不可变版本；无论成功失败都收集资源、Events、Pod describe、当前/上一容器日志和实际镜像。
+- `scripts/deploy/cloud-deploy.sh` 是远程 CD seam：只接受 `sha-xxxxxxx` 镜像，读取服务器本地生产 `.env`，把 Web 限制在 `127.0.0.1:18080`，健康/版本检查失败时保存 Compose 证据并尝试恢复上一镜像组；不会管理宿主机博客或上传 Secret。
 - 所有 Java 服务使用 ECS JSON 控制台日志并公开 `APP_VERSION`/`GIT_COMMIT`。Gateway 负责建立 `X-Correlation-Id`，内部 REST 继续传递，交易和治理事件 envelope 保存同一关联标识。
 - 完整实施顺序、数据库归属和通信规则见 `docs/roadmap/2026-08-microservices-migration.md`。
 
@@ -39,6 +40,7 @@ deploy/                        Compose 四库、Redis、RabbitMQ 和服务编排
 k8s/                           Kubernetes Base、CI Kind Overlay 与部署说明
 scripts/dev/                   本地微服务启动与验收入口
 scripts/ci/                    服务验证、测试报告和 Kind 本地部署入口
+scripts/deploy/                云服务器版本化发布入口
 ```
 
 服务接口与数据表的正式对照基线见 `doc/服务接口清单与数据表归属方案.md`。该文档以当前 Controller、核心 interface 和 Flyway `V1`～`V6` 为准，明确模块 owner、跨模块读取方式和写入边界。

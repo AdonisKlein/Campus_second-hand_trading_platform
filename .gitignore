@@ -26,6 +26,7 @@ test-results/
 .env
 .env.*
 !.env.example
+!deploy/cloud/.env.production.example
 backend/.env
 backend/.env.*
 !backend/.env.example

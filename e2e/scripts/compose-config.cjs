@@ -23,7 +23,8 @@ const environment = {
   VERIFICATION_PEPPER: 'e2e-only-verification-pepper-at-least-32-characters',
   CORS_ORIGINS: 'http://127.0.0.1:18080',
   SESSION_COOKIE_SECURE: 'false',
-  WEB_PORT: '127.0.0.1:18080',
+  WEB_BIND_ADDRESS: '127.0.0.1',
+  WEB_PORT: '18080',
   MAILPIT_WEB_PORT: '18025'
 };
 

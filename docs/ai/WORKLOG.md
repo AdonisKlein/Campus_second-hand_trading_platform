@@ -18,24 +18,15 @@
 
 ## 当前状态
 
-### 公开 GHCR 镜像取消本机 CD 登录（2026-09-03）
+### 阿里云共享主机 CD 替换本机 Kind CD（2026-09-03）
 
-- 移除本机 CD Job 对 `GITHUB_TOKEN` 的 GHCR 登录步骤；公开镜像由 `deploy-kind-local.ps1` 直接匿名拉取。
-- 保留 `packages: read` 权限，避免公开 Package 的 Token 登录在 self-hosted Runner 上产生无关认证失败。
-- 验证：待执行本地契约检查和 GitHub Actions 远程验收。
-
-### 本机 Kind CD 使用 GitHub Actions Token（2026-09-03）
-
-- 本机 CD 的 GHCR 登录改用 `github.actor` 与 `secrets.GITHUB_TOKEN`，不再依赖个人 `GHCR_USERNAME`/`GHCR_READ_TOKEN` Secret。
-- 保留 `packages: read` 权限和 Secret 非空校验；GHCR Package 仍需允许当前仓库的 Actions 访问。
-- 验证：待执行本地契约检查和 GitHub Actions 远程验收。
-
-### 本机 Kind 自动 CD（2026-09-03）
-
-- 新增 `scripts/ci/deploy-kind-local.ps1`，在已有 `kind-campus-ci` 集群中拉取 GHCR 的 SHA 镜像，更新六个 Deployment，等待 rollout，并执行 Web smoke check；不会删除或重建本地集群。
-- GitHub Actions 新增 `deploy-local-kind` Job，仅响应 `main` Push，在 Windows self-hosted Runner 上执行；通过 `GHCR_USERNAME` 和 `GHCR_READ_TOKEN` 仓库 Secret 登录 GHCR。
-- 验证：待执行 PowerShell 脚本语法检查、GitHub Actions 远程运行和本机 Runner 验收；本轮尚未提交。
-- 遗留：需要在本机注册带有 `self-hosted`、`windows`、`campus-local` 标签的 Runner，并配置 GHCR 只读 Secret。
+- 撤销 `9081863` 前后引入的开发者电脑 self-hosted Runner 自动部署路径，删除 `deploy-local-kind` Job 与专用更新脚本；手动 `kind-local.ps1` 和 GitHub 托管 Runner 临时 Kind 验收保留。
+- 新增可显式开关的 `deploy-cloud` Job：只有服务测试、契约/前端、E2E、SHA 镜像和临时 Kind 全绿后，才上传不可变部署 release 并通过固定 host key 的 SSH 发布到阿里云。
+- Compose 应用镜像已参数化；生产 Overlay 约束容器内存，Web 只绑定 `127.0.0.1:18080`。部署脚本强制 HTTPS CORS 与 Secure Cookie，检查 readiness/版本，失败时收集证据并尝试恢复上一组应用镜像。
+- `WEB_BIND_ADDRESS` 与 `WEB_PORT` 已拆成两个变量；E2E Compose 同步改为回环地址和纯数字端口，避免把旧 `127.0.0.1:18080` 端口值与新绑定地址拼成非法 IP。
+- 服务器只读盘点：2 vCPU、1.8 GiB RAM、无 Swap、Docker 未安装；Nginx 80 与 MySQL 3306 正在服务现有博客环境，`campus.derawaze.top` 尚无 DNS 记录。因此 `CLOUD_DEPLOY_ENABLED` 必须保持 `false`，完成扩容、Docker、DNS、HTTPS、生产 `.env` 和 GitHub Secret 后再开启。
+- 验证：生产 Compose 合并配置通过，确认六个 SHA 应用镜像且只有 Web 暴露 `127.0.0.1:18080`；`actionlint 1.7.12`、部署 Shell 语法、工作项 8 静态契约、前端 Node 测试 3/3、容器内两份 Nginx `nginx -t` 和完整 Compose Playwright E2E 15/15 均通过。服务器与客户端扫描得到的 ED25519 host key 指纹一致，`git diff --check` 通过。云服务器未发生任何写操作，博客未停止。
+- 提交号：本轮提交后使用 `git log -1` 查看。
 
 ### 文档去重与用例口径收敛（2026-08-31）
 

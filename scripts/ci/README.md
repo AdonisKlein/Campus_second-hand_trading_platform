@@ -57,3 +57,10 @@ node scripts/ci/test-report.mjs `
 ```powershell
 node scripts/ci/test-report.mjs --self-test
 ```
+
+## 部署门禁
+
+- `scripts/ci/deploy-kind.sh` 在 GitHub 托管 Runner 的一次性 Kind 集群验证 Kubernetes 清单、readiness、liveness 和镜像版本。
+- `scripts/deploy/cloud-deploy.sh` 只在上述门禁和全部测试通过后发布同一组 SHA 镜像到阿里云 Compose 环境。
+- 开发者电脑上的 `deploy-local-kind` self-hosted Job 已退役；云主机未准备好时仓库变量 `CLOUD_DEPLOY_ENABLED` 必须保持 `false`。
+- 云端准备和 Secret 配置见 `deploy/cloud/README.md`。
