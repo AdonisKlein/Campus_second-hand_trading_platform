@@ -18,6 +18,13 @@
 
 ## 当前状态
 
+### 云原生实验成员 C：修复公开 API E2E 把业务 403 当成身份拒绝（2026-09-03）
+
+- GitHub Actions `33726714110`（`0ab341c`）Maven 89/89 通过。失败摘要只有一项：`public-api-surface.spec.js` 在买家登录后探测 `PUT /api/chat/blocks/{userId}`，Trading 返回业务 403「学生账号不可用」且 `code=FORBIDDEN`。脚本用 `/Forbidden/i` 扫整段 JSON，误把机器码当成 Spring Security 的身份拒绝。`Publish unified test report` 是上游失败后的连带退出。
+- 修复：只检查 `message` 是否含 CSRF/未登录/无权访问等身份文案，不再把 `"code":"FORBIDDEN"` 判失败。
+- 验证：`node --check e2e/tests/public-api-surface.spec.js`；对 CI 原样响应做正则对照，整段 JSON 会误伤、只看 `message` 则通过。未在本机重跑 Compose Playwright。
+- 遗留：尚未提交。
+
 ### 云原生实验成员 C：隔离测试共享 H2 脏数据（2026-09-03）
 
 - CI 失败用例 `MarketplaceFaultIsolationTest.failedPurchaseLeavesNoOrderOrOutboxAndPropagatesCorrelationId`（expected 0 was 1）不是生产路径写了半条订单。`requestPurchase` 在 `marketplace.require` 抛 503 时尚未 `saveAndFlush`；单元测试 `dependencyFailureCannotLeaveHalfOrder` 已覆盖。

@@ -79,7 +79,8 @@ async function expectAuthenticatedRoute(page, endpoint) {
   const evidence = `${endpoint.method} ${endpoint.path} (${endpoint.owner}); response=${body.slice(0, 500)}`;
   expect(response.status(), `${evidence}; authenticated route must pass the identity boundary`).not.toBe(401);
   if (response.status() === 403) {
-    expect(body, `${evidence}; 403 may be a domain rejection, but not an identity, role or CSRF rejection`)
+    const rejection = rejectionText(body);
+    expect(rejection, `${evidence}; 403 may be a domain rejection, but not an identity, role or CSRF rejection`)
       .not.toMatch(/CSRF|Forbidden|未登录|无权访问|需要管理员权限/i);
     expect(body, `${evidence}; domain rejection must use the owning service response contract`).toContain('"success"');
   }
@@ -87,5 +88,14 @@ async function expectAuthenticatedRoute(page, endpoint) {
   expect(response.status(), `${evidence}; route must not fail as an unhandled server error`).toBeLessThan(500);
   if (response.status() === 404) {
     expect(body, `${evidence}; 404 must come from the owning service rather than an unmatched gateway route`).toContain('"success"');
+  }
+}
+
+function rejectionText(body) {
+  try {
+    const payload = JSON.parse(body);
+    return typeof payload.message === 'string' ? payload.message : body;
+  } catch {
+    return body;
   }
 }
