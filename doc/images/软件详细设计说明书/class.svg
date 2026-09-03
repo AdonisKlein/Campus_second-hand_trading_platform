@@ -1,6 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1592" height="1596" viewBox="0 0 1592 1596">
+<svg xmlns="http://www.w3.org/2000/svg" width="1592" height="1716" viewBox="0 0 1592 1716">
 <rect width="100%" height="100%" fill="#fff"/>
+<path d="M 500 448 L 500 414" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<polygon points="500,400 508,414 492,414" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 696 484 L 696 450" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<polygon points="696,436 704,450 688,450" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 696 748 L 696 714" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<polygon points="696,700 704,714 688,714" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 892 460 L 892 426" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<polygon points="892,412 900,426 884,426" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 1088 448 L 1088 414" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<polygon points="1088,400 1096,414 1080,414" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 1284 484 L 1284 450" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<polygon points="1284,436 1292,450 1276,450" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 1480 472 L 1480 438" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<polygon points="1480,424 1488,438 1472,438" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 166 1110 L 166 1096 L 97 1096 L 97 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="97,1062 105,1076 89,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 476 1110 L 476 1096 L 251 1096 L 251 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="251,1062 259,1076 243,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 786 1110 L 786 1096 L 405 1096 L 405 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="405,1062 413,1076 397,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 1096 1110 L 1096 1096 L 559 1096 L 559 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="559,1062 567,1076 551,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 1406 1110 L 1406 1096 L 713 1096 L 713 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="713,1062 721,1076 705,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 166 1250 L 166 1236 L 867 1236 L 867 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="867,1062 875,1076 859,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 476 1250 L 476 1236 L 1021 1236 L 1021 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="1021,1062 1029,1076 1013,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 786 1250 L 786 1236 L 1175 1236 L 1175 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="1175,1062 1183,1076 1167,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 1096 1250 L 1096 1236 L 1329 1236 L 1329 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="1329,1062 1337,1076 1321,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 1406 1250 L 1406 1236 L 1483 1236 L 1483 1076" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="1483,1062 1491,1076 1475,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 108 138 L 108 152 L 304 152 L 304 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 299.5 320 L 304 330 L 308.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 108 138 L 108 152 L 304 152 L 304 442" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 299.5 442 L 304 452 L 308.5 442" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 308 114 L 308 128 L 108 128 L 108 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 103.5 320 L 108 330 L 112.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 508 102 L 508 116 L 500 116 L 500 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 495.5 320 L 500 330 L 504.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 708 138 L 708 152 L 696 152 L 696 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 691.5 320 L 696 330 L 700.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 708 138 L 708 152 L 696 152 L 696 620" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 691.5 620 L 696 630 L 700.5 620" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 908 128 L 908 142 L 892 142 L 892 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 887.5 320 L 892 330 L 896.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1108 126 L 1108 140 L 696 140 L 696 620" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 691.5 620 L 696 630 L 700.5 620" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 108 276 L 108 290 L 1284 290 L 1284 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1279.5 320 L 1284 330 L 1288.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 308 290 L 308 304 L 1088 304 L 1088 438" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1083.5 438 L 1088 448 L 1092.5 438" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 508 264 L 508 278 L 1480 278 L 1480 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1475.5 320 L 1480 330 L 1484.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 708 278 L 708 292 L 1480 292 L 1480 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1475.5 320 L 1480 330 L 1484.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 304 424 L 304 662" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 299.5 662 L 304 672 L 308.5 662" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 304 452 L 304 434" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 308.5 434 L 304 424 L 299.5 434" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 108 412 L 108 426 L 166 426 L 166 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 161.5 1100 L 166 1110 L 170.5 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 304 424 L 304 438 L 476 438 L 476 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 471.5 1100 L 476 1110 L 480.5 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 696 602 L 696 616 L 786 616 L 786 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 781.5 1100 L 786 1110 L 790.5 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 696 842 L 696 856 L 786 856 L 786 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 781.5 1100 L 786 1110 L 790.5 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1088 552 L 1088 566 L 1096 566 L 1096 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1091.5 1100 L 1096 1110 L 1100.5 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1088 580 L 1088 562" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1092.5 562 L 1088 552 L 1083.5 562" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1284 588 L 1284 602 L 166 602 L 166 1240" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 161.5 1240 L 166 1250 L 170.5 1240" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1480 590 L 1480 604 L 1096 604 L 1096 1240" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1091.5 1240 L 1096 1250 L 1100.5 1240" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 500 540 L 500 558" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 495.5 558 L 500 568 L 504.5 558" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 108 644 L 108 658 L 166 658 L 166 1100" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 161.5 1100 L 166 1110 L 170.5 1100" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 108 412 L 108 430" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 103.5 430 L 108 440 L 112.5 430" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 166 1180 L 166 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 161.5 1390 L 166 1400 L 170.5 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 476 1194 L 476 1208 L 1406 1208 L 1406 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1401.5 1390 L 1406 1400 L 1410.5 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 786 1180 L 786 1194 L 476 1194 L 476 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 471.5 1390 L 476 1400 L 480.5 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1096 1206 L 1096 1220 L 786 1220 L 786 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 781.5 1390 L 786 1400 L 790.5 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1406 1180 L 1406 1194 L 1096 1194 L 1096 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1091.5 1390 L 1096 1400 L 1100.5 1390" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 166 1334 L 166 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 161.5 1518 L 166 1528 L 170.5 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 476 1334 L 476 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 471.5 1518 L 476 1528 L 480.5 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 786 1334 L 786 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 781.5 1518 L 786 1528 L 790.5 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1096 1334 L 1096 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1091.5 1518 L 1096 1528 L 1100.5 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1406 1334 L 1406 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1401.5 1518 L 1406 1528 L 1410.5 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 327.2 1440.9 L 330 1440" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="312,1446 321.5,1449.2 327.2,1440.9 317.7,1437.8" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 321.9361919665707 1447.4313525013958 L 330 1440 L 319.09014207241904 1438.893202818941" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 640 1446 L 640 1446 L 640 1440 L 632 1440" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 632 1435.5 L 622 1440 L 632 1444.5" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 950 1440 L 632 1440" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 632 1435.5 L 622 1440 L 632 1444.5" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 786 1528 L 786 1516 L 166 1516 L 166 1502" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 170.5 1502 L 166 1492 L 161.5 1502" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1096 1528 L 1096 1516 L 166 1516 L 166 1502" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 170.5 1502 L 166 1492 L 161.5 1502" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 328 1568 L 330 1568" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="312,1568 320,1574 328,1568 320,1562" fill="#000" stroke="#000" stroke-width="1.5"/>
+<path d="M 320 1572.5 L 330 1568 L 320 1563.5" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1258 1568 L 1260 1568" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="1242,1568 1250,1574 1258,1568 1250,1562" fill="#000" stroke="#000" stroke-width="1.5"/>
+<path d="M 1250 1572.5 L 1260 1568 L 1250 1563.5" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 460.2 1482.4 L 460.2 1496.4 L 166 1496.4 L 166 1528" fill="none" stroke="#000" stroke-width="1.5"/>
+<polygon points="476,1480 467.2,1475.3 460.2,1482.4 469,1487.2" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<path d="M 161.5 1518 L 166 1528 L 170.5 1518" fill="none" stroke="#000" stroke-width="1.5"/>
+<path d="M 1260 1440 L 1246 1440 L 1246 1446 L 322 1446" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M 322 1441.5 L 312 1446 L 322 1450.5" fill="none" stroke="#000" stroke-width="1.5"/>
 <g>
 <rect x="20" y="20" width="176" height="118" fill="#fff" stroke="#000" stroke-width="1.5"/>
 <line x1="20" y1="58" x2="196" y2="58" stroke="#000" stroke-width="1.5"/>
@@ -386,396 +512,270 @@
 <text x="26" y="1057" font-size="9" font-family="Arial, sans-serif">+ findById()</text>
 </g>
 <g>
-<rect x="20" y="1066" width="292" height="70" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="20" y1="1104" x2="312" y2="1104" stroke="#000" stroke-width="1.5"/>
-<line x1="20" y1="1120" x2="312" y2="1120" stroke="#000" stroke-width="1.5"/>
-<text x="166" y="1082.5" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="166" y="1095.5" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">UserRepository</text>
-<text x="26" y="1131" font-size="9" font-family="Arial, sans-serif">+ findByEmailIgnoreCase()</text>
+<rect x="20" y="1110" width="292" height="70" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="20" y1="1148" x2="312" y2="1148" stroke="#000" stroke-width="1.5"/>
+<line x1="20" y1="1164" x2="312" y2="1164" stroke="#000" stroke-width="1.5"/>
+<text x="166" y="1126.5" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="166" y="1139.5" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">UserRepository</text>
+<text x="26" y="1175" font-size="9" font-family="Arial, sans-serif">+ findByEmailIgnoreCase()</text>
 </g>
 <g>
-<rect x="330" y="1066" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="330" y1="1118" x2="622" y2="1118" stroke="#000" stroke-width="1.5"/>
-<line x1="330" y1="1134" x2="622" y2="1134" stroke="#000" stroke-width="1.5"/>
-<text x="476" y="1083" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="476" y="1096" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">EmailVerification</text>
-<text x="476" y="1109" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
-<text x="336" y="1145" font-size="9" font-family="Arial, sans-serif">+ findByEmailAndPurpose()</text>
+<rect x="330" y="1110" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="330" y1="1162" x2="622" y2="1162" stroke="#000" stroke-width="1.5"/>
+<line x1="330" y1="1178" x2="622" y2="1178" stroke="#000" stroke-width="1.5"/>
+<text x="476" y="1127" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="476" y="1140" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">EmailVerification</text>
+<text x="476" y="1153" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
+<text x="336" y="1189" font-size="9" font-family="Arial, sans-serif">+ findByEmailAndPurpose()</text>
 </g>
 <g>
-<rect x="640" y="1066" width="292" height="70" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="640" y1="1104" x2="932" y2="1104" stroke="#000" stroke-width="1.5"/>
-<line x1="640" y1="1120" x2="932" y2="1120" stroke="#000" stroke-width="1.5"/>
-<text x="786" y="1082.5" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="786" y="1095.5" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ItemRepository</text>
-<text x="646" y="1131" font-size="9" font-family="Arial, sans-serif">+ findBySellerId()</text>
+<rect x="640" y="1110" width="292" height="70" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="640" y1="1148" x2="932" y2="1148" stroke="#000" stroke-width="1.5"/>
+<line x1="640" y1="1164" x2="932" y2="1164" stroke="#000" stroke-width="1.5"/>
+<text x="786" y="1126.5" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="786" y="1139.5" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ItemRepository</text>
+<text x="646" y="1175" font-size="9" font-family="Arial, sans-serif">+ findBySellerId()</text>
 </g>
 <g>
-<rect x="950" y="1066" width="292" height="96" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="950" y1="1118" x2="1242" y2="1118" stroke="#000" stroke-width="1.5"/>
-<line x1="950" y1="1134" x2="1242" y2="1134" stroke="#000" stroke-width="1.5"/>
-<text x="1096" y="1083" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="1096" y="1096" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">TradeOrder</text>
-<text x="1096" y="1109" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
-<text x="956" y="1145" font-size="9" font-family="Arial, sans-serif">+ findByBuyerId…()</text>
-<text x="956" y="1157" font-size="9" font-family="Arial, sans-serif">+ findLockedById()</text>
+<rect x="950" y="1110" width="292" height="96" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="950" y1="1162" x2="1242" y2="1162" stroke="#000" stroke-width="1.5"/>
+<line x1="950" y1="1178" x2="1242" y2="1178" stroke="#000" stroke-width="1.5"/>
+<text x="1096" y="1127" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="1096" y="1140" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">TradeOrder</text>
+<text x="1096" y="1153" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
+<text x="956" y="1189" font-size="9" font-family="Arial, sans-serif">+ findByBuyerId…()</text>
+<text x="956" y="1201" font-size="9" font-family="Arial, sans-serif">+ findLockedById()</text>
 </g>
 <g>
-<rect x="1260" y="1066" width="292" height="70" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="1260" y1="1104" x2="1552" y2="1104" stroke="#000" stroke-width="1.5"/>
-<line x1="1260" y1="1120" x2="1552" y2="1120" stroke="#000" stroke-width="1.5"/>
-<text x="1406" y="1082.5" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="1406" y="1095.5" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">MessageRepository</text>
-<text x="1266" y="1131" font-size="9" font-family="Arial, sans-serif">+ findByItemId()</text>
+<rect x="1260" y="1110" width="292" height="70" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="1260" y1="1148" x2="1552" y2="1148" stroke="#000" stroke-width="1.5"/>
+<line x1="1260" y1="1164" x2="1552" y2="1164" stroke="#000" stroke-width="1.5"/>
+<text x="1406" y="1126.5" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="1406" y="1139.5" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">MessageRepository</text>
+<text x="1266" y="1175" font-size="9" font-family="Arial, sans-serif">+ findByItemId()</text>
 </g>
 <g>
-<rect x="20" y="1158" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="20" y1="1210" x2="312" y2="1210" stroke="#000" stroke-width="1.5"/>
-<line x1="20" y1="1226" x2="312" y2="1226" stroke="#000" stroke-width="1.5"/>
-<text x="166" y="1175" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="166" y="1188" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ChatConversation</text>
-<text x="166" y="1201" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
-<text x="26" y="1237" font-size="9" font-family="Arial, sans-serif">+ findByItemAndParties()</text>
+<rect x="20" y="1250" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="20" y1="1302" x2="312" y2="1302" stroke="#000" stroke-width="1.5"/>
+<line x1="20" y1="1318" x2="312" y2="1318" stroke="#000" stroke-width="1.5"/>
+<text x="166" y="1267" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="166" y="1280" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ChatConversation</text>
+<text x="166" y="1293" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
+<text x="26" y="1329" font-size="9" font-family="Arial, sans-serif">+ findByItemAndParties()</text>
 </g>
 <g>
-<rect x="330" y="1158" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="330" y1="1210" x2="622" y2="1210" stroke="#000" stroke-width="1.5"/>
-<line x1="330" y1="1226" x2="622" y2="1226" stroke="#000" stroke-width="1.5"/>
-<text x="476" y="1175" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="476" y="1188" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ChatMessage</text>
-<text x="476" y="1201" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
-<text x="336" y="1237" font-size="9" font-family="Arial, sans-serif">+ findByConversationId()</text>
+<rect x="330" y="1250" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="330" y1="1302" x2="622" y2="1302" stroke="#000" stroke-width="1.5"/>
+<line x1="330" y1="1318" x2="622" y2="1318" stroke="#000" stroke-width="1.5"/>
+<text x="476" y="1267" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="476" y="1280" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ChatMessage</text>
+<text x="476" y="1293" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
+<text x="336" y="1329" font-size="9" font-family="Arial, sans-serif">+ findByConversationId()</text>
 </g>
 <g>
-<rect x="640" y="1158" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="640" y1="1210" x2="932" y2="1210" stroke="#000" stroke-width="1.5"/>
-<line x1="640" y1="1226" x2="932" y2="1226" stroke="#000" stroke-width="1.5"/>
-<text x="786" y="1175" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="786" y="1188" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ChatBlock</text>
-<text x="786" y="1201" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
-<text x="646" y="1237" font-size="9" font-family="Arial, sans-serif">+ existsByPair()</text>
+<rect x="640" y="1250" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="640" y1="1302" x2="932" y2="1302" stroke="#000" stroke-width="1.5"/>
+<line x1="640" y1="1318" x2="932" y2="1318" stroke="#000" stroke-width="1.5"/>
+<text x="786" y="1267" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="786" y="1280" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ChatBlock</text>
+<text x="786" y="1293" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
+<text x="646" y="1329" font-size="9" font-family="Arial, sans-serif">+ existsByPair()</text>
 </g>
 <g>
-<rect x="950" y="1158" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="950" y1="1210" x2="1242" y2="1210" stroke="#000" stroke-width="1.5"/>
-<line x1="950" y1="1226" x2="1242" y2="1226" stroke="#000" stroke-width="1.5"/>
-<text x="1096" y="1175" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="1096" y="1188" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ContentReport</text>
-<text x="1096" y="1201" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
-<text x="956" y="1237" font-size="9" font-family="Arial, sans-serif">+ findByReporterId…()</text>
+<rect x="950" y="1250" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="950" y1="1302" x2="1242" y2="1302" stroke="#000" stroke-width="1.5"/>
+<line x1="950" y1="1318" x2="1242" y2="1318" stroke="#000" stroke-width="1.5"/>
+<text x="1096" y="1267" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="1096" y="1280" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ContentReport</text>
+<text x="1096" y="1293" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
+<text x="956" y="1329" font-size="9" font-family="Arial, sans-serif">+ findByReporterId…()</text>
 </g>
 <g>
-<rect x="1260" y="1158" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="1260" y1="1210" x2="1552" y2="1210" stroke="#000" stroke-width="1.5"/>
-<line x1="1260" y1="1226" x2="1552" y2="1226" stroke="#000" stroke-width="1.5"/>
-<text x="1406" y="1175" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
-<text x="1406" y="1188" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ReportAction</text>
-<text x="1406" y="1201" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
-<text x="1266" y="1237" font-size="9" font-family="Arial, sans-serif">+ findByReportId()</text>
+<rect x="1260" y="1250" width="292" height="84" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="1260" y1="1302" x2="1552" y2="1302" stroke="#000" stroke-width="1.5"/>
+<line x1="1260" y1="1318" x2="1552" y2="1318" stroke="#000" stroke-width="1.5"/>
+<text x="1406" y="1267" text-anchor="middle" font-size="9" font-family="Arial, sans-serif" font-style="italic">«interface»</text>
+<text x="1406" y="1280" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">ReportAction</text>
+<text x="1406" y="1293" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="italic">Repository</text>
+<text x="1266" y="1329" font-size="9" font-family="Arial, sans-serif">+ findByReportId()</text>
 </g>
 <g>
-<rect x="20" y="1290" width="292" height="92" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="20" y1="1314" x2="312" y2="1314" stroke="#000" stroke-width="1.5"/>
-<line x1="20" y1="1366" x2="312" y2="1366" stroke="#000" stroke-width="1.5"/>
-<text x="166" y="1306" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">User</text>
-<text x="26" y="1325" font-size="9" font-family="Arial, sans-serif">- id: Long</text>
-<text x="26" y="1337" font-size="9" font-family="Arial, sans-serif">- email: String</text>
-<text x="26" y="1349" font-size="9" font-family="Arial, sans-serif">- role: String</text>
-<text x="26" y="1361" font-size="9" font-family="Arial, sans-serif">- status: String</text>
-<text x="26" y="1377" font-size="9" font-family="Arial, sans-serif">+ getId()</text>
+<rect x="20" y="1400" width="292" height="92" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="20" y1="1424" x2="312" y2="1424" stroke="#000" stroke-width="1.5"/>
+<line x1="20" y1="1476" x2="312" y2="1476" stroke="#000" stroke-width="1.5"/>
+<text x="166" y="1416" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">User</text>
+<text x="26" y="1435" font-size="9" font-family="Arial, sans-serif">- id: Long</text>
+<text x="26" y="1447" font-size="9" font-family="Arial, sans-serif">- email: String</text>
+<text x="26" y="1459" font-size="9" font-family="Arial, sans-serif">- role: String</text>
+<text x="26" y="1471" font-size="9" font-family="Arial, sans-serif">- status: String</text>
+<text x="26" y="1487" font-size="9" font-family="Arial, sans-serif">+ getId()</text>
 </g>
 <g>
-<rect x="330" y="1290" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="330" y1="1314" x2="622" y2="1314" stroke="#000" stroke-width="1.5"/>
-<line x1="330" y1="1354" x2="622" y2="1354" stroke="#000" stroke-width="1.5"/>
-<text x="476" y="1306" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">Item</text>
-<text x="336" y="1325" font-size="9" font-family="Arial, sans-serif">- sellerId: Long</text>
-<text x="336" y="1337" font-size="9" font-family="Arial, sans-serif">- status: ItemStatus</text>
-<text x="336" y="1349" font-size="9" font-family="Arial, sans-serif">- tags: Set</text>
-<text x="336" y="1365" font-size="9" font-family="Arial, sans-serif">+ getSellerId()</text>
+<rect x="330" y="1400" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="330" y1="1424" x2="622" y2="1424" stroke="#000" stroke-width="1.5"/>
+<line x1="330" y1="1464" x2="622" y2="1464" stroke="#000" stroke-width="1.5"/>
+<text x="476" y="1416" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">Item</text>
+<text x="336" y="1435" font-size="9" font-family="Arial, sans-serif">- sellerId: Long</text>
+<text x="336" y="1447" font-size="9" font-family="Arial, sans-serif">- status: ItemStatus</text>
+<text x="336" y="1459" font-size="9" font-family="Arial, sans-serif">- tags: Set</text>
+<text x="336" y="1475" font-size="9" font-family="Arial, sans-serif">+ getSellerId()</text>
 </g>
 <g>
-<rect x="640" y="1290" width="292" height="92" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="640" y1="1314" x2="932" y2="1314" stroke="#000" stroke-width="1.5"/>
-<line x1="640" y1="1366" x2="932" y2="1366" stroke="#000" stroke-width="1.5"/>
-<text x="786" y="1306" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">TradeOrder</text>
-<text x="646" y="1325" font-size="9" font-family="Arial, sans-serif">- itemId: Long</text>
-<text x="646" y="1337" font-size="9" font-family="Arial, sans-serif">- buyerId: Long</text>
-<text x="646" y="1349" font-size="9" font-family="Arial, sans-serif">- sellerId: Long</text>
-<text x="646" y="1361" font-size="9" font-family="Arial, sans-serif">- status</text>
-<text x="646" y="1377" font-size="9" font-family="Arial, sans-serif">+ getStatus()</text>
+<rect x="640" y="1400" width="292" height="92" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="640" y1="1424" x2="932" y2="1424" stroke="#000" stroke-width="1.5"/>
+<line x1="640" y1="1476" x2="932" y2="1476" stroke="#000" stroke-width="1.5"/>
+<text x="786" y="1416" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">TradeOrder</text>
+<text x="646" y="1435" font-size="9" font-family="Arial, sans-serif">- itemId: Long</text>
+<text x="646" y="1447" font-size="9" font-family="Arial, sans-serif">- buyerId: Long</text>
+<text x="646" y="1459" font-size="9" font-family="Arial, sans-serif">- sellerId: Long</text>
+<text x="646" y="1471" font-size="9" font-family="Arial, sans-serif">- status</text>
+<text x="646" y="1487" font-size="9" font-family="Arial, sans-serif">+ getStatus()</text>
 </g>
 <g>
-<rect x="950" y="1290" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="950" y1="1314" x2="1242" y2="1314" stroke="#000" stroke-width="1.5"/>
-<line x1="950" y1="1354" x2="1242" y2="1354" stroke="#000" stroke-width="1.5"/>
-<text x="1096" y="1306" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">Message</text>
-<text x="956" y="1325" font-size="9" font-family="Arial, sans-serif">- itemId: Long</text>
-<text x="956" y="1337" font-size="9" font-family="Arial, sans-serif">- senderId: Long</text>
-<text x="956" y="1349" font-size="9" font-family="Arial, sans-serif">- content: String</text>
+<rect x="950" y="1400" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="950" y1="1424" x2="1242" y2="1424" stroke="#000" stroke-width="1.5"/>
+<line x1="950" y1="1464" x2="1242" y2="1464" stroke="#000" stroke-width="1.5"/>
+<text x="1096" y="1416" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">Message</text>
+<text x="956" y="1435" font-size="9" font-family="Arial, sans-serif">- itemId: Long</text>
+<text x="956" y="1447" font-size="9" font-family="Arial, sans-serif">- senderId: Long</text>
+<text x="956" y="1459" font-size="9" font-family="Arial, sans-serif">- content: String</text>
 </g>
 <g>
-<rect x="1260" y="1290" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="1260" y1="1314" x2="1552" y2="1314" stroke="#000" stroke-width="1.5"/>
-<line x1="1260" y1="1354" x2="1552" y2="1354" stroke="#000" stroke-width="1.5"/>
-<text x="1406" y="1306" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">EmailVerification</text>
-<text x="1266" y="1325" font-size="9" font-family="Arial, sans-serif">- email: String</text>
-<text x="1266" y="1337" font-size="9" font-family="Arial, sans-serif">- codeHash: String</text>
-<text x="1266" y="1349" font-size="9" font-family="Arial, sans-serif">- purpose</text>
-<text x="1266" y="1365" font-size="9" font-family="Arial, sans-serif">+ isUsed()</text>
+<rect x="1260" y="1400" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="1260" y1="1424" x2="1552" y2="1424" stroke="#000" stroke-width="1.5"/>
+<line x1="1260" y1="1464" x2="1552" y2="1464" stroke="#000" stroke-width="1.5"/>
+<text x="1406" y="1416" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">EmailVerification</text>
+<text x="1266" y="1435" font-size="9" font-family="Arial, sans-serif">- email: String</text>
+<text x="1266" y="1447" font-size="9" font-family="Arial, sans-serif">- codeHash: String</text>
+<text x="1266" y="1459" font-size="9" font-family="Arial, sans-serif">- purpose</text>
+<text x="1266" y="1475" font-size="9" font-family="Arial, sans-serif">+ isUsed()</text>
 </g>
 <g>
-<rect x="20" y="1408" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="20" y1="1432" x2="312" y2="1432" stroke="#000" stroke-width="1.5"/>
-<line x1="20" y1="1472" x2="312" y2="1472" stroke="#000" stroke-width="1.5"/>
-<text x="166" y="1424" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ChatConversation</text>
-<text x="26" y="1443" font-size="9" font-family="Arial, sans-serif">- itemId: Long</text>
-<text x="26" y="1455" font-size="9" font-family="Arial, sans-serif">- buyerId: Long</text>
-<text x="26" y="1467" font-size="9" font-family="Arial, sans-serif">- sellerId: Long</text>
+<rect x="20" y="1528" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="20" y1="1552" x2="312" y2="1552" stroke="#000" stroke-width="1.5"/>
+<line x1="20" y1="1592" x2="312" y2="1592" stroke="#000" stroke-width="1.5"/>
+<text x="166" y="1544" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ChatConversation</text>
+<text x="26" y="1563" font-size="9" font-family="Arial, sans-serif">- itemId: Long</text>
+<text x="26" y="1575" font-size="9" font-family="Arial, sans-serif">- buyerId: Long</text>
+<text x="26" y="1587" font-size="9" font-family="Arial, sans-serif">- sellerId: Long</text>
 </g>
 <g>
-<rect x="330" y="1408" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="330" y1="1432" x2="622" y2="1432" stroke="#000" stroke-width="1.5"/>
-<line x1="330" y1="1472" x2="622" y2="1472" stroke="#000" stroke-width="1.5"/>
-<text x="476" y="1424" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ChatMessage</text>
-<text x="336" y="1443" font-size="9" font-family="Arial, sans-serif">- conversationId: Long</text>
-<text x="336" y="1455" font-size="9" font-family="Arial, sans-serif">- senderId: Long</text>
-<text x="336" y="1467" font-size="9" font-family="Arial, sans-serif">- body: String</text>
+<rect x="330" y="1528" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="330" y1="1552" x2="622" y2="1552" stroke="#000" stroke-width="1.5"/>
+<line x1="330" y1="1592" x2="622" y2="1592" stroke="#000" stroke-width="1.5"/>
+<text x="476" y="1544" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ChatMessage</text>
+<text x="336" y="1563" font-size="9" font-family="Arial, sans-serif">- conversationId: Long</text>
+<text x="336" y="1575" font-size="9" font-family="Arial, sans-serif">- senderId: Long</text>
+<text x="336" y="1587" font-size="9" font-family="Arial, sans-serif">- body: String</text>
 </g>
 <g>
-<rect x="640" y="1408" width="292" height="68" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="640" y1="1432" x2="932" y2="1432" stroke="#000" stroke-width="1.5"/>
-<line x1="640" y1="1460" x2="932" y2="1460" stroke="#000" stroke-width="1.5"/>
-<text x="786" y="1424" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ChatBlock</text>
-<text x="646" y="1443" font-size="9" font-family="Arial, sans-serif">- blockerId: Long</text>
-<text x="646" y="1455" font-size="9" font-family="Arial, sans-serif">- blockedId: Long</text>
+<rect x="640" y="1528" width="292" height="68" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="640" y1="1552" x2="932" y2="1552" stroke="#000" stroke-width="1.5"/>
+<line x1="640" y1="1580" x2="932" y2="1580" stroke="#000" stroke-width="1.5"/>
+<text x="786" y="1544" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ChatBlock</text>
+<text x="646" y="1563" font-size="9" font-family="Arial, sans-serif">- blockerId: Long</text>
+<text x="646" y="1575" font-size="9" font-family="Arial, sans-serif">- blockedId: Long</text>
 </g>
 <g>
-<rect x="950" y="1408" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="950" y1="1432" x2="1242" y2="1432" stroke="#000" stroke-width="1.5"/>
-<line x1="950" y1="1472" x2="1242" y2="1472" stroke="#000" stroke-width="1.5"/>
-<text x="1096" y="1424" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ContentReport</text>
-<text x="956" y="1443" font-size="9" font-family="Arial, sans-serif">- reporterId: Long</text>
-<text x="956" y="1455" font-size="9" font-family="Arial, sans-serif">- targetType</text>
-<text x="956" y="1467" font-size="9" font-family="Arial, sans-serif">- targetId: Long</text>
+<rect x="950" y="1528" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="950" y1="1552" x2="1242" y2="1552" stroke="#000" stroke-width="1.5"/>
+<line x1="950" y1="1592" x2="1242" y2="1592" stroke="#000" stroke-width="1.5"/>
+<text x="1096" y="1544" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ContentReport</text>
+<text x="956" y="1563" font-size="9" font-family="Arial, sans-serif">- reporterId: Long</text>
+<text x="956" y="1575" font-size="9" font-family="Arial, sans-serif">- targetType</text>
+<text x="956" y="1587" font-size="9" font-family="Arial, sans-serif">- targetId: Long</text>
 </g>
 <g>
-<rect x="1260" y="1408" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<line x1="1260" y1="1432" x2="1552" y2="1432" stroke="#000" stroke-width="1.5"/>
-<line x1="1260" y1="1472" x2="1552" y2="1472" stroke="#000" stroke-width="1.5"/>
-<text x="1406" y="1424" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ReportAction</text>
-<text x="1266" y="1443" font-size="9" font-family="Arial, sans-serif">- reportId: Long</text>
-<text x="1266" y="1455" font-size="9" font-family="Arial, sans-serif">- adminId: Long</text>
-<text x="1266" y="1467" font-size="9" font-family="Arial, sans-serif">- actionType</text>
+<rect x="1260" y="1528" width="292" height="80" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<line x1="1260" y1="1552" x2="1552" y2="1552" stroke="#000" stroke-width="1.5"/>
+<line x1="1260" y1="1592" x2="1552" y2="1592" stroke="#000" stroke-width="1.5"/>
+<text x="1406" y="1544" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-style="normal">ReportAction</text>
+<text x="1266" y="1563" font-size="9" font-family="Arial, sans-serif">- reportId: Long</text>
+<text x="1266" y="1575" font-size="9" font-family="Arial, sans-serif">- adminId: Long</text>
+<text x="1266" y="1587" font-size="9" font-family="Arial, sans-serif">- actionType</text>
 </g>
-<path d="M 500 448 L 500 414" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polygon points="500,400 508,414 492,414" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="510" y="435" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
-<path d="M 696 484 L 696 450" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polygon points="696,436 704,450 688,450" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="706" y="471" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
-<path d="M 696 748 L 696 714" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polygon points="696,700 704,714 688,714" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="706" y="735" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
-<path d="M 892 460 L 892 426" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polygon points="892,412 900,426 884,426" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="902" y="447" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
-<path d="M 1088 448 L 1088 414" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polygon points="1088,400 1096,414 1080,414" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="1098" y="435" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
-<path d="M 1284 484 L 1284 450" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polygon points="1284,436 1292,450 1276,450" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="1294" y="471" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
-<path d="M 1480 472 L 1480 438" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polygon points="1480,424 1488,438 1472,438" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="1490" y="459" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
-<path d="M 166 1066 L 166 1064 L 97 1064 L 97 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="97,1062 105,1076 89,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="141.5" y="1068" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 476 1066 L 476 1064 L 251 1064 L 251 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="251,1062 259,1076 243,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="373.5" y="1068" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 786 1066 L 786 1064 L 405 1064 L 405 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="405,1062 413,1076 397,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="605.5" y="1068" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 1096 1066 L 1096 1064 L 559 1064 L 559 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="559,1062 567,1076 551,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="837.5" y="1068" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 1406 1066 L 1406 1064 L 713 1064 L 713 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="713,1062 721,1076 705,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="1069.5" y="1068" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 166 1158 L 166 1110 L 867.0000000000001 1110 L 867.0000000000001 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="867.0000000000001,1062 875.0000000000001,1076 859.0000000000001,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="526.5" y="1114" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 476 1158 L 476 1110 L 1021 1110 L 1021 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="1021,1062 1029,1076 1013,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="758.5" y="1114" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 786 1158 L 786 1110 L 1175 1110 L 1175 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="1175,1062 1183,1076 1167,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="990.5" y="1114" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 1096 1158 L 1096 1110 L 1329 1110 L 1329 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="1329,1062 1337,1076 1321,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="1222.5" y="1114" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 1406 1158 L 1406 1110 L 1483 1110 L 1483 1076" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="1483,1062 1491,1076 1475,1076" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<text x="1454.5" y="1114" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
-<path d="M 108 138 L 108 234 L 304 234 L 304 320" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 299.5 320 L 304 330 L 308.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
+<text x="510" y="427" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
+<text x="706" y="463" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
+<text x="706" y="727" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
+<text x="902" y="439" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
+<text x="1098" y="427" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
+<text x="1294" y="463" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
+<text x="1490" y="451" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«realize»</text>
+<text x="121.5" y="1088" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="353.5" y="1088" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="585.5" y="1088" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="817.5" y="1088" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="1049.5" y="1088" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="596.5" y="1228" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="828.5" y="1228" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="1060.5" y="1228" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="1292.5" y="1228" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
+<text x="1493" y="1197.5" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">泛化</text>
 
-<path d="M 108 138 L 108 295 L 304 295 L 304 442" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 299.5 442 L 304 452 L 308.5 442" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 308 114 L 308 222 L 108 222 L 108 320" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 103.5 320 L 108 330 L 112.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 508 102 L 508 216 L 500 216 L 500 320" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 495.5 320 L 500 330 L 504.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 708 138 L 708 234 L 696 234 L 696 320" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 691.5 320 L 696 330 L 700.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 708 138 L 708 384 L 696 384 L 696 620" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 691.5 620 L 696 630 L 700.5 620" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 908 128 L 908 229 L 892 229 L 892 320" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 887.5 320 L 892 330 L 896.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1108 126 L 1108 378 L 696 378 L 696 620" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 691.5 620 L 696 630 L 700.5 620" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 108 276 L 108 303 L 1284 303 L 1284 320" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1279.5 320 L 1284 330 L 1288.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 308 290 L 308 369 L 1088 369 L 1088 438" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1083.5 438 L 1088 448 L 1092.5 438" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 508 264 L 508 297 L 1480 297 L 1480 320" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1475.5 320 L 1480 330 L 1484.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 708 278 L 708 304 L 1480 304 L 1480 320" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1475.5 320 L 1480 330 L 1484.5 320" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 304 424 L 304 662" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 299.5 662 L 304 672 L 308.5 662" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 304 452 L 304 434" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 308.5 434 L 304 424 L 299.5 434" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 108 412 L 108 739 L 166 739 L 166 1056" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 161.5 1056 L 166 1066 L 170.5 1056" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 304 424 L 304 745 L 476 745 L 476 1056" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 471.5 1056 L 476 1066 L 480.5 1056" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 696 602 L 696 834 L 786 834 L 786 1056" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 781.5 1056 L 786 1066 L 790.5 1056" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 696 842 L 696 954 L 786 954 L 786 1056" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 781.5 1056 L 786 1066 L 790.5 1056" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1088 552 L 1088 809 L 1096 809 L 1096 1056" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1091.5 1056 L 1096 1066 L 1100.5 1056" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1088 580 L 1088 562" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1092.5 562 L 1088 552 L 1083.5 562" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1284 588 L 1284 873 L 166 873 L 166 1148" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 161.5 1148 L 166 1158 L 170.5 1148" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1480 590 L 1480 874 L 1096 874 L 1096 1148" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1091.5 1148 L 1096 1158 L 1100.5 1148" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 500 540 L 500 558" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<path d="M 495.5 558 L 500 568 L 504.5 558" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="508" y="543" font-size="10" font-family="Arial, sans-serif" fill="#000">«use»</text>
-<path d="M 108 644 L 108 855 L 166 855 L 166 1056" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<path d="M 161.5 1056 L 166 1066 L 170.5 1056" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="145" y="849" font-size="10" font-family="Arial, sans-serif" fill="#000">«use»</text>
-<path d="M 108 412 L 108 430" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<path d="M 103.5 430 L 108 440 L 112.5 430" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="116" y="415" font-size="10" font-family="Arial, sans-serif" fill="#000">«create»</text>
-<path d="M 166 1136 L 166 1280" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 161.5 1280 L 166 1290 L 170.5 1280" fill="none" stroke="#000" stroke-width="1.5"/>
+<text x="510" y="557" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«use»</text>
+<text x="176" y="851" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«use»</text>
+<text x="118" y="429" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«create»</text>
 
-<path d="M 476 1150 L 476 1220 L 1406 1220 L 1406 1280" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1401.5 1280 L 1406 1290 L 1410.5 1280" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 786 1136 L 786 1213 L 476 1213 L 476 1280" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 471.5 1280 L 476 1290 L 480.5 1280" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1096 1162 L 1096 1226 L 786 1226 L 786 1280" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 781.5 1280 L 786 1290 L 790.5 1280" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1406 1136 L 1406 1213 L 1096 1213 L 1096 1280" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1091.5 1280 L 1096 1290 L 1100.5 1280" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 166 1242 L 166 1398" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 161.5 1398 L 166 1408 L 170.5 1398" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 476 1242 L 476 1398" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 471.5 1398 L 476 1408 L 480.5 1398" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 786 1242 L 786 1398" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 781.5 1398 L 786 1408 L 790.5 1398" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1096 1242 L 1096 1398" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1091.5 1398 L 1096 1408 L 1100.5 1398" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 1406 1242 L 1406 1398" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 1401.5 1398 L 1406 1408 L 1410.5 1398" fill="none" stroke="#000" stroke-width="1.5"/>
 
-<path d="M 296.82106723119176 1341.0596442562694 L 313.4105336155959 1341.0596442562694 L 313.4105336155959 1330 L 330 1330" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="312,1336 302.51316701949486,1332.8377223398318 296.82106723119176,1341.0596442562694 306.30790021169696,1344.2219219164379" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<path d="M 320 1334.5 L 330 1330 L 320 1325.5" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="323.4105336155959" y="1329.5298221281346" font-size="10" font-family="Arial, sans-serif" fill="#000">1  seller  0..*</text>
-<path d="M 640 1336 L 631 1336 L 631 1330 L 632 1330" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 632 1325.5 L 622 1330 L 632 1334.5" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="639" y="1327" font-size="10" font-family="Arial, sans-serif" fill="#000">itemId</text>
-<path d="M 950 1330 L 632 1330" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 632 1325.5 L 622 1330 L 632 1334.5" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="799" y="1324" font-size="10" font-family="Arial, sans-serif" fill="#000">itemId</text>
-<path d="M 786 1408 L 786 1395 L 166 1395 L 166 1392" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 170.5 1392 L 166 1382 L 161.5 1392" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="484" y="1389" font-size="10" font-family="Arial, sans-serif" fill="#000">blocker</text>
-<path d="M 1096 1408 L 1096 1395 L 166 1395 L 166 1392" fill="none" stroke="#000" stroke-width="1.5"/>
-<path d="M 170.5 1392 L 166 1382 L 161.5 1392" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="639" y="1389" font-size="10" font-family="Arial, sans-serif" fill="#000">reporter</text>
-<path d="M 296 1448 L 330 1448" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="312,1448 304,1442 296,1448 304,1454" fill="#000" stroke="#000" stroke-width="1.5"/>
-<path d="M 320 1452.5 L 330 1448 L 320 1443.5" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="323" y="1442" font-size="10" font-family="Arial, sans-serif" fill="#000">1  0..*</text>
-<path d="M 1226 1448 L 1260 1448" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="1242,1448 1234,1442 1226,1448 1234,1454" fill="#000" stroke="#000" stroke-width="1.5"/>
-<path d="M 1250 1452.5 L 1260 1448 L 1250 1443.5" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="1253" y="1442" font-size="10" font-family="Arial, sans-serif" fill="#000">1  1..*</text>
-<path d="M 491.8811298272358 1368.0532808598873 L 491.8811298272358 1388.0266404299437 L 166 1388.0266404299437 L 166 1408" fill="none" stroke="#000" stroke-width="1.5"/>
-<polygon points="476,1370 484.6705845911602,1374.982064115157 491.8811298272358,1368.0532808598873 483.2105452360756,1363.0712167447302" fill="#fff" stroke="#000" stroke-width="1.5"/>
-<path d="M 161.5 1398 L 166 1408 L 170.5 1398" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="338.9405649136179" y="1382.0266404299437" font-size="10" font-family="Arial, sans-serif" fill="#000">1  0..*</text>
-<path d="M 1260 1330 L 786 1330 L 786 1336 L 322 1336" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-<path d="M 322 1331.5 L 312 1336 L 322 1340.5" fill="none" stroke="#000" stroke-width="1.5"/>
-<text x="794" y="1327" font-size="10" font-family="Arial, sans-serif" fill="#000">«email»</text>
-<text x="20" y="1510" font-size="11" font-family="Arial, sans-serif" fill="#333">属性中的协作类型同时表示可导航关联；图中用连线标出分层调用、接口实现、仓库泛化及实体结构关系。</text>
+<text x="328.6" y="1392" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">1  seller  0..*</text>
+<text x="634" y="1392" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">itemId</text>
+<text x="786" y="1392" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">itemId</text>
+<text x="470" y="1508" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">blocker</text>
+<text x="625" y="1508" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">reporter</text>
+<text x="329" y="1520" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">1  0..*</text>
+<text x="1259" y="1520" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">1  1..*</text>
+<text x="304.3" y="1508.4" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">1  0..*</text>
+<text x="789" y="1392" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#000">«email»</text>
+<text x="20" y="1630" font-size="11" font-family="Arial, sans-serif" fill="#333">属性中的协作类型同时表示可导航关联；图中用连线标出分层调用、接口实现、仓库泛化及实体结构关系。</text>
 
 <g>
-  <text x="20" y="1540" font-size="12" font-family="Arial, sans-serif" font-weight="bold">UML 关系图例</text>
-  <path d="M 20 1564 L 90 1564" fill="none" stroke="#000" stroke-width="1.5"/>
-  <path d="M 83 1560.5 L 90 1564 L 83 1567.5" fill="none" stroke="#000" stroke-width="1.5"/>
-  <text x="100" y="1568" font-size="11" font-family="Arial, sans-serif">关联（可导航）</text>
-  <path d="M 250 1564 L 320 1564" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <path d="M 313 1560.5 L 320 1564 L 313 1567.5" fill="none" stroke="#000" stroke-width="1.5"/>
-  <text x="330" y="1568" font-size="11" font-family="Arial, sans-serif">依赖 «use»</text>
-  <path d="M 470 1564 L 540 1564" fill="none" stroke="#000" stroke-width="1.5"/>
-  <polygon points="470,1564 478,1558 486,1564 478,1570" fill="#fff" stroke="#000" stroke-width="1.5"/>
-  <text x="550" y="1568" font-size="11" font-family="Arial, sans-serif">聚合</text>
-  <path d="M 620 1564 L 690 1564" fill="none" stroke="#000" stroke-width="1.5"/>
-  <polygon points="620,1564 628,1558 636,1564 628,1570" fill="#000" stroke="#000" stroke-width="1.5"/>
-  <text x="700" y="1568" font-size="11" font-family="Arial, sans-serif">组合</text>
-  <path d="M 770 1578 L 770 1550" fill="none" stroke="#000" stroke-width="1.5"/>
-  <polygon points="770,1542 763,1554 777,1554" fill="#fff" stroke="#000" stroke-width="1.5"/>
-  <text x="786" y="1568" font-size="11" font-family="Arial, sans-serif">泛化</text>
-  <path d="M 860 1578 L 860 1550" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <polygon points="860,1542 853,1554 867,1554" fill="#fff" stroke="#000" stroke-width="1.5"/>
-  <text x="876" y="1568" font-size="11" font-family="Arial, sans-serif">接口实现 «realize»</text>
+  <text x="20" y="1660" font-size="12" font-family="Arial, sans-serif" font-weight="bold">UML 关系图例</text>
+  <path d="M 20 1684 L 90 1684" fill="none" stroke="#000" stroke-width="1.5"/>
+  <path d="M 83 1680.5 L 90 1684 L 83 1687.5" fill="none" stroke="#000" stroke-width="1.5"/>
+  <text x="100" y="1688" font-size="11" font-family="Arial, sans-serif">关联（可导航）</text>
+  <path d="M 250 1684 L 320 1684" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <path d="M 313 1680.5 L 320 1684 L 313 1687.5" fill="none" stroke="#000" stroke-width="1.5"/>
+  <text x="330" y="1688" font-size="11" font-family="Arial, sans-serif">依赖 «use»</text>
+  <path d="M 470 1684 L 540 1684" fill="none" stroke="#000" stroke-width="1.5"/>
+  <polygon points="470,1684 478,1678 486,1684 478,1690" fill="#fff" stroke="#000" stroke-width="1.5"/>
+  <text x="550" y="1688" font-size="11" font-family="Arial, sans-serif">聚合</text>
+  <path d="M 620 1684 L 690 1684" fill="none" stroke="#000" stroke-width="1.5"/>
+  <polygon points="620,1684 628,1678 636,1684 628,1690" fill="#000" stroke="#000" stroke-width="1.5"/>
+  <text x="700" y="1688" font-size="11" font-family="Arial, sans-serif">组合</text>
+  <path d="M 770 1698 L 770 1670" fill="none" stroke="#000" stroke-width="1.5"/>
+  <polygon points="770,1662 763,1674 777,1674" fill="#fff" stroke="#000" stroke-width="1.5"/>
+  <text x="786" y="1688" font-size="11" font-family="Arial, sans-serif">泛化</text>
+  <path d="M 860 1698 L 860 1670" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <polygon points="860,1662 853,1674 867,1674" fill="#fff" stroke="#000" stroke-width="1.5"/>
+  <text x="876" y="1688" font-size="11" font-family="Arial, sans-serif">接口实现 «realize»</text>
 </g>
 </svg>
