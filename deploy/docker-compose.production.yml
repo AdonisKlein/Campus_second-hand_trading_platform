@@ -2,13 +2,14 @@ services:
   mysql:
     image: ${IMAGE_NAMESPACE}/campus-mysql:${IMAGE_TAG}
     command:
-      - --innodb-buffer-pool-size=96M
+      - --innodb-buffer-pool-size=64M
+      - --innodb-log-buffer-size=8M
       - --max-connections=30
       - --table-open-cache=200
       - --performance-schema=OFF
     deploy:
       resources:
-        limits: {memory: 384M}
+        limits: {memory: 320M}
         reservations: {memory: 192M}
 
   redis:
@@ -29,58 +30,67 @@ services:
 
   api-gateway:
     environment:
-      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError -Dreactor.netty.ioWorkerCount=2"
+      JAVA_TOOL_OPTIONS: "-Xms24m -Xmx80m -XX:MaxMetaspaceSize=112m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=24m -XX:MaxDirectMemorySize=32m -XX:TieredStopAtLevel=1 -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError -Dreactor.netty.ioWorkerCount=2"
+      SPRING_JMX_ENABLED: "false"
     deploy:
       resources:
-        limits: {memory: 288M}
+        limits: {memory: 320M}
         reservations: {memory: 96M}
 
   account-service:
     environment:
-      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms24m -Xmx80m -XX:MaxMetaspaceSize=112m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=24m -XX:MaxDirectMemorySize=16m -XX:TieredStopAtLevel=1 -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      SPRING_MAIN_LAZY_INITIALIZATION: "true"
+      SPRING_JMX_ENABLED: "false"
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
       SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
       SERVER_TOMCAT_THREADS_MAX: "16"
       SERVER_TOMCAT_THREADS_MIN_SPARE: "1"
     deploy:
       resources:
-        limits: {memory: 288M}
+        limits: {memory: 352M}
         reservations: {memory: 96M}
 
   marketplace-service:
     environment:
-      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms24m -Xmx80m -XX:MaxMetaspaceSize=112m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=24m -XX:MaxDirectMemorySize=16m -XX:TieredStopAtLevel=1 -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      SPRING_MAIN_LAZY_INITIALIZATION: "true"
+      SPRING_JMX_ENABLED: "false"
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
       SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
       SERVER_TOMCAT_THREADS_MAX: "16"
       SERVER_TOMCAT_THREADS_MIN_SPARE: "1"
     deploy:
       resources:
-        limits: {memory: 288M}
+        limits: {memory: 352M}
         reservations: {memory: 96M}
 
   trading-service:
     environment:
-      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms24m -Xmx80m -XX:MaxMetaspaceSize=112m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=24m -XX:MaxDirectMemorySize=16m -XX:TieredStopAtLevel=1 -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      SPRING_MAIN_LAZY_INITIALIZATION: "true"
+      SPRING_JMX_ENABLED: "false"
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
       SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
       SERVER_TOMCAT_THREADS_MAX: "16"
       SERVER_TOMCAT_THREADS_MIN_SPARE: "1"
     deploy:
       resources:
-        limits: {memory: 288M}
+        limits: {memory: 352M}
         reservations: {memory: 96M}
 
   governance-service:
     environment:
-      JAVA_TOOL_OPTIONS: "-Xms32m -Xmx112m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=32m -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      JAVA_TOOL_OPTIONS: "-Xms24m -Xmx80m -XX:MaxMetaspaceSize=112m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=24m -XX:MaxDirectMemorySize=16m -XX:TieredStopAtLevel=1 -Xss256k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
+      SPRING_MAIN_LAZY_INITIALIZATION: "true"
+      SPRING_JMX_ENABLED: "false"
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
       SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
       SERVER_TOMCAT_THREADS_MAX: "16"
       SERVER_TOMCAT_THREADS_MIN_SPARE: "1"
     deploy:
       resources:
-        limits: {memory: 288M}
+        limits: {memory: 352M}
         reservations: {memory: 96M}
 
   web:

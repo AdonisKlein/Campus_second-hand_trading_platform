@@ -54,8 +54,10 @@ expect(cloudProvision.includes('DEPLOY_USER') && cloudProvision.includes('chown 
 expect(cloudCompose.includes("limits: {memory:"), "production Compose must constrain container memory on the shared host");
 expect(baseCompose.includes("mysqladmin ping -h 127.0.0.1 -P 3306") && !baseCompose.includes("mysqladmin ping -h localhost"),
   "MySQL readiness must use the final TCP listener, not the temporary init socket");
-expect(cloudCompose.includes("-Xmx112m") && cloudCompose.includes("SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE"),
-  "small-host production overlay must cap JVM heaps and database connection pools");
+expect(cloudCompose.includes("-Xmx80m") && cloudCompose.includes("-XX:MaxMetaspaceSize=112m")
+    && cloudCompose.includes("SPRING_MAIN_LAZY_INITIALIZATION")
+    && cloudCompose.includes("SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE"),
+  "small-host production overlay must cap JVM memory regions and database connection pools");
 for (const image of ["campus-mysql", "campus-redis", "campus-rabbitmq"]) {
   expect(workflow.includes(`image: ${image}`) && cloudCompose.includes(`/${image}:\${IMAGE_TAG}`),
     `cloud dependencies must mirror ${image} through GHCR instead of pulling Docker Hub on the server`);

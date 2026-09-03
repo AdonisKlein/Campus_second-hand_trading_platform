@@ -29,9 +29,10 @@
 - 创建非 root 的 `campus-deploy` 发布账号并验证其可通过专用无口令密钥登录、运行 Compose 和读取生产配置；GitHub 的 `CLOUD_SSH_KEY` 已替换为该专用密钥，本机临时私钥随后删除。首次错误密钥因生成命令把引号写成了口令而无法用于 BatchMode，已用真实无人值守 SSH 验证锁定并修复。
 - 分支首次真实 CD 的全部测试、六个应用镜像和 Kind 部署均通过；云端阶段在 `compose pull` 暴露服务器无法连接 Docker Hub。生产 Overlay 随后改为由 CI 将固定版本 MySQL、Redis、RabbitMQ 原样镜像至 GHCR，使服务器部署只依赖已验证可达的 GHCR，不修改全机镜像源。
 - 同一提交重跑后镜像拉取成功，云端冒烟进一步暴露 1.8 GiB 主机全局 OOM：容器 MySQL 退出码 137、`OOMKilled=true`，Trading/Governance 因数据库消失而不健康。课程演示 Overlay 已缩小 JVM 堆/元空间、Hikari 连接池、Tomcat 线程与 MySQL 缓冲，并串行启动后两个 JPA 服务；MySQL 健康检查改走 3306/TCP，防止把初始化临时 socket 误判为正式就绪。
+- `sha-8409a09` 首次修复将 Metaspace 误压到 96 MiB，Account 日志明确报 `OutOfMemoryError: Metaspace`；提高后又通过内核 `constraint=CONSTRAINT_NONE, global_oom` 证实五个 JVM 同驻时仍有物理内存启动峰值。最终生产 Overlay 使用 80 MiB Java 堆、112 MiB Metaspace、受限代码缓存/直接内存、Tier 1 JIT、JPA 延迟初始化和 64 MiB MySQL Buffer Pool，从保留数据卷的干净容器状态复验成功。
 - 新增 `CLOUD_DEPLOY_REF` 仓库变量作为唯一部署分支选择器，临时验收可只部署 `codex/cloud-server-deployment`，以后切换 `main` 无需改工作流。
 - 初始盘点发现 2 vCPU、1.8 GiB RAM、无 Swap、Docker 未安装，Nginx 80 与 MySQL 3306 正在服务博客；上述一次性演示前置项现已补齐。正式发布触发前仅需完成本分支验证提交，并将 `CLOUD_DEPLOY_ENABLED` 打开。
-- 验证：生产 Compose 合并配置通过，确认六个 SHA 应用镜像且只有 Web 暴露 `127.0.0.1:18080`；`actionlint 1.7.12`、部署 Shell 语法、工作项 8 静态契约、前端 Node 测试 3/3、容器内两份 Nginx `nginx -t` 和完整 Compose Playwright E2E 15/15 均通过。服务器与客户端扫描得到的 ED25519 host key 指纹一致，`git diff --check` 通过。云服务器未发生任何写操作，博客未停止。
+- 验证：生产 Compose 合并配置、工作项 8 静态契约和 `git diff --check` 通过；GitHub run `33754743837` 的五服务测试、契约/前端、Playwright E2E、统一报告、九个 SHA 镜像和 Kind 部署通过，云端失败根因已由实机日志锁定。修正参数后使用同一 `sha-8409a09` 镜像原地复验：九个容器全部 Healthy、五个 Java 容器重启数均为 0，公网 readiness 为 UP、info 返回完整提交号、首页与 `/api/items` 均为 200；Swap 余量约 3.9 GiB，博客虚拟主机仍返回 200。
 - 提交号：本轮提交后使用 `git log -1` 查看。
 
 ### 文档去重与用例口径收敛（2026-08-31）
