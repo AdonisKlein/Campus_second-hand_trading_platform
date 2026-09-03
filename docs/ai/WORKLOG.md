@@ -18,6 +18,12 @@
 
 ## 当前状态
 
+### 本机 Kind CD 使用 GitHub Actions Token（2026-09-03）
+
+- 本机 CD 的 GHCR 登录改用 `github.actor` 与 `secrets.GITHUB_TOKEN`，不再依赖个人 `GHCR_USERNAME`/`GHCR_READ_TOKEN` Secret。
+- 保留 `packages: read` 权限和 Secret 非空校验；GHCR Package 仍需允许当前仓库的 Actions 访问。
+- 验证：待执行本地契约检查和 GitHub Actions 远程验收。
+
 ### 本机 Kind 自动 CD（2026-09-03）
 
 - 新增 `scripts/ci/deploy-kind-local.ps1`，在已有 `kind-campus-ci` 集群中拉取 GHCR 的 SHA 镜像，更新六个 Deployment，等待 rollout，并执行 Web smoke check；不会删除或重建本地集群。
