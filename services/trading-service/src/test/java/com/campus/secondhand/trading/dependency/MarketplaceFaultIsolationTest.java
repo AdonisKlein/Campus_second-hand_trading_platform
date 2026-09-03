@@ -74,6 +74,8 @@ class MarketplaceFaultIsolationTest {
         registry.add("campus.trading.marketplace-uri",
                 () -> MARKETPLACE.url("/").toString().replaceAll("/$", ""));
         registry.add("management.health.rabbit.enabled", () -> "false");
+        registry.add("spring.datasource.url",
+                () -> "jdbc:h2:mem:trading_fault_isolation;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1");
     }
 
     @AfterAll
@@ -91,7 +93,9 @@ class MarketplaceFaultIsolationTest {
     @BeforeEach
     void reset() {
         circuits.circuitBreaker(MarketplaceDependencyClient.CIRCUIT_NAME).reset();
-        orders.deleteAll();
+        jdbc.update("delete from outbox_events");
+        jdbc.update("delete from inbox_events");
+        jdbc.update("delete from trade_orders");
         RESPONSES.clear();
         when(accounts.requireActiveStudent(2L)).thenReturn(account(2, "买家"));
         when(accounts.find(anyLong())).thenAnswer(call -> Optional.of(account(call.getArgument(0), "用户")));
@@ -126,8 +130,10 @@ class MarketplaceFaultIsolationTest {
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.code").value("PRODUCT_SERVICE_UNAVAILABLE"))
                 .andExpect(jsonPath("$.message").value("商品服务暂时不可用，请稍后重试"));
-        assertThat(jdbc.queryForObject("select count(*) from trade_orders", Integer.class)).isZero();
-        assertThat(jdbc.queryForObject("select count(*) from outbox_events", Integer.class)).isZero();
+        assertThat(jdbc.queryForObject("select count(*) from trade_orders", Integer.class))
+                .as("failed purchase must not persist trade_orders").isZero();
+        assertThat(jdbc.queryForObject("select count(*) from outbox_events", Integer.class))
+                .as("failed purchase must not persist outbox_events").isZero();
         RecordedRequest request = MARKETPLACE.takeRequest();
         RecordedRequest retry = MARKETPLACE.takeRequest();
         assertThat(request.getHeader("X-Correlation-Id")).isEqualTo("fault-corr-1");

@@ -18,6 +18,14 @@
 
 ## 当前状态
 
+### 云原生实验成员 C：隔离测试共享 H2 脏数据（2026-09-03）
+
+- CI 失败用例 `MarketplaceFaultIsolationTest.failedPurchaseLeavesNoOrderOrOutboxAndPropagatesCorrelationId`（expected 0 was 1）不是生产路径写了半条订单。`requestPurchase` 在 `marketplace.require` 抛 503 时尚未 `saveAndFlush`；单元测试 `dependencyFailureCannotLeaveHalfOrder` 已覆盖。
+- 根因：全部 `@SpringBootTest` 共用 `jdbc:h2:mem:trading`。`TradingApiTest.commandIsDurablyStoredBeforeRabbitDelivery` 会留下 1 条 `outbox_events`，故障隔离用例只 `orders.deleteAll()`，JDBC 数 Outbox 就会看到这 1 行。GitHub Actions 的第二个 error 是上游失败后的报告步骤连带失败。
+- 修复：故障隔离测试改用独立库 `trading_fault_isolation`，`@BeforeEach` 用 JDBC 清空 orders/outbox/inbox；API 测试写完 Outbox 后删除。断言加上表名说明。
+- 验证：`TradingApiTest` + `MarketplaceFaultIsolationTest` 同 JVM 8/8 通过。
+- 遗留：尚未提交。
+
 ### 云原生实验成员 C：本地 CI 门禁复验（2026-09-03）
 
 - 对照 GitHub Actions `service-tests` / 契约门禁，对本项改动做了本地 `mvn verify` 与实验静态检查。
