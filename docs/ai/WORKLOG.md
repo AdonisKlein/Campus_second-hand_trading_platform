@@ -16,6 +16,14 @@
 
 本文件记录已经落地的事实，不记录未经确认的设想。每轮完成后在顶部追加结果，包含验证证据和提交号。
 
+### Kind 本地镜像加载加速（2026-09-03）
+
+- `deploy-kind-local.ps1` 改为自动缓存：本机存在完整 SHA 镜像时跳过 GHCR 拉取，否则自动拉取，随后统一 `kind load docker-image`。
+- `k8s/README.md` 补充本地镜像命名要求、命令示例和缺失镜像行为。
+- GitHub Actions 的 `Deploy to local Kind` Job 使用自动缓存逻辑，缓存未命中时可自动拉取新 SHA 镜像。
+- 验证：PowerShell 脚本静态检查待执行；未运行 Docker/Kind 部署。
+- 提交号：本轮尚未提交。
+
 ## 当前状态
 
 ### 公开 GHCR 镜像取消本机 CD 登录（2026-09-03）

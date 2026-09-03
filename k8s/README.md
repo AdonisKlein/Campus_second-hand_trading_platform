@@ -27,6 +27,22 @@ powershell -ExecutionPolicy Bypass -File scripts/ci/kind-local.ps1 up
 
 脚本会完成六个镜像的独立构建、创建 Kind 集群、加载镜像、生成本地随机 Secret、应用 Kustomize、等待平台与所有业务服务 rollout，并通过 Web 同源入口做冒烟测试。任意 rollout 或健康检查失败都会返回非零退出码。
 
+### 使用本地镜像加速
+
+部署脚本会自动检查本机 Docker 缓存：如果完整镜像名和 tag 已存在，就跳过 GHCR 下载；否则才拉取远端镜像，然后加载到 Kind 节点：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/ci/deploy-kind-local.ps1 `
+  -ImageNamespace ghcr.io/adonisklein `
+  -ImageTag sha-d7f57d9 `
+  -ClusterName campus-ci `
+  -Namespace campus-market
+```
+
+重复部署同一个 SHA tag 时会直接复用缓存；首次部署新 SHA 仍需从 GHCR 拉取。脚本不会把本地镜像自动推送到仓库。也可以在网络较好的机器执行 `docker pull`，再通过 `docker save`/`docker load` 搬运镜像。
+
+GitHub Actions 的 `Deploy to local Kind` Job 使用同一自动缓存逻辑：self-hosted Runner 已缓存的镜像会跳过下载，缓存未命中时自动从 GHCR 拉取。
+
 查看状态：
 
 ```powershell

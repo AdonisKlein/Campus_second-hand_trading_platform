@@ -18,7 +18,7 @@ function Assert-Command([string]$Name) {
     }
 }
 
-foreach ($command in @('docker', 'kubectl')) { Assert-Command $command }
+foreach ($command in @('docker', 'kubectl', 'kind')) { Assert-Command $command }
 
 kubectl config get-contexts $context 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) {
@@ -36,9 +36,17 @@ $images = @(
 
 foreach ($entry in $images) {
     $image = "$ImageNamespace/$($entry.Image):$ImageTag"
-    Write-Host "Pulling $image"
-    docker pull $image
-    if ($LASTEXITCODE -ne 0) { throw "Failed to pull $image" }
+    docker image inspect $image *> $null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Using cached local image $image"
+    } else {
+        Write-Host "Pulling $image"
+        docker pull $image
+        if ($LASTEXITCODE -ne 0) { throw "Failed to pull $image" }
+    }
+    Write-Host "Loading $image into Kind cluster $ClusterName"
+    kind load docker-image $image --name $ClusterName
+    if ($LASTEXITCODE -ne 0) { throw "Failed to load $image into Kind" }
     kubectl --context $context -n $Namespace set image "deployment/$($entry.Deployment)" "$($entry.Container)=$image"
     if ($LASTEXITCODE -ne 0) { throw "Failed to update deployment/$($entry.Deployment)" }
 }
