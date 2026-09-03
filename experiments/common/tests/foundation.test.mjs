@@ -35,8 +35,10 @@ test('canonical generator is byte-for-byte deterministic', () => {
 });
 
 test('pinned Metrics Server manifest keeps the published checksum', () => {
+  const normalized = readFileSync(resolve(common, 'third-party', 'metrics-server-v0.9.0.yaml'), 'utf8')
+    .replaceAll('\r\n', '\n');
   assert.equal(
-    hash(resolve(common, 'third-party', 'metrics-server-v0.9.0.yaml')),
+    createHash('sha256').update(normalized).digest('hex'),
     '1cec29a5267809306a2c6ec74a3e449abbb705b4a8beed0c8a1963910f72c79b',
   );
 });

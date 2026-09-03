@@ -18,6 +18,15 @@
 
 ## 当前状态
 
+### 云原生实验成员 C：本地 CI 门禁复验（2026-09-03）
+
+- 对照 GitHub Actions `service-tests` / 契约门禁，对本项改动做了本地 `mvn verify` 与实验静态检查。
+- Trading `mvn verify`：**Surefire 27/27**、**Failsafe 2/2**（`FreshMySqlIT`、`RabbitTopologyIT`）通过，BUILD SUCCESS。首次失败是本机 Docker Desktop 未启动，Testcontainers 找不到 named pipe；拉起引擎后复跑通过。
+- 实验门禁：`verify-powershell.ps1` 解析通过；`foundation.test.mjs` 8/8；`verify-work-item-8.mjs`、事件契约、`git diff --check` 通过。
+- 修正：Windows 检出把 Metrics Server YAML 变成 CRLF，哈希对不上 Linux 发布校验和。测试改为先把 `\r\n` 规范成 `\n` 再 SHA-256，与仓库锁定的 `1cec29a5…c79b` 一致。
+- 未跑：其余四个服务的 Maven、Playwright Compose E2E、镜像构建（本项未改那些路径）。推送到 `codex/cloud-native-experiments` 后由 GitHub Actions 全量执行。
+- 遗留：尚未提交。
+
 ### 云原生实验成员 C：Kind 故障隔离现场（2026-09-02）
 
 - 本机 Kind `v0.33.0` / `go1.26.7` `windows/amd64`，集群 `campus-ci`、context `kind-campus-ci`、namespace `campus-market`。Docker Desktop 需关闭 containerd snapshotter 与容器代理，否则 Kind 节点拉镜像与 `docker build` 会失败。
