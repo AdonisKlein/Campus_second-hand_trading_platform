@@ -84,6 +84,7 @@ jobs:
           path: |
             services/${{ matrix.service }}/target/surefire-reports/**
             services/${{ matrix.service }}/target/failsafe-reports/**
+            services/${{ matrix.service }}/target/reports/**
 
   contract-and-frontend-tests:
     name: Contract and frontend tests

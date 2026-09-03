@@ -581,3 +581,9 @@
 2. `docker compose ... ps` 确认本地服务状态；当前验收入口为 `http://localhost`。
 3. 阅读本文件“当前进行中”与最新提交，不重复已经完成的轮次。
 4. 修改后同步测试、Postman（如契约变化）和本日志。
+### 微服务 Maven HTML 测试报告（2026-09-03）
+
+- 将 `maven-surefire-report-plugin 3.5.5` 配置迁移到 Gateway、Account、Marketplace、Trading、Governance 五个微服务；`verify` 阶段同时生成 Surefire/Failsafe HTML 到各服务 `target/reports`。
+- CI Maven evidence 同步上传 `target/reports/**`，保留原 XML/TXT、统一 Markdown/JSON 和 Playwright HTML 报告。
+- 验证：POM 配置与 CI 路径静态检查；尚未运行完整五服务 Maven/Docker 验证。
+- 遗留：执行 `scripts/ci/verify-services.ps1` 后确认五个服务均生成 `target/reports/surefire.html` 与 `target/reports/failsafe.html`（实际文件名以插件输出为准）。
