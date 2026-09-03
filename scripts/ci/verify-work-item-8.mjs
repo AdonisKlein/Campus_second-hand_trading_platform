@@ -7,6 +7,7 @@ const ciOverlay = read("k8s/overlays/ci/kustomization.yaml");
 const mysqlPlatform = read("k8s/base/platform.yaml");
 const composeMysqlInit = read("deploy/mysql/init/01-databases.sh");
 const cloudDeploy = read("scripts/deploy/cloud-deploy.sh");
+const cloudProvision = read("scripts/deploy/cloud-provision.sh");
 const cloudCompose = read("deploy/docker-compose.production.yml");
 const webNginx = read("frontend/deploy/nginx.conf");
 const services = ["api-gateway", "account-service", "marketplace-service", "trading-service", "governance-service"];
@@ -35,6 +36,8 @@ expect(workflow.includes("deploy-cloud:") && workflow.includes("needs: [build-im
   "cloud CD must wait for immutable images and the disposable Kind deployment gate");
 expect(workflow.includes("CLOUD_DEPLOY_ENABLED == 'true'"),
   "cloud CD must remain explicitly disabled until the shared host is provisioned");
+expect(workflow.includes("github.ref == vars.CLOUD_DEPLOY_REF"),
+  "cloud CD target branch must be selected explicitly without editing workflow code");
 expect(cloudDeploy.includes("SESSION_COOKIE_SECURE=true") && cloudDeploy.includes("CORS_ORIGINS=https://"),
   "cloud deployment must reject insecure browser session settings");
 expect(cloudDeploy.includes("127.0.0.1") && cloudDeploy.includes("--no-build") && cloudDeploy.includes("--wait"),
@@ -43,6 +46,10 @@ expect(cloudDeploy.includes('"https://${CLOUD_DOMAIN}/api/actuator/health/readin
   "cloud deployment must verify the public HTTPS route, DNS and host reverse proxy");
 expect(cloudDeploy.includes("current-image-tag") && cloudDeploy.includes("Rolling back application images"),
   "cloud deployment must retain an application-image rollback path");
+expect(cloudProvision.includes("refusing to overwrite") && cloudProvision.includes("openssl rand -hex 32"),
+  "cloud provisioning must generate secrets on-host and refuse to overwrite an existing env file");
+expect(cloudProvision.includes('DEPLOY_USER') && cloudProvision.includes('chown "${DEPLOY_USER}:${DEPLOY_USER}"'),
+  "cloud provisioning must grant the non-root deployment account access to its release state");
 expect(cloudCompose.includes("limits: {memory:"), "production Compose must constrain container memory on the shared host");
 expect(webNginx.includes("$http_x_forwarded_proto") && webNginx.includes("$upstream_forwarded_proto"),
   "the Web proxy must preserve the original HTTPS scheme from the host Nginx");

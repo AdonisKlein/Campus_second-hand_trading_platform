@@ -246,7 +246,7 @@ jobs:
   deploy-kind:
     name: Deploy microservices to Kind
     needs: build-images
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == vars.CLOUD_DEPLOY_REF)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     permissions:
@@ -294,7 +294,7 @@ jobs:
   deploy-cloud:
     name: Deploy to Aliyun server
     needs: [build-images, deploy-kind]
-    if: ${{ vars.CLOUD_DEPLOY_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) }}
+    if: ${{ vars.CLOUD_DEPLOY_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == vars.CLOUD_DEPLOY_REF)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment:
